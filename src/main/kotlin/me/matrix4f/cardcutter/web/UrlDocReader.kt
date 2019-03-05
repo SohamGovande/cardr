@@ -30,7 +30,13 @@ class UrlDocReader(private val url: String) {
         doc = Jsoup.connect(url).get()
         meta = doc.getElementsByTag("meta")
         try {
-            metaJson = JsonParser().parse(doc.select("script[type='application/ld+json']").maxBy { it.html().length }?.html()).asJsonObject
+            var jsonText = doc.select("script[type='application/ld+json']").maxBy { it.html().length }?.html() ?: throw NullPointerException()
+
+            //Remove the "headline" and "description" attributes - if they contain quotes, they cause a JSON parse failure
+            jsonText = jsonText.replace(Regex("\"headline\":\\s\".+\","), "")
+                .replace(Regex("\"description\":\\s\".+\","), "")
+
+            metaJson = JsonParser().parse(jsonText).asJsonObject
         } catch (e: Exception) {
             metaJson = JsonObject()
         }
@@ -55,6 +61,8 @@ class UrlDocReader(private val url: String) {
                 Author("", it[5]!!.value)
             ))
         }
+        // Make sure this is the last one
+        matcher.register("(?i)(By )([\\w.]+) ([\\w.]+)") { AuthorList(Author(it[2]!!.value, it[3]!!.value)) }
     }
 
     private fun findMeta(vararg attributes: String): String? {
@@ -137,7 +145,11 @@ class UrlDocReader(private val url: String) {
         if (authors.isNotEmpty())
             return authors;
 
-        authors = doc.select("[itemProp='author creator']").map { getAuthorFromName(it.text()) }.toTypedArray()
+        authors = doc.select("[itemProp='author creator']")
+            .map { matcher.evaluateString(it.text())?.value ?: emptyArray() }
+            .flatMap { it.asIterable() }
+            .toTypedArray()
+
         if (authors.isNotEmpty())
             return authors;
         return matcher.evaluateDoc(doc)?.value

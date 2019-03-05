@@ -32,6 +32,14 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".StandardArticleBody_body p")
     }
 
+    private fun nytimes(): Elements {
+        return doc.select(".StoryBodyCompanionColumn")
+    }
+
+    private fun foxnews(): Elements {
+        return doc.select(".article-body p")
+    }
+
     fun getBodyParagraphs(): Elements {
         try {
             return javaClass.getDeclaredMethod(hostName).invoke(this) as Elements

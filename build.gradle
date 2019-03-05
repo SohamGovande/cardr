@@ -3,6 +3,7 @@ buildscript {
 
     repositories {
         mavenCentral()
+        jcenter()
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -11,12 +12,12 @@ buildscript {
 
 plugins {
     id 'java'
+    id 'com.github.johnrengelman.shadow' version '4.0.4'
 }
+apply plugin: 'kotlin'
 
-group 'CardCutter'
+group 'me.vgsoham'
 version '1.0-SNAPSHOT'
-
-sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
@@ -29,30 +30,22 @@ dependencies {
 
 jar {
     manifest {
-        attributes "Main-Class": "me.matrix4f.cardcutter.CardCutterApplication"
-    }
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
-    }
-
-    doLast {
-        copy {
-            from 'build/libs/cardcutter-1.0-SNAPSHOT.jar'
-            into "X:/dev/intellij/cardcutter/CardCutter"
-        }
+        attributes 'Main-Class': 'me.matrix4f.cardcutter.CardCutterApplication'
     }
 }
 
+// Output to build/libs/shadow.jar
+shadowJar {
+    baseName = 'cardcutter_main'
+    classifier = null
+    version = null
 
-group 'me.vgsoham.cardcutter'
-version '1.0-SNAPSHOT'
-
-apply plugin: 'kotlin'
-
-sourceCompatibility = 1.8
-
-repositories {
-    mavenCentral()
+    doLast {
+        copy {
+            from 'build/libs/cardcutter_main.jar'
+            into "C:\\Users\\vgsoh\\Desktop\\CC Extension\\native"
+        }
+    }
 }
 
 dependencies {
