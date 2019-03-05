@@ -135,19 +135,18 @@ class UrlDocReader(private val url: String) {
             return authors
 
         authors = doc.select("[data-authorname]")
-            .map { getAuthorFromName(it.attr("data-authorname")) }
+            .map { matcher.evaluateString(it.attr("data-authorname"))?.value ?: arrayOf(getAuthorFromName(it.text())) }
+            .flatMap { it.asIterable() }
             .distinct()
             .toTypedArray()
-        if (authors.isNotEmpty())
-            return authors;
 
-        authors = doc.select(".author").map { getAuthorFromName(it.text()) }.toTypedArray()
         if (authors.isNotEmpty())
-            return authors;
+            return authors
 
-        authors = doc.select("[itemProp='author creator']")
-            .map { matcher.evaluateString(it.text())?.value ?: emptyArray() }
+        authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName")
+            .map { matcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
             .flatMap { it.asIterable() }
+            .distinct()
             .toTypedArray()
 
         if (authors.isNotEmpty())
@@ -212,7 +211,7 @@ class UrlDocReader(private val url: String) {
         // Try to get the date in ISO format from the metadata information
         var dateISO = findMeta("analyticsAttributes.articleDate",
                 "sailthru.date", "pubdate", "og:pubdate", "og:article:published_time", "og:article:modified_time",
-                "datePublished", "dateModified", "article:published_timef")
+                "datePublished", "dateModified", "article:published_time")
 
         if (dateISO == null) {
             if (metaJson.has("datePublished"))
@@ -226,7 +225,18 @@ class UrlDocReader(private val url: String) {
         // If it was found, parse it
         if (dateISO != null) {
             val endDate = Regex("[^0-9\\- ]").find(dateISO)?.range?.first ?: "0000-00-00".length
-            val sections = dateISO.substring(0, endDate).split("-")
+            val sections : List<String>
+
+            // Format YYYYMMDD e.g. 20190301
+            if (dateISO.none { !it.isDigit() } && dateISO.length == 8) {
+                sections = listOf(
+                    dateISO.substring(0, 4),
+                    dateISO.substring(4, 6),
+                    dateISO.substring(6, 8)
+                )
+            } else {
+                sections = dateISO.substring(0, endDate).split("-")
+            }
 
             var ts : Timestamp
             try {
@@ -326,7 +336,13 @@ class UrlDocReader(private val url: String) {
     fun getPublication(): String {
         if (this.publisher == null) {
             if (metaJson.has("publisher")) {
-                val jsonPublisher = metaJson["publisher"].asJsonObject
+
+                val jsonPublisher =
+                    if (metaJson["publisher"].isJsonArray)
+                        metaJson["publisher"].asJsonArray[0].asJsonObject
+                    else
+                        metaJson["publisher"].asJsonObject
+
                 publisher = jsonPublisher["name"].asString
                 return publisher as String
             }

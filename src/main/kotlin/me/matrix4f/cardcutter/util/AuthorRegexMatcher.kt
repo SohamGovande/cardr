@@ -29,6 +29,9 @@ class AuthorRegexMatcher() {
             if (elements.size == 0) continue
 
             for (element in elements) {
+                if (element.hasClass("HeroTextBelow-description"))
+                    continue
+
                 val matchResult = Regex(pair.first).find(element.text()) ?: continue
 
                 try {
