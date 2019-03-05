@@ -15,20 +15,35 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             "div.c-entry-content ol")
     }
 
+    // Doesn't work - CNN waits to load the paragraphs
     private fun cnn(): Elements {
-        return doc.select(".zn-body__paragraph")
+        return doc.getElementsByClass("zn-body__paragraph")
+    }
+
+    private fun bbc(): Elements {
+        return doc.select(".story-body__inner p")
+    }
+
+    private fun thehill(): Elements {
+        return doc.select(".field-name-body .field-items")
     }
 
     private fun reuters(): Elements {
-        return doc.select("StandardArticleBody_body p")
+        return doc.select(".StandardArticleBody_body p")
     }
 
     fun getBodyParagraphs(): Elements {
-        return when(hostName) {
-            "cnn" -> cnn()
-            "vox" -> vox()
-            "reuters" -> reuters()
-            else -> doc.getElementsByTag("p")
+        try {
+            return javaClass.getDeclaredMethod(hostName).invoke(this) as Elements
+        } catch (e: Exception) {
+
+            // NoSuchMethodException is normal, it means the host was unrecognized
+            if (!(e is NoSuchMethodException))
+                e.printStackTrace()
+
+            /* if (e is NoSuchMethodException) */
+            // Default behavior
+            return doc.getElementsByTag("p")
         }
     }
 }

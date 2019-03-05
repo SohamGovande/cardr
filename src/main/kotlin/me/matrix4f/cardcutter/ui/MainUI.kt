@@ -188,7 +188,7 @@ class MainUI {
             this.publisher = SimpleStringProperty(reader.getPublication())
             this.url = SimpleStringProperty(reader.getURL())
             this.title = SimpleStringProperty(reader.getTitle() ?: "")
-            this.cardTag.set("TAG")
+            this.cardTag.set(title.get())
             this.cardBody.set(reader.getBodyParagraphText(true))
 
             propertyTitleTextField.textProperty().bindBidirectional(this.title)
@@ -354,7 +354,7 @@ class MainUI {
                 this.publisher = SimpleStringProperty(reader.getPublication())
                 this.url = SimpleStringProperty(reader.getURL())
                 this.title = SimpleStringProperty(reader.getTitle() ?: "")
-                this.cardTag.set("TAG")
+                this.cardTag.set(title.get())
                 this.cardBody.set(reader.getBodyParagraphText(true))
 
                 Platform.runLater {

@@ -5,10 +5,7 @@ import com.google.gson.JsonParser
 import javafx.beans.property.SimpleStringProperty
 import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Timestamp
-import me.matrix4f.cardcutter.util.convertMonthNameToNumber
-import me.matrix4f.cardcutter.util.currentDate
-import me.matrix4f.cardcutter.util.ensureYYYYFormat
-import me.matrix4f.cardcutter.util.matchRegexDates
+import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.body.CardBodyReader
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -27,6 +24,8 @@ class UrlDocReader(private val url: String) {
     private var bodyParagraphElements: Elements? = null
     private var titleString: String? = null
 
+    private val matcher = AuthorRegexMatcher()
+
     init {
         doc = Jsoup.connect(url).get()
         meta = doc.getElementsByTag("meta")
@@ -34,6 +33,27 @@ class UrlDocReader(private val url: String) {
             metaJson = JsonParser().parse(doc.select("script[type='application/ld+json']").maxBy { it.html().length }?.html()).asJsonObject
         } catch (e: Exception) {
             metaJson = JsonObject()
+        }
+
+        matcher.register("(?i)(By )([\\w.]+) ([\\w.]+)(?=, \\w+)") { AuthorList(Author(it[2]!!.value, it[3]!!.value)) }
+        matcher.register("(?i)(By )([\\w.]+)\\s([\\w.]+)\\s+(and|&)\\s+([\\w.]+)\\s([\\w.]+)") {
+            AuthorList(arrayOf(
+                Author(it[2]!!.value, it[3]!!.value),
+                Author(it[5]!!.value, it[6]!!.value)
+            ))
+        }
+        matcher.register("(?i)(By )([\\w.]+)\\s(and|&)\\s([\\w.]+)") {
+            AuthorList(arrayOf(
+                Author("", it[2]!!.value),
+                Author("", it[4]!!.value)
+            ))
+        }
+        matcher.register("(?i)(By )([\\w.]+),\\s([\\w.]+),\\s(and|&)\\s([\\w.]+)") {
+            AuthorList(arrayOf(
+                Author("", it[2]!!.value),
+                Author("", it[3]!!.value),
+                Author("", it[5]!!.value)
+            ))
         }
     }
 
@@ -51,27 +71,33 @@ class UrlDocReader(private val url: String) {
     }
 
     protected fun getAuthorFromName(name: String): Author {
+        if (name.equals("BBC News"))
+            return Author("", "BBC")
+
         val lastSpace = name.trim().lastIndexOf(' ')
         if (lastSpace == -1)
             return Author(SimpleStringProperty(""), SimpleStringProperty(name))
-        return Author(
-                SimpleStringProperty(name.substring(0, lastSpace).trim()),
-                SimpleStringProperty(name.substring(lastSpace+1).trim()))
+        return Author(name.substring(0, lastSpace).trim(),
+                name.substring(lastSpace+1).trim())
     }
 
-    protected fun getAuthorFromXML(): String? {
-        var authorStr = findMeta("author", "og:article:author")
-
-        if (authorStr == null) return null
+    protected fun getAuthorFromXML(): Array<Author>? {
+        var authorStr: String = findMeta("author", "og:article:author") ?: return null
+        if (authorStr.contains("www"))
+            return null;
+        val parsed = matcher.evaluateString(authorStr)
+        if (parsed != null) return parsed.value
 
         val firstPunctuation = Regex("[^a-zA-Z &.()*]").find(authorStr)?.range?.first ?: authorStr.length
         authorStr = authorStr.substring(0, firstPunctuation)
-        return authorStr
+
+        return arrayOf(getAuthorFromName(authorStr))
     }
 
+
     fun getAuthors(): Array<Author>? {
-        var author : String? = null
-        var authors: Array<Author> = arrayOf()
+        var author: String? = null
+        var authors: Array<Author>? = arrayOf()
 
         if (metaJson.has("author")) {
             val authorJson = metaJson["author"]
@@ -90,17 +116,20 @@ class UrlDocReader(private val url: String) {
             }
         }
 
-        if (authors.isNotEmpty())
+        if (authors != null && authors.isNotEmpty())
             return authors
         if (author != null)
             return arrayOf(getAuthorFromName(author))
 
-        author = getAuthorFromXML()
+        authors = getAuthorFromXML()
 
-        if (author != null)
-            return arrayOf(getAuthorFromName(author))
+        if (authors != null && authors.isNotEmpty())
+            return authors
 
-        authors = doc.select("[data-authorname]").map { getAuthorFromName(it.attr("data-authorname")) }.toTypedArray()
+        authors = doc.select("[data-authorname]")
+            .map { getAuthorFromName(it.attr("data-authorname")) }
+            .distinct()
+            .toTypedArray()
         if (authors.isNotEmpty())
             return authors;
 
@@ -111,14 +140,10 @@ class UrlDocReader(private val url: String) {
         authors = doc.select("[itemProp='author creator']").map { getAuthorFromName(it.text()) }.toTypedArray()
         if (authors.isNotEmpty())
             return authors;
-
-
-        return null
-
-        //TODO add it so that it removes numbers from names
+        return matcher.evaluateDoc(doc)?.value
     }
 
-    private fun getDateFromHumanReadable(date: String): Timestamp {
+    private fun convertIsoToHumanReadable(date: String): Timestamp {
         var dateChanging = date.toLowerCase()
                 .replace(Regex("(Mon|Tue|Wed|Thu|Fri|Sat|Sun)"), "")
                 .replace(Regex("\\d\\d:\\d\\d:\\d\\d"), "")
@@ -198,7 +223,7 @@ class UrlDocReader(private val url: String) {
                 ts.month.set(sections[1].toInt().toString())
                 ts.day.set(sections[2].toInt().toString())
             } catch (e: Exception) {
-                ts = getDateFromHumanReadable(dateISO)
+                ts = convertIsoToHumanReadable(dateISO)
             }
             return ts
         }
@@ -206,7 +231,7 @@ class UrlDocReader(private val url: String) {
         // Some random weird news site does it this way
         val humanReadable = doc.getElementsByTag("span")?.select("[itemprop=datePublished]")?.html()
         if (humanReadable != null && humanReadable.isNotEmpty())
-            return getDateFromHumanReadable(humanReadable)
+            return convertIsoToHumanReadable(humanReadable)
 
         /*
         Try to parse it from the body of the text :(
@@ -272,11 +297,18 @@ class UrlDocReader(private val url: String) {
 
     private fun getHostName(url: String): String {
         val uri = URI(url)
-        val hostname = uri.host
+        var hostname = uri.host
         // to provide faultproof result, check if not null then return only hostname, without www.
-        return if (hostname != null) {
-            if (hostname.startsWith("www.")) hostname.substring(4) else hostname
-        } else "No Publication"
+        if (hostname != null) {
+            if (hostname.startsWith("http://")) hostname = hostname.substring("http://".length + 1)
+            if (hostname.startsWith("https://")) hostname = hostname.substring("https://".length + 1)
+
+            if (hostname.startsWith("www")) hostname = hostname.substring(hostname.indexOf('.') + 1)
+
+            // remove the .com / .org / .net
+            hostname = hostname.substring(0, hostname.lastIndexOf('.'))
+        } else hostname = "No Publication"
+        return hostname
     }
 
     fun getPublication(): String {
@@ -318,7 +350,7 @@ class UrlDocReader(private val url: String) {
 
     private fun getBodyParagraphs(): Elements {
         if (bodyParagraphElements == null) {
-            val reader = CardBodyReader(getHostName(url).toLowerCase(), doc)
+            val reader = CardBodyReader(getPublication().toLowerCase(), doc)
             bodyParagraphElements = reader.getBodyParagraphs()
         }
         return bodyParagraphElements as Elements;

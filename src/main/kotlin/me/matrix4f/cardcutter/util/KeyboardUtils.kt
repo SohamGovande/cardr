@@ -26,7 +26,6 @@ fun paste(r: Robot) {
 }
 
 fun pasteCardToVerbatim(tag: String, cite: Cite, body: String) {
-    val msWord = MSWordInteractor()
     val r = Robot()
     r.autoDelay = 50
 
