@@ -3,13 +3,12 @@ package me.matrix4f.cardcutter.util
 import org.jsoup.nodes.Document
 import java.lang.Exception
 
-class AuthorRegexMatcher() {
+class AuthorRegexMatcher {
 
     private val regexs: MutableList<Pair<String, (MatchGroupCollection) -> AuthorList>> = mutableListOf()
 
-    fun register(string: String, processor: (MatchGroupCollection) -> AuthorList) {
-        regexs.add(Pair(string, processor));
-    }
+    fun register(string: String, processor: (MatchGroupCollection) -> AuthorList) =
+        regexs.add(Pair(string, processor))
 
     fun evaluateString(str: String) : AuthorList? {
         for (pair in regexs) {

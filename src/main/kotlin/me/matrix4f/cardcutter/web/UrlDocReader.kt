@@ -24,7 +24,9 @@ class UrlDocReader(private val url: String) {
     private var bodyParagraphElements: Elements? = null
     private var titleString: String? = null
 
-    private val matcher = AuthorRegexMatcher()
+    // Matchers
+    private val authorMatcher = AuthorRegexMatcher()
+    private val dateMatcher = DateRegexMatcher()
 
     init {
         doc = Jsoup.connect(url).get()
@@ -41,20 +43,21 @@ class UrlDocReader(private val url: String) {
             metaJson = JsonObject()
         }
 
-        matcher.register("(?i)(By )([\\w.]+) ([\\w.]+)(?=, \\w+)") { AuthorList(Author(it[2]!!.value, it[3]!!.value)) }
-        matcher.register("(?i)(By )([\\w.]+)\\s([\\w.]+)\\s+(and|&)\\s+([\\w.]+)\\s([\\w.]+)") {
+        // REGISTER AUTHOR REGEXES
+        authorMatcher.register("(?i)(By )([\\w.]+) ([\\w.]+)(?=, \\w+)") { AuthorList(Author(it[2]!!.value, it[3]!!.value)) }
+        authorMatcher.register("(?i)(By )([\\w.]+)\\s([\\w.]+)\\s+(and|&)\\s+([\\w.]+)\\s([\\w.]+)") {
             AuthorList(arrayOf(
                 Author(it[2]!!.value, it[3]!!.value),
                 Author(it[5]!!.value, it[6]!!.value)
             ))
         }
-        matcher.register("(?i)(By )([\\w.]+)\\s(and|&)\\s([\\w.]+)") {
+        authorMatcher.register("(?i)(By )([\\w.]+)\\s(and|&)\\s([\\w.]+)") {
             AuthorList(arrayOf(
                 Author("", it[2]!!.value),
                 Author("", it[4]!!.value)
             ))
         }
-        matcher.register("(?i)(By )([\\w.]+),\\s([\\w.]+),\\s(and|&)\\s([\\w.]+)") {
+        authorMatcher.register("(?i)(By )([\\w.]+),\\s([\\w.]+),\\s(and|&)\\s([\\w.]+)") {
             AuthorList(arrayOf(
                 Author("", it[2]!!.value),
                 Author("", it[3]!!.value),
@@ -62,7 +65,32 @@ class UrlDocReader(private val url: String) {
             ))
         }
         // Make sure this is the last one
-        matcher.register("(?i)(By )([\\w.]+) ([\\w.]+)") { AuthorList(Author(it[2]!!.value, it[3]!!.value)) }
+        authorMatcher.register("(?i)(By )([\\w.]+) ([\\w.]+)") { AuthorList(Author(it[2]!!.value, it[3]!!.value)) }
+
+        // REGISTER DATE REGEXES
+        dateMatcher.register(RegexDatePattern(
+            "(?i)(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(t(ember)?)?|oct(ober)?|nov(ember)?|dec(ember)?)[,.]?\\s([0-9][0-9]?)(st|nd|rd|th)?[ ,.]+([0-9]+)?",
+            { convertMonthNameToNumber(it[1]!!.value) },
+            { it[14]!!.value.toInt().toString() },
+            { ensureYYYYFormat(it[16]?.value ?: currentDate().year.toString()) }))
+
+        dateMatcher.register(RegexDatePattern(
+            "(?i)([0-9][0-9]?)(st|nd|rd|th)?\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(t(ember)?)?|oct(ober)?|nov(ember)?|dec(ember)?)[ ,.]+([0-9]+)?",
+            { convertMonthNameToNumber(it[3]!!.value) },
+            { it[1]!!.value.toInt().toString() },
+            { ensureYYYYFormat(it[16]?.value ?: currentDate().year.toString()) }))
+
+        dateMatcher.register(RegexDatePattern(
+            "(?i)([0-9][0-9][0-9][0-9])[ ,.]+(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(t(ember)?)?|oct(ober)?|nov(ember)?|dec(ember)?)[,.]?\\s([0-9][0-9]?)(st|nd|rd|th)?",
+            { convertMonthNameToNumber(it[2]!!.value) },
+            { it[15]!!.value.toInt().toString() },
+            { ensureYYYYFormat(it[1]?.value ?: currentDate().year.toString()) }))
+
+        dateMatcher.register(RegexDatePattern(
+            "([0-9][0-9]?)[-./ ]([0-9][0-9]?)[-./ ]([0-9][0-9]([0-9][0-9])?)",
+            { it[1]!!.value.toInt().toString() },
+            { it[2]!!.value.toInt().toString() },
+            { ensureYYYYFormat(it[3]?.value ?: currentDate().year.toString()) }))
     }
 
     private fun findMeta(vararg attributes: String): String? {
@@ -92,8 +120,8 @@ class UrlDocReader(private val url: String) {
     protected fun getAuthorFromXML(): Array<Author>? {
         var authorStr: String = findMeta("author", "og:article:author") ?: return null
         if (authorStr.contains("www"))
-            return null;
-        val parsed = matcher.evaluateString(authorStr)
+            return null
+        val parsed = authorMatcher.evaluateString(authorStr)
         if (parsed != null) return parsed.value
 
         val firstPunctuation = Regex("[^a-zA-Z &.()*]").find(authorStr)?.range?.first ?: authorStr.length
@@ -135,7 +163,7 @@ class UrlDocReader(private val url: String) {
             return authors
 
         authors = doc.select("[data-authorname]")
-            .map { matcher.evaluateString(it.attr("data-authorname"))?.value ?: arrayOf(getAuthorFromName(it.text())) }
+            .map { authorMatcher.evaluateString(it.attr("data-authorname"))?.value ?: arrayOf(getAuthorFromName(it.text())) }
             .flatMap { it.asIterable() }
             .distinct()
             .toTypedArray()
@@ -144,14 +172,14 @@ class UrlDocReader(private val url: String) {
             return authors
 
         authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName")
-            .map { matcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+            .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
             .flatMap { it.asIterable() }
             .distinct()
             .toTypedArray()
 
         if (authors.isNotEmpty())
-            return authors;
-        return matcher.evaluateDoc(doc)?.value
+            return authors
+        return authorMatcher.evaluateDoc(doc)?.value
     }
 
     private fun convertIsoToHumanReadable(date: String): Timestamp {
@@ -168,7 +196,7 @@ class UrlDocReader(private val url: String) {
             if (dateChanging.contains(i.toString())) {
                 ts.year.set(i.toString())
                 dateChanging = dateChanging.replace(i.toString(), "")
-                break;
+                break
             }
         }
 
@@ -278,43 +306,7 @@ class UrlDocReader(private val url: String) {
 
          */
 
-        //1
-        var ts = matchRegexDates(
-            doc,
-            "(?i)(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(t(ember)?)?|oct(ober)?|nov(ember)?|dec(ember)?)[,.]?\\s([0-9][0-9]?)(st|nd|rd|th)?[ ,.]+([0-9]+)?",
-            { convertMonthNameToNumber(it[1]!!.value) },
-            { it[14]!!.value.toInt().toString() },
-            { ensureYYYYFormat(it[16]?.value ?: currentDate().year.toString()) })
-        if (ts != null) return ts
-
-        //2
-        ts = matchRegexDates(
-            doc,
-            "(?i)([0-9][0-9]?)(st|nd|rd|th)?\\s(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(t(ember)?)?|oct(ober)?|nov(ember)?|dec(ember)?)[ ,.]+([0-9]+)?",
-            { convertMonthNameToNumber(it[3]!!.value) },
-            { it[1]!!.value.toInt().toString() },
-            { ensureYYYYFormat(it[16]?.value ?: currentDate().year.toString()) })
-        if (ts != null) return ts
-
-        //3
-        ts = matchRegexDates(
-            doc,
-            "(?i)([0-9][0-9][0-9][0-9])[ ,.]+(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(t(ember)?)?|oct(ober)?|nov(ember)?|dec(ember)?)[,.]?\\s([0-9][0-9]?)(st|nd|rd|th)?",
-            { convertMonthNameToNumber(it[2]!!.value) },
-            { it[15]!!.value.toInt().toString() },
-            { ensureYYYYFormat(it[1]?.value ?: currentDate().year.toString()) })
-        if (ts != null) return ts
-
-        //4
-        ts = matchRegexDates(
-            doc,
-            "([0-9][0-9]?)[-./ ]([0-9][0-9]?)[-./ ]([0-9][0-9]([0-9][0-9])?)",
-            { it[1]!!.value.toInt().toString() },
-            { it[2]!!.value.toInt().toString() },
-            { ensureYYYYFormat(it[3]?.value ?: currentDate().year.toString()) })
-        if (ts != null) return ts
-
-        return Timestamp()
+        return dateMatcher.matchRegexDates(doc) ?: Timestamp()
     }
 
     private fun getHostName(url: String): String {
@@ -381,7 +373,7 @@ class UrlDocReader(private val url: String) {
             val reader = CardBodyReader(getPublication().toLowerCase(), doc)
             bodyParagraphElements = reader.getBodyParagraphs()
         }
-        return bodyParagraphElements as Elements;
+        return bodyParagraphElements as Elements
     }
 
     fun getBodyParagraphText(condensed: Boolean) : String {

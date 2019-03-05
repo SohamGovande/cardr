@@ -10,32 +10,6 @@ fun currentDate() : LocalDateTime {
     return LocalDateTime.now()
 }
 
-fun matchRegexDates(doc: Document,
-                            regex: String,
-                            extractMonth: (groups: MatchGroupCollection) -> String,
-                            extractDate: (groups: MatchGroupCollection) -> String,
-                            extractYear: (groups: MatchGroupCollection) -> String) : Timestamp? {
-    val elements = doc.select("*:matchesOwn($regex)")
-    if (elements.size == 0) return null
-
-    for (element in elements) {
-        val matchResult = Regex(regex).find(element.text()) ?: continue
-
-        try {
-            val ts = Timestamp()
-            ts.day = SimpleStringProperty(extractDate(matchResult.groups))
-            ts.month = SimpleStringProperty(extractMonth(matchResult.groups))
-            ts.year = SimpleStringProperty(extractYear(matchResult.groups))
-            return ts
-        } catch (e: Exception) {
-            e.printStackTrace()
-            continue
-        }
-    }
-
-    return null
-}
-
 fun convertMonthNameToNumber(word: String) : String {
     return when(word.toLowerCase()) {
         "jan", "january" -> "1"
