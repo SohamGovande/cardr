@@ -66,7 +66,7 @@ class MainUI {
     }
     var loaded = false
 
-    private fun generateAuthorsGrid(regenerateUI: (GridPane) -> Unit) : GridPane {
+    private fun generateAuthorsGrid(regenerateUI: (GridPane) -> Unit): GridPane {
         val authorGrid = GridPane()
         authorGrid.vgap = 2.0
         authorGrid.hgap = 2.0
@@ -147,14 +147,14 @@ class MainUI {
         component.textProperty().addListener(changeListenerUpdateHTML)
     }
 
-    private fun generateDefaultHTML() : String {
+    private fun generateDefaultHTML(): String {
         return """
             |<style>
                 |body { background-color: #f4f4f4; }
             |</style>""".trimMargin()
     }
 
-    private fun generateHTMLContent() : String {
+    private fun generateHTMLContent(): String {
         val cite = Cite(
             authors,
             timestamp,

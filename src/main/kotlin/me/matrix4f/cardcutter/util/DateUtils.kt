@@ -6,11 +6,11 @@ import org.jsoup.nodes.Document
 import java.lang.Exception
 import java.time.LocalDateTime
 
-fun currentDate() : LocalDateTime {
+fun currentDate(): LocalDateTime {
     return LocalDateTime.now()
 }
 
-fun convertMonthNameToNumber(word: String) : String {
+fun convertMonthNameToNumber(word: String): String {
     return when(word.toLowerCase()) {
         "jan", "january" -> "1"
         "feb", "february" -> "2"

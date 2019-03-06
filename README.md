@@ -25,4 +25,4 @@ Fig. 1:
 
 ## Credits
 **Soham Govande** - Policy debater, developer of the extension and the desktop application
- 
+ e

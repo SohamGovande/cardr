@@ -253,7 +253,7 @@ class UrlDocReader(private val url: String) {
         // If it was found, parse it
         if (dateISO != null) {
             val endDate = Regex("[^0-9\\- ]").find(dateISO)?.range?.first ?: "0000-00-00".length
-            val sections : List<String>
+            val sections: List<String>
 
             // Format YYYYMMDD e.g. 20190301
             if (dateISO.none { !it.isDigit() } && dateISO.length == 8) {
@@ -266,7 +266,7 @@ class UrlDocReader(private val url: String) {
                 sections = dateISO.substring(0, endDate).split("-")
             }
 
-            var ts : Timestamp
+            var ts: Timestamp
             try {
                 ts = Timestamp()
                 ts.year.set(sections[0].toInt().toString())
@@ -376,7 +376,7 @@ class UrlDocReader(private val url: String) {
         return bodyParagraphElements as Elements
     }
 
-    fun getBodyParagraphText(condensed: Boolean) : String {
+    fun getBodyParagraphText(condensed: Boolean): String {
         val sb = StringBuilder()
         getBodyParagraphs().forEach {
             if (!condensed)

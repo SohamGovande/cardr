@@ -22,7 +22,7 @@ class MSWordInteractor {
      *
      * @return A string of all windows with Win32 class L"OpusApp"
      */
-    external fun getWordWindows() : Array<String>
+    external fun getWordWindows(): Array<String>
 
     /**
      * Brings a word window into focus

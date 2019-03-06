@@ -15,7 +15,7 @@ class DateRegexMatcher {
 
     fun register(pattern: RegexDatePattern) = patterns.add(pattern)
 
-    fun matchRegexDates(doc: Document) : Timestamp? {
+    fun matchRegexDates(doc: Document): Timestamp? {
         for (pattern in patterns) {
             val elements = doc.select("*:matchesOwn(${pattern.regex})")
             if (elements.size == 0) continue

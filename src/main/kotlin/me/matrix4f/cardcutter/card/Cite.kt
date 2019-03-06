@@ -8,7 +8,7 @@ data class Cite(val authors: Array<Author>,
                 val publication: String,
                 val url: String) {
 
-    private fun getAuthorName(useShortName: Boolean) : String {
+    private fun getAuthorName(useShortName: Boolean): String {
         if (authors.size > 1) {
             // Multiple authors - create a list (e.g. "Brooks, Wolfsworth, and Ikenberry")
             val builder = StringBuilder(authors[0].toString(useShortName))
@@ -26,7 +26,7 @@ data class Cite(val authors: Array<Author>,
         }
     }
 
-    private fun getAuthorQualifications() : String {
+    private fun getAuthorQualifications(): String {
         val sb = StringBuilder()
 
         for (author in authors)

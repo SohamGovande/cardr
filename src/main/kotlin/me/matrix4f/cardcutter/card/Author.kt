@@ -5,7 +5,7 @@ import javafx.beans.property.StringProperty
 
 data class Author(val firstName: StringProperty, val lastName: StringProperty, val qualifications: StringProperty = SimpleStringProperty("")) {
 
-    constructor(first: String, last: String) : this(SimpleStringProperty(first), SimpleStringProperty(last), SimpleStringProperty(""))
+    constructor(first: String, last: String): this(SimpleStringProperty(first), SimpleStringProperty(last), SimpleStringProperty(""))
 
     fun toString(short: Boolean): String {
         return if (short) {

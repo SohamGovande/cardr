@@ -11,13 +11,13 @@ class Timestamp() {
     var month: StringProperty = SimpleStringProperty("")
     var day: StringProperty = SimpleStringProperty("")
 
-    fun yearAsInt() : Int? {
+    fun yearAsInt(): Int? {
         return if (hasYear()) year.get().toInt() else null;
     }
 
-    private fun hasDay() : Boolean = day.get().isNotEmpty()
-    private fun hasYear() : Boolean = year.get().isNotEmpty()
-    private fun hasMonth() : Boolean = month.get().isNotEmpty()
+    private fun hasDay(): Boolean = day.get().isNotEmpty()
+    private fun hasYear(): Boolean = year.get().isNotEmpty()
+    private fun hasMonth(): Boolean = month.get().isNotEmpty()
 
     fun toString(fullDate: Boolean): String {
         val yearIntOrNull = yearAsInt()

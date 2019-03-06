@@ -10,7 +10,7 @@ class AuthorRegexMatcher {
     fun register(string: String, processor: (MatchGroupCollection) -> AuthorList) =
         regexs.add(Pair(string, processor))
 
-    fun evaluateString(str: String) : AuthorList? {
+    fun evaluateString(str: String): AuthorList? {
         for (pair in regexs) {
             val matchResult = Regex(pair.first).find(str) ?: continue
             try {
@@ -22,7 +22,7 @@ class AuthorRegexMatcher {
         return null
     }
 
-    fun evaluateDoc(doc: Document) : AuthorList? {
+    fun evaluateDoc(doc: Document): AuthorList? {
         for (pair in regexs) {
             val elements = doc.select("*:matchesOwn(${pair.first})")
             if (elements.size == 0) continue

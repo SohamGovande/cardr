@@ -1,13 +1,8 @@
 package me.matrix4f.cardcutter
 
 import javafx.application.Application
-import javafx.beans.property.SimpleStringProperty
 import javafx.scene.Scene
 import javafx.stage.Stage
-import me.matrix4f.cardcutter.card.Author
-import me.matrix4f.cardcutter.card.Cite
-import me.matrix4f.cardcutter.card.Timestamp
-import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
 import me.matrix4f.cardcutter.ui.MainUI
 import me.matrix4f.cardcutter.web.UrlDocReader
 import java.util.*
@@ -41,10 +36,12 @@ fun testURLs() {
     }
 }
 
-var ui : MainUI? = null
+var ui: MainUI? = null
 
-class CardCutterApplication : Application() {
+class CardCutterApplication: Application() {
+
     override fun start(stage: Stage) {
+
         stage.title = "CardCutter for Debate"
         stage.resizableProperty().set(false)
 
