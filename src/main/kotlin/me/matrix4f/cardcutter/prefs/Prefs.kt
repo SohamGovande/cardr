@@ -20,11 +20,17 @@ object Prefs {
     fun read() {
         if (Files.exists(path)) {
             prefs = gson.fromJson(String(Files.readAllBytes(path)), PrefsObject::class.java)
+        } else {
+            save()
         }
     }
 
     fun save() {
-        Files.write(path, gson.toJson(this, javaClass).toByteArray(), StandardOpenOption.WRITE, StandardOpenOption.CREATE)
+        Files.write(
+            path,
+            gson.toJson(prefs, PrefsObject::class.java).toByteArray(),
+            StandardOpenOption.WRITE, StandardOpenOption.CREATE
+        )
     }
 }
 

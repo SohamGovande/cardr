@@ -8,10 +8,7 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.collections.FXCollections
 import javafx.geometry.Insets
-import javafx.scene.control.Button
-import javafx.scene.control.ComboBox
-import javafx.scene.control.Label
-import javafx.scene.control.TextField
+import javafx.scene.control.*
 import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.HBox
@@ -23,6 +20,7 @@ import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
+import me.matrix4f.cardcutter.prefs.windows.FontPrefsWindow
 import me.matrix4f.cardcutter.util.pasteCardToVerbatim
 import me.matrix4f.cardcutter.web.UrlDocReader
 import org.jsoup.Jsoup
@@ -204,8 +202,28 @@ class MainUI {
 
     }
 
+    fun generateMenuBar(): MenuBar {
+        val menuBar = MenuBar()
+        val settingsMenu = Menu("Settings")
+
+        val fontMenuItem = MenuItem("Font")
+        fontMenuItem.setOnAction {
+            FontPrefsWindow().show()
+        }
+        val citeMenuItem = MenuItem("Cite")
+
+        settingsMenu.items.add(fontMenuItem)
+        settingsMenu.items.add(citeMenuItem)
+
+        menuBar.getMenus().add(settingsMenu)
+        return menuBar
+    }
+
     fun initialize(): VBox {
+
+
         val panel = VBox()
+        panel.children.add(VBox(generateMenuBar()))
 
         val searchBarPanel = HBox();
         searchBarPanel.spacing = 5.0

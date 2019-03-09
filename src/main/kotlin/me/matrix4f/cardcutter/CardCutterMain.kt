@@ -41,7 +41,6 @@ var ui: MainUI? = null
 class CardCutterApplication: Application() {
 
     override fun start(stage: Stage) {
-
         stage.title = "CardCutter for Debate"
         stage.resizableProperty().set(false)
 
