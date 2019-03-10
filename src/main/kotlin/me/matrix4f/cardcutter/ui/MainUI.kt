@@ -244,7 +244,7 @@ class MainUI {
     }
 
     fun initialize(): VBox {
-        recordTime("ln231")
+
         panel.children.add(VBox(generateMenuBar()))
 
         searchBarPanel.spacing = 5.0
@@ -257,12 +257,12 @@ class MainUI {
         searchBarPanel.children.add(gotoUrlButton)
 
         bodyAreaPanel.padding = Insets(5.0)
-        recordTime("ln248")
+
         pGrid.hgap = 10.0
         pGrid.vgap = 10.0
         pGrid.prefWidth = 300.0
         pGrid.prefHeight = CardCutterApplication.HEIGHT // Take up the rest remaining space
-        recordTime("ln253")
+
         bindToRefreshWebView(propertyUrlTextField)
         pGrid.add(Label("URL"), 0, 0)
         pGrid.add(propertyUrlTextField, 1, 0)
@@ -290,7 +290,7 @@ class MainUI {
         slashTextField2.isEditable = false
         slashTextField2.prefColumnCount = 1
         slashTextField2.style = "-fx-background-color: #f4f4f4"
-        recordTime("ln282")
+
         pGrid.add(Label("Date"), 0, 2)
 
         dateHBox.spacing = 10.0
@@ -328,13 +328,13 @@ class MainUI {
         val exportToWordHBox = GridPane();
         exportToWordHBox.hgap = 5.0;
 
-        recordTime("ln325")
+
         exportToWordHBox.add(Label("Window:"), 0, 0)
 
         wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0);
         exportToWordHBox.add(wordWindowList, 1, 0)
 
-        recordTime("ln336")
+
 
         exportToWordHBox.add(refreshBtn, 2, 0)
         exportToWordSettings.children.add(exportToWordHBox)
