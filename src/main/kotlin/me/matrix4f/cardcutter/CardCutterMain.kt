@@ -2,6 +2,7 @@ package me.matrix4f.cardcutter
 
 import javafx.application.Application
 import javafx.scene.Scene
+import javafx.scene.image.Image
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import me.matrix4f.cardcutter.ui.MainUI
@@ -21,6 +22,7 @@ class CardCutterApplication: Application() {
         stage.width = WIDTH
         stage.height = HEIGHT
         stage.show()
+        stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
 
         ui = MainUI()
         stage.scene = Scene(ui!!.initialize(), WIDTH, HEIGHT)
