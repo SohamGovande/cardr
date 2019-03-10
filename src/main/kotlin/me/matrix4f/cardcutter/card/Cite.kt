@@ -1,5 +1,6 @@
 package me.matrix4f.cardcutter.card
 
+import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.util.currentDate
 
 data class Cite(val authors: Array<Author>,
@@ -40,11 +41,24 @@ data class Cite(val authors: Array<Author>,
     }
 
     fun getDetailedInfo(): String {
+        val format = Prefs.get().citeFormat
         val now = currentDate()
-        return "${getAuthorName(false)}, ${getAuthorQualifications()}${date.toString(true)} (DOA ${now.monthValue}/${now.dayOfMonth}/${now.year}), ${publication}, \"${title}\", ${url}";
+        return format.replace("<Author>", getAuthorName(false))
+            .replace("<Qualifications>", getAuthorQualifications())
+            .replace("<Date>", date.toString(true))
+            .replace("<CurrentDate>", "${now.monthValue}/${now.dayOfMonth}/${now.year}")
+            .replace("<Publication>", publication)
+            .replace("<Title>", title)
+            .replace("<Url>", url)
     }
 
     fun toString(html: Boolean): String {
-        return "${if(html) "<strong style='text-decoration:underline;'>" else ""}${getNameAndDate()}${if(html) "</strong>" else ""} - ${getDetailedInfo()}"
+        var nameAndDate = getNameAndDate()
+        if (html) {
+            nameAndDate = (if(html) "<strong style='text-decoration:underline;'>" else "") + nameAndDate
+            nameAndDate += "</strong>"
+        }
+
+        return "${nameAndDate}${getDetailedInfo()}"
     }
 }

@@ -8,7 +8,7 @@ data class Author(val firstName: StringProperty, val lastName: StringProperty, v
     constructor(first: String, last: String): this(SimpleStringProperty(first), SimpleStringProperty(last), SimpleStringProperty(""))
 
     fun toString(short: Boolean): String {
-        return if (short) {
+        return if (short || firstName.get().isEmpty()) {
             lastName.get()
         } else {
             ("${firstName.get()} ${lastName.get()}")

@@ -34,13 +34,13 @@ class Timestamp() {
                     return "${month.get().substring(0, 3)} ${year.get()}"
 
                 else
-                    return "${month.get()}/${day.get()}/${year.get()}"
+                    return "${month.get()}-${day.get()}-${year.get()}"
             } else {
                 val yearInt = yearIntOrNull.toInt()
                 val date = currentDate()
                 if (yearInt == date.year) {
                     // Card is from this year
-                    return "${month.get()}/${day.get()}";
+                    return "${month.get()}-${day.get()}";
                 } else {
                     // Card is from a previous year
 

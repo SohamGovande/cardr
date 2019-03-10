@@ -9,6 +9,9 @@ import javafx.scene.image.ImageView
 import javafx.collections.FXCollections
 import javafx.geometry.Insets
 import javafx.scene.control.*
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCodeCombination
+import javafx.scene.input.KeyCombination
 import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.HBox
@@ -20,6 +23,7 @@ import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
+import me.matrix4f.cardcutter.prefs.windows.CitePrefsWindow
 import me.matrix4f.cardcutter.prefs.windows.FontPrefsWindow
 import me.matrix4f.cardcutter.util.pasteCardToVerbatim
 import me.matrix4f.cardcutter.web.UrlDocReader
@@ -206,14 +210,16 @@ class MainUI {
         val menuBar = MenuBar()
         val settingsMenu = Menu("Settings")
 
-        val fontMenuItem = MenuItem("Font")
-        fontMenuItem.setOnAction {
-            FontPrefsWindow().show()
-        }
-        val citeMenuItem = MenuItem("Cite")
+        val cardFormatMenuItem = MenuItem("Cite")
+        cardFormatMenuItem.accelerator = KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN)
+        cardFormatMenuItem.setOnAction { CitePrefsWindow().show() }
 
+        val fontMenuItem = MenuItem("Font")
+        fontMenuItem.accelerator = KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN)
+        fontMenuItem.setOnAction { FontPrefsWindow().show() }
+
+        settingsMenu.items.add(cardFormatMenuItem)
         settingsMenu.items.add(fontMenuItem)
-        settingsMenu.items.add(citeMenuItem)
 
         menuBar.getMenus().add(settingsMenu)
         return menuBar

@@ -5,6 +5,7 @@ import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
+import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.ui.HtmlSelection
 import me.matrix4f.cardcutter.web.UrlDocReader
 import org.jsoup.Jsoup
@@ -46,9 +47,12 @@ fun pasteCardToVerbatim(tag: String, cite: Cite, body: String) {
     r.keyPress(KeyEvent.VK_END)
     r.keyRelease(KeyEvent.VK_END)
 
+    val fontName = Prefs.get().fontName
+    val fontSizeEm = Prefs.get().fontSize/11.0
+
     val restOfPaste = """
-        <span style="font-family: Calibri;font-size:'0.9167em';">&nbsp;- ${cite.getDetailedInfo()}</span>
-        <p style="font-family: Calibri;font-size:'0.9167em';">${body}</p>
+        <span style="font-family: $fontName;font-size:'${fontSizeEm}em';">${cite.getDetailedInfo()}</span>
+        <p style="font-family: $fontName;font-size:'${fontSizeEm}em';">${body}</p>
     """.trimIndent()
     Toolkit.getDefaultToolkit().systemClipboard.setContents(HtmlSelection(restOfPaste), null)
     paste(r)
