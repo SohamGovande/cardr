@@ -72,7 +72,7 @@ class FontPrefsWindow: PrefsWindow("Settings - Font") {
         gp.add(Label("Size"), 0, 1)
         gp.add(sizeTF, 1, 1)
 
-        val header = Label("Font Siettings")
+        val header = Label("Font Settings")
         header.font = Font.font(20.0)
         header.style = "-fx-font-weight: bold;"
         val subheader = Label("NOTE: For the \"Send to Verbatim\" feature")
