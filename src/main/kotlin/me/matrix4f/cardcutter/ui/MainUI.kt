@@ -23,6 +23,7 @@ import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
+import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.prefs.windows.CitePrefsWindow
 import me.matrix4f.cardcutter.prefs.windows.FontPrefsWindow
 import me.matrix4f.cardcutter.util.pasteCardToVerbatim
@@ -170,7 +171,7 @@ class MainUI {
                 |body { background-color: #f4f4f4; }
             |</style>
             |<div id="copy">
-                |<div style="font-family: 'Calibri', 'Segoe UI';">
+                |<div style="font-family: '${Prefs.get().fontName}', 'Arial';">
                     |<h4 style="font-size: '1.0833em';">${cardTag.get()}</h4>
                     |<span>${cite.toString(true)}</span>
                     |<p>${cardBody.get()}</p>
