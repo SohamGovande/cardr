@@ -226,6 +226,26 @@ class MainUI {
 
     private fun generateMenuBar(): MenuBar {
         val menuBar = MenuBar()
+
+        val toolsMenu = Menu("Tools")
+        val copyMenuItem = MenuItem("Copy to Clipboard")
+        copyMenuItem.accelerator = KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN)
+        copyMenuItem.setOnAction { copyCardToClipboard() }
+
+        toolsMenu.items.add(SeparatorMenuItem())
+
+        val refreshWindowsMenuItem  = MenuItem("Refresh Windows")
+        refreshWindowsMenuItem.accelerator = KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN)
+        refreshWindowsMenuItem.setOnAction { refreshWordWindows() }
+
+        val sendMenuItem = MenuItem("Send to Verbatim")
+        sendMenuItem.accelerator = KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN)
+        sendMenuItem.setOnAction { sendCardToVerbatim() }
+
+        toolsMenu.items.add(copyMenuItem)
+        toolsMenu.items.add(refreshWindowsMenuItem)
+        toolsMenu.items.add(sendMenuItem)
+
         val settingsMenu = Menu("Settings")
 
         val cardFormatMenuItem = MenuItem("Cite")
@@ -239,7 +259,8 @@ class MainUI {
         settingsMenu.items.add(cardFormatMenuItem)
         settingsMenu.items.add(fontMenuItem)
 
-        menuBar.getMenus().add(settingsMenu)
+        menuBar.menus.add(toolsMenu)
+        menuBar.menus.add(settingsMenu)
         return menuBar
     }
 
@@ -388,16 +409,7 @@ class MainUI {
             }.start()
         }
 
-        copyBtn.setOnAction {
-            Toolkit.getDefaultToolkit()
-                .systemClipboard
-                .setContents(
-                    HtmlSelection(
-                        Jsoup.parseBodyFragment(generateHTMLContent()).getElementById("copy").html()
-                    ),
-                    null
-                )
-        }
+        copyBtn.setOnAction { copyCardToClipboard() }
 
         val msWordInteractor = MSWordInteractor()
         wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
@@ -405,27 +417,8 @@ class MainUI {
             wordWindowList.selectionModel.select(0)
         }
 
-        refreshBtn.setOnAction {
-            wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
-            if (!wordWindowList.items.isEmpty()) {
-                wordWindowList.selectionModel.select(0)
-            }
-        }
-
-        exportBtn.setOnAction {
-            val msWord = MSWordInteractor()
-            val cite = Cite(
-                authors,
-                timestamp,
-                title.get(),
-                publisher.get(),
-                url.get()
-            )
-            if (wordWindowList.items.size > 0) {
-                msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
-            }
-            pasteCardToVerbatim(cardTag.get(), cite, cardBody.get())
-        }
+        refreshBtn.setOnAction { refreshWordWindows() }
+        exportBtn.setOnAction { sendCardToVerbatim() }
 
         // Load the refresh icon
         val refreshResource: InputStream? = javaClass.getResourceAsStream("/refresh.png")
@@ -434,6 +427,12 @@ class MainUI {
             refreshBtn.graphic = ImageView(refreshBtnImage)
         } else {
             refreshBtn.text = "Refresh"
+        }
+
+        urlTextField.setOnKeyPressed {
+            if (it.isControlDown && it.text.equals("v")) {
+                Platform.runLater { gotoUrlButton.fire() }
+            }
         }
 
         // Web view default content
@@ -450,6 +449,39 @@ class MainUI {
 
         recordTime("finish deferred loading")
         loaded = true
+    }
+
+    private fun refreshWordWindows() {
+        wordWindowList.items = FXCollections.observableList(MSWordInteractor().getValidWordWindows())
+        if (!wordWindowList.items.isEmpty()) {
+            wordWindowList.selectionModel.select(0)
+        }
+    }
+
+    private fun copyCardToClipboard() {
+        Toolkit.getDefaultToolkit()
+            .systemClipboard
+            .setContents(
+                HtmlSelection(
+                    Jsoup.parseBodyFragment(generateHTMLContent()).getElementById("copy").html()
+                ),
+                null
+            )
+    }
+
+    private fun sendCardToVerbatim() {
+        val msWord = MSWordInteractor()
+        val cite = Cite(
+            authors,
+            timestamp,
+            title.get(),
+            publisher.get(),
+            url.get()
+        )
+        if (wordWindowList.items.size > 0) {
+            msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
+        }
+        pasteCardToVerbatim(cardTag.get(), cite, cardBody.get())
     }
 
 }

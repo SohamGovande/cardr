@@ -15,7 +15,7 @@ import java.net.URI
 
 class UrlDocReader(private val url: String) {
 
-    private val doc: Document
+    private var doc: Document
     private val meta: Elements
     private var metaJson: JsonObject
 
@@ -29,7 +29,12 @@ class UrlDocReader(private val url: String) {
     private val dateMatcher = DateRegexMatcher()
 
     init {
-        doc = Jsoup.connect(url).get()
+        try {
+            doc = Jsoup.connect(url).get()
+        } catch (e: Exception) {
+            doc = Jsoup.parse("<html></html>")
+            println("Unable to load URL: $url")
+        }
         meta = doc.getElementsByTag("meta")
         try {
             var jsonText = doc.select("script[type='application/ld+json']").maxBy { it.html().length }?.html() ?: throw NullPointerException()
