@@ -37,38 +37,54 @@ import java.net.URL
 
 class MainUI {
 
-    var authors: Array<Author> = arrayOf(Author(SimpleStringProperty(""), SimpleStringProperty("")))
-    var title: StringProperty = SimpleStringProperty("")
-    var timestamp: Timestamp = Timestamp()
-    var publisher: StringProperty = SimpleStringProperty("")
-    var url: StringProperty = SimpleStringProperty("")
-    var cardTag: StringProperty = SimpleStringProperty("TAG")
-    val changeListenerUpdateHTML = { _: ObservableValue<out String>, _: String, _: String -> Unit
+    private var authors: Array<Author> = arrayOf(Author(SimpleStringProperty(""), SimpleStringProperty("")))
+    private var title: StringProperty = SimpleStringProperty("")
+    private var timestamp: Timestamp = Timestamp()
+    private var publisher: StringProperty = SimpleStringProperty("")
+    private var url: StringProperty = SimpleStringProperty("")
+    private var cardTag: StringProperty = SimpleStringProperty("TAG")
+    private val changeListenerUpdateHTML = { _: ObservableValue<out String>, _: String, _: String ->
+        Unit
         // Sufficiently delay it to occur after the event goes through
         refreshHTML()
     }
-    val cardBody: StringProperty = SimpleStringProperty("")
+    private val cardBody: StringProperty = SimpleStringProperty("")
 
-    val propertyUrlTextField = TextField()
-    val propertyPubTextField = TextField()
-    val propertyDateDayTextField = TextField()
-    val propertyDateMonthTextField = TextField()
-    val propertyDateYearTextField = TextField()
-    val propertyTitleTextField = TextField()
-    val cardTagTextField = TextField()
-    val urlTextField = TextField()
+    private val propertyUrlTextField = TextField()
+    private val propertyPubTextField = TextField()
+    private val propertyDateDayTextField = TextField()
+    private val propertyDateMonthTextField = TextField()
+    private val propertyDateYearTextField = TextField()
+    private val propertyTitleTextField = TextField()
+    private val cardTagTextField = TextField()
+    private val urlTextField = TextField()
 
-    var cardDisplay: WebView? = null
+    private val cardDisplay = WebView()
 
-    var lastUI: GridPane? = null
-    val pGrid = GridPane()
-    val generateAuthorGridBoxCallback: (GridPane) -> Unit = {
-        pGrid.children.remove(lastUI)
-        pGrid.requestLayout()
-        pGrid.add(it, 1, 5)
-        lastUI = it
-    }
+    private var lastUI: GridPane? = null
+    private val pGrid = GridPane()
+    private var generateAuthorGridBoxCallback: (GridPane) -> Unit = {}
     var loaded = false
+
+    private val panel = VBox()
+    private val searchBarPanel = HBox();
+    private val gotoUrlButton = Button("GO")
+    private val bodyAreaPanel = HBox()
+
+    private val slashTextField = TextField("/")
+    private val slashTextField2 = TextField("/")
+    private val dateHBox = HBox()
+
+    private val cardDisplayArea = VBox()
+    private val cardDisplayMenu = HBox()
+
+    private val exportToWordSettings = VBox()
+    private val copyBtn = Button("Copy to Clipboard")
+    private val exportBtn = Button("Send to Verbatim")
+
+    private val refreshBtn = Button()
+
+    private val wordWindowList = ComboBox<String>()
 
     private fun generateAuthorsGrid(regenerateUI: (GridPane) -> Unit): GridPane {
         val authorGrid = GridPane()
@@ -137,7 +153,7 @@ class MainUI {
 
         addAuthor.setOnAction {
             val authorsMutable = authors.toMutableList()
-            authorsMutable.add(Author(SimpleStringProperty(""),SimpleStringProperty("")))
+            authorsMutable.add(Author(SimpleStringProperty(""), SimpleStringProperty("")))
             authors = authorsMutable.toTypedArray()
 
             regenerateUI(generateAuthorsGrid(regenerateUI))
@@ -208,7 +224,7 @@ class MainUI {
 
     }
 
-    fun generateMenuBar(): MenuBar {
+    private fun generateMenuBar(): MenuBar {
         val menuBar = MenuBar()
         val settingsMenu = Menu("Settings")
 
@@ -228,30 +244,25 @@ class MainUI {
     }
 
     fun initialize(): VBox {
-
-
-        val panel = VBox()
+        recordTime("ln231")
         panel.children.add(VBox(generateMenuBar()))
 
-        val searchBarPanel = HBox();
         searchBarPanel.spacing = 5.0
         searchBarPanel.padding = Insets(5.0)
 
         urlTextField.promptText = "Paste URL"
         urlTextField.prefWidth = CardCutterApplication.WIDTH - 50
-        val gotoUrlButton = Button("GO")
         gotoUrlButton.prefWidth = 50.0
         searchBarPanel.children.add(urlTextField)
         searchBarPanel.children.add(gotoUrlButton)
 
-        val bodyAreaPanel = HBox()
         bodyAreaPanel.padding = Insets(5.0)
-
+        recordTime("ln248")
         pGrid.hgap = 10.0
         pGrid.vgap = 10.0
         pGrid.prefWidth = 300.0
         pGrid.prefHeight = CardCutterApplication.HEIGHT // Take up the rest remaining space
-
+        recordTime("ln253")
         bindToRefreshWebView(propertyUrlTextField)
         pGrid.add(Label("URL"), 0, 0)
         pGrid.add(propertyUrlTextField, 1, 0)
@@ -272,17 +283,16 @@ class MainUI {
         propertyDateYearTextField.prefColumnCount = 4
         propertyDateYearTextField.promptText = "2019"
 
-        val slashTextField = TextField("/")
         slashTextField.isEditable = false
         slashTextField.prefColumnCount = 1
         slashTextField.style = "-fx-background-color: #f4f4f4"
-        val slashTextField2 = TextField("/")
+
         slashTextField2.isEditable = false
         slashTextField2.prefColumnCount = 1
         slashTextField2.style = "-fx-background-color: #f4f4f4"
-
+        recordTime("ln282")
         pGrid.add(Label("Date"), 0, 2)
-        val dateHBox = HBox()
+
         dateHBox.spacing = 10.0
         dateHBox.children.add(propertyDateMonthTextField)
         dateHBox.children.add(slashTextField)
@@ -300,18 +310,13 @@ class MainUI {
         bindToRefreshWebView(cardTagTextField)
         pGrid.add(Label("Card Tag"), 0, 4)
         pGrid.add(cardTagTextField, 1, 4)
-
         pGrid.add(Label("Authors"), 0, 5)
-        generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
 
         pGrid.columnConstraints.add(ColumnConstraints(60.0))
         pGrid.columnConstraints.add(ColumnConstraints(225.0))
 
-        val msWordInteractor = MSWordInteractor()
-
         pGrid.add(Label("Verbatim"), 0, 6)
 
-        val exportToWordSettings = VBox()
         exportToWordSettings.spacing = 5.0;
 
         val header = Label("Send Card to Verbatim")
@@ -323,45 +328,24 @@ class MainUI {
         val exportToWordHBox = GridPane();
         exportToWordHBox.hgap = 5.0;
 
-
+        recordTime("ln325")
         exportToWordHBox.add(Label("Window:"), 0, 0)
-        val wordWindowList = ComboBox<String>(FXCollections.observableList(msWordInteractor.getValidWordWindows()))
-        if (!wordWindowList.items.isEmpty()) {
-            wordWindowList.selectionModel.select(0)
-        }
+
         wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0);
         exportToWordHBox.add(wordWindowList, 1, 0)
 
-
-        val refreshBtn = Button()
-
-        val refreshResource: InputStream? = javaClass.getResourceAsStream("/refresh.png")
-        if (refreshResource != null) {
-            val refreshBtnImage = Image(refreshResource, 20.0, 20.0, true, true)
-            refreshBtn.graphic = ImageView(refreshBtnImage)
-        } else {
-            refreshBtn.text = "Refresh"
-        }
+        recordTime("ln336")
 
         exportToWordHBox.add(refreshBtn, 2, 0)
         exportToWordSettings.children.add(exportToWordHBox)
 
-        val exportBtn = Button("Send to Verbatim")
         exportToWordSettings.children.add(exportBtn)
         pGrid.add(exportToWordSettings, 1, 6)
 
-        val cardDisplayArea = VBox()
-
-        val cardDisplayMenu = HBox()
         cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
         cardDisplayMenu.spacing = 5.0
 
-        val copyBtn = Button("Copy to Clipboard")
         cardDisplayMenu.children.add(copyBtn)
-
-        val cardDisplay = WebView()
-        cardDisplay.engine.loadContent(generateDefaultHTML())
-        this.cardDisplay = cardDisplay
 
         cardDisplayArea.children.add(cardDisplayMenu)
         cardDisplayArea.children.add(cardDisplay)
@@ -371,6 +355,13 @@ class MainUI {
 
         panel.children.add(searchBarPanel)
         panel.children.add(bodyAreaPanel)
+
+        recordTime("init main ui")
+        return panel
+    }
+
+    fun doDeferredLoad() {
+        // Button actions
 
         gotoUrlButton.setOnAction {
             Thread {
@@ -408,6 +399,12 @@ class MainUI {
                 )
         }
 
+        val msWordInteractor = MSWordInteractor()
+        wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
+        if (!wordWindowList.items.isEmpty()) {
+            wordWindowList.selectionModel.select(0)
+        }
+
         refreshBtn.setOnAction {
             wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
             if (!wordWindowList.items.isEmpty()) {
@@ -430,8 +427,29 @@ class MainUI {
             pasteCardToVerbatim(cardTag.get(), cite, cardBody.get())
         }
 
+        // Load the refresh icon
+        val refreshResource: InputStream? = javaClass.getResourceAsStream("/refresh.png")
+        if (refreshResource != null) {
+            val refreshBtnImage = Image(refreshResource, 20.0, 20.0, true, true)
+            refreshBtn.graphic = ImageView(refreshBtnImage)
+        } else {
+            refreshBtn.text = "Refresh"
+        }
+
+        // Web view default content
+        cardDisplay.engine.loadContent(generateDefaultHTML())
+
+        // Generate author grid box callback
+        generateAuthorGridBoxCallback = {
+            pGrid.children.remove(lastUI)
+            pGrid.requestLayout()
+            pGrid.add(it, 1, 5)
+            lastUI = it
+        }
+        generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
+
+        recordTime("finish deferred loading")
         loaded = true
-        recordTime("init main ui")
-        return panel
     }
+
 }

@@ -17,13 +17,15 @@ class CardCutterApplication: Application() {
     override fun start(stage: Stage) {
         recordTime("main")
         stage.title = "CardCutter for Debate"
-        stage.resizableProperty().set(false)
-        stage.scene = Scene(VBox(), WIDTH, HEIGHT)
-        stage.sizeToScene()
+        stage.isResizable = false
+        stage.width = WIDTH
+        stage.height = HEIGHT
         stage.show()
+        recordTime("showWindow")
 
         ui = MainUI()
         stage.scene = Scene(ui!!.initialize(), WIDTH, HEIGHT)
+        ui!!.doDeferredLoad()
     }
 
     companion object {
