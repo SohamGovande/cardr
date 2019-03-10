@@ -197,7 +197,7 @@ class MainUI {
 
 
     private fun refreshHTML() {
-        Platform.runLater { cardDisplay?.engine?.loadContent(generateHTMLContent()) }
+        Platform.runLater { cardDisplay.engine?.loadContent(generateHTMLContent()) }
     }
 
     fun loadFromReader(reader: UrlDocReader) {
@@ -228,21 +228,21 @@ class MainUI {
         val menuBar = MenuBar()
 
         val toolsMenu = Menu("Tools")
-        val copyMenuItem = MenuItem("Copy to Clipboard")
+        val copyMenuItem = MenuItem("Copy card")
         copyMenuItem.accelerator = KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN)
         copyMenuItem.setOnAction { copyCardToClipboard() }
 
-        toolsMenu.items.add(SeparatorMenuItem())
 
-        val refreshWindowsMenuItem  = MenuItem("Refresh Windows")
-        refreshWindowsMenuItem.accelerator = KeyCodeCombination(KeyCode.G, KeyCombination.CONTROL_DOWN)
+        val refreshWindowsMenuItem  = MenuItem("Refresh MSWord")
+        refreshWindowsMenuItem.accelerator = KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN)
         refreshWindowsMenuItem.setOnAction { refreshWordWindows() }
 
         val sendMenuItem = MenuItem("Send to Verbatim")
-        sendMenuItem.accelerator = KeyCodeCombination(KeyCode.V, KeyCombination.CONTROL_DOWN)
+        sendMenuItem.accelerator = KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
         sendMenuItem.setOnAction { sendCardToVerbatim() }
 
         toolsMenu.items.add(copyMenuItem)
+        toolsMenu.items.add(SeparatorMenuItem())
         toolsMenu.items.add(refreshWindowsMenuItem)
         toolsMenu.items.add(sendMenuItem)
 

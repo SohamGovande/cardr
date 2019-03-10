@@ -22,11 +22,11 @@ class CardCutterApplication: Application() {
         stage.width = WIDTH
         stage.height = HEIGHT
         stage.show()
-        stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
 
         ui = MainUI()
         stage.scene = Scene(ui!!.initialize(), WIDTH, HEIGHT)
         ui!!.doDeferredLoad()
+        stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
     }
 
     companion object {
