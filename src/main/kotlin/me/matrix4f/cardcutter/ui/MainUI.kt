@@ -26,6 +26,7 @@ import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
 import me.matrix4f.cardcutter.prefs.windows.CitePrefsWindow
 import me.matrix4f.cardcutter.prefs.windows.FontPrefsWindow
 import me.matrix4f.cardcutter.util.pasteCardToVerbatim
+import me.matrix4f.cardcutter.util.recordTime
 import me.matrix4f.cardcutter.web.UrlDocReader
 import org.jsoup.Jsoup
 import java.awt.Desktop
@@ -429,6 +430,7 @@ class MainUI {
         }
 
         loaded = true
+        recordTime("init main ui")
         return panel
     }
 }
