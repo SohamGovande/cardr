@@ -26,6 +26,8 @@ import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.prefs.windows.CitePrefsWindow
 import me.matrix4f.cardcutter.prefs.windows.FontPrefsWindow
+import me.matrix4f.cardcutter.util.OS
+import me.matrix4f.cardcutter.util.getOSType
 import me.matrix4f.cardcutter.util.pasteCardToVerbatim
 import me.matrix4f.cardcutter.util.recordTime
 import me.matrix4f.cardcutter.web.UrlDocReader
@@ -417,7 +419,10 @@ class MainUI {
             wordWindowList.selectionModel.select(0)
         }
 
+        refreshBtn.isDisable = (getOSType() != OS.WINDOWS)
         refreshBtn.setOnAction { refreshWordWindows() }
+
+        exportBtn.isDisable = refreshBtn.isDisable;
         exportBtn.setOnAction { sendCardToVerbatim() }
 
         // Load the refresh icon
@@ -452,6 +457,8 @@ class MainUI {
     }
 
     private fun refreshWordWindows() {
+        if (getOSType() != OS.WINDOWS)
+            return
         wordWindowList.items = FXCollections.observableList(MSWordInteractor().getValidWordWindows())
         if (!wordWindowList.items.isEmpty()) {
             wordWindowList.selectionModel.select(0)
@@ -470,6 +477,9 @@ class MainUI {
     }
 
     private fun sendCardToVerbatim() {
+        if (getOSType() != OS.WINDOWS)
+            return
+
         val msWord = MSWordInteractor()
         val cite = Cite(
             authors,
