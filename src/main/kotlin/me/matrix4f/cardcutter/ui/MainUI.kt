@@ -231,7 +231,7 @@ class MainUI {
 
         val toolsMenu = Menu("Tools")
         val copyMenuItem = MenuItem("Copy card")
-        copyMenuItem.accelerator = KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN)
+        copyMenuItem.accelerator = KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
         copyMenuItem.setOnAction { copyCardToClipboard() }
 
 
@@ -251,11 +251,9 @@ class MainUI {
         val settingsMenu = Menu("Settings")
 
         val cardFormatMenuItem = MenuItem("Cite")
-        cardFormatMenuItem.accelerator = KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN)
         cardFormatMenuItem.setOnAction { CitePrefsWindow().show() }
 
         val fontMenuItem = MenuItem("Font")
-        fontMenuItem.accelerator = KeyCodeCombination(KeyCode.F, KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN)
         fontMenuItem.setOnAction { FontPrefsWindow().show() }
 
         settingsMenu.items.add(cardFormatMenuItem)
