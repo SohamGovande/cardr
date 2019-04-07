@@ -34,6 +34,7 @@ class UrlDocReader(private val url: String) {
         } catch (e: Exception) {
             doc = Jsoup.parse("<html></html>")
             println("Unable to load URL: $url")
+            showErrorDialog("Error loading URL: ${e.javaClass.simpleName}", "A ${e.javaClass.simpleName} exception occurred while loading $url")
         }
         meta = doc.getElementsByTag("meta")
         try {
