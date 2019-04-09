@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
 import me.matrix4f.cardcutter.util.currentDate
 
-class Timestamp() {
+class Timestamp {
 
     var year: StringProperty = SimpleStringProperty("")
     var month: StringProperty = SimpleStringProperty("")
@@ -56,7 +56,7 @@ class Timestamp() {
     }
 
     override fun toString(): String {
-        return "Timestamp(year=${year?.get()}, month=${month?.get()}, day=${day?.get()})"
+        return "Timestamp(year=${year.get()}, month=${month.get()}, day=${day.get()})"
     }
 
 

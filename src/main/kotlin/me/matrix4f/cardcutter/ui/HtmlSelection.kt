@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package me.matrix4f.cardcutter.ui
 
 import java.awt.datatransfer.DataFlavor
