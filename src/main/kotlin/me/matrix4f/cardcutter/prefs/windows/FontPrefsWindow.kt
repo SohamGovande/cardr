@@ -17,8 +17,8 @@ class FontPrefsWindow: PrefsWindow("Settings - Font") {
     private val sizeTF = TextField("11")
 
     override fun close() {
-        Prefs.get().fontName = fontTF.font.name
-        Prefs.get().fontSize = sizeTF.font.size.toInt()
+        Prefs.get().fontName = fontTF.text
+        Prefs.get().fontSize = sizeTF.text.toInt()
         Prefs.save()
 
         super.close()
@@ -33,35 +33,6 @@ class FontPrefsWindow: PrefsWindow("Settings - Font") {
         gp.hgap = 5.0
         gp.vgap = 5.0
         gp.padding = Insets(10.0)
-
-        fontTF.textProperty().addListener { _: ObservableValue<out String>, _: String, newValue: String -> Unit
-            val font = Font.font(newValue, sizeTF.text.toDouble())
-            if (font.name.equals(newValue, true)) {
-                fontTF.font = font
-                sizeTF.font = font
-            }
-        }
-
-        sizeTF.textProperty().addListener { _: ObservableValue<out String>, _: String, newValue: String -> Unit
-            var font: Font
-            try {
-                font = Font.font(fontTF.font.name, newValue.toDouble())
-            } catch (e: Exception) {
-                var adjustedFontSize = newValue.replace(Regex("[^\\d]"), "")
-
-                sizeTF.text = adjustedFontSize
-                if (adjustedFontSize.isEmpty())
-                    adjustedFontSize = "11"
-
-                font = Font.font(
-                    fontTF.font.name,
-                    adjustedFontSize.toDouble()
-                )
-            }
-
-            fontTF.font = font
-            sizeTF.font = font
-        }
 
         fontTF.text = Prefs.get().fontName
         sizeTF.text = Prefs.get().fontSize.toString()
@@ -87,6 +58,13 @@ class FontPrefsWindow: PrefsWindow("Settings - Font") {
         applyBtn.setOnAction {
             close()
         }
+
+        val currentFont = Font.font(
+            Prefs.get().fontName,
+            Prefs.get().fontSize.toDouble()
+        )
+        fontTF.font = currentFont
+        sizeTF.font = currentFont
 
         vbox.children.add(header)
         vbox.children.add(subheader)

@@ -16,6 +16,7 @@ import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
+import javafx.scene.text.Font
 import javafx.scene.text.TextAlignment
 import javafx.scene.web.WebView
 import me.matrix4f.cardcutter.CardCutterApplication
@@ -23,6 +24,7 @@ import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
+import me.matrix4f.cardcutter.util.HtmlSelection
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.prefs.windows.CitePrefsWindow
 import me.matrix4f.cardcutter.prefs.windows.FontPrefsWindow
@@ -30,14 +32,16 @@ import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
 import me.matrix4f.cardcutter.util.pasteCardToVerbatim
 import me.matrix4f.cardcutter.util.recordTime
-import me.matrix4f.cardcutter.web.UrlDocReader
+import me.matrix4f.cardcutter.web.WebsiteCardCutter
 import org.jsoup.Jsoup
 import java.awt.Desktop
+import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
 import java.io.InputStream
 import java.net.URL
+import java.util.*
 
-class MainUI {
+class CardCuttingUI {
 
     private var authors: Array<Author> = arrayOf(Author(SimpleStringProperty(""), SimpleStringProperty("")))
     private var title: StringProperty = SimpleStringProperty("")
@@ -61,7 +65,7 @@ class MainUI {
     private val cardTagTextField = TextField()
     private val urlTextField = TextField()
 
-    private val cardDisplay = WebView()
+    private val cardWV = WebView()
 
     private var lastUI: GridPane? = null
     private val pGrid = GridPane()
@@ -184,13 +188,15 @@ class MainUI {
             publisher.get(),
             url.get()
         )
+        println(Arrays.toString(GraphicsEnvironment.getLocalGraphicsEnvironment().
+            getAvailableFontFamilyNames()))
         return """
             |<style>
                 |body { background-color: #f4f4f4; }
             |</style>
             |<div id="copy">
-                |<div style="font-family: '${Prefs.get().fontName}', 'Arial';">
-                    |<h4 style="font-size: '1.0833em';">${cardTag.get()}</h4>
+                |<div style="font-family: '${Prefs.get().fontName}';">
+                    |<h4 style="font-size: '13pt';">${cardTag.get()}</h4>
                     |<span>${cite.toString(true)}</span>
                     |<p>${cardBody.get()}</p>
                 |</div>
@@ -199,10 +205,10 @@ class MainUI {
 
 
     private fun refreshHTML() {
-        Platform.runLater { cardDisplay.engine?.loadContent(generateHTMLContent()) }
+        Platform.runLater { cardWV.engine?.loadContent(generateHTMLContent()) }
     }
 
-    fun loadFromReader(reader: UrlDocReader) {
+    fun loadFromReader(reader: WebsiteCardCutter) {
         Platform.runLater {
             this.urlTextField.text = reader.getURL()
             this.authors = reader.getAuthors() ?: this.authors
@@ -369,7 +375,7 @@ class MainUI {
         cardDisplayMenu.children.add(copyBtn)
 
         cardDisplayArea.children.add(cardDisplayMenu)
-        cardDisplayArea.children.add(cardDisplay)
+        cardDisplayArea.children.add(cardWV)
 
         bodyAreaPanel.children.add(pGrid)
         bodyAreaPanel.children.add(cardDisplayArea)
@@ -383,10 +389,9 @@ class MainUI {
 
     fun doDeferredLoad() {
         // Button actions
-
         gotoUrlButton.setOnAction {
             Thread {
-                val reader = UrlDocReader(urlTextField.text)
+                val reader = WebsiteCardCutter(urlTextField.text)
                 this.authors = reader.getAuthors() ?: this.authors
                 this.timestamp = reader.getDate()
                 this.publisher = SimpleStringProperty(reader.getPublication())
@@ -439,7 +444,7 @@ class MainUI {
         }
 
         // Web view default content
-        cardDisplay.engine.loadContent(generateDefaultHTML())
+        cardWV.engine.loadContent(generateDefaultHTML())
 
         // Generate author grid box callback
         generateAuthorGridBoxCallback = {

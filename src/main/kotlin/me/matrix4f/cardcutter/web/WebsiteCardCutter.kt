@@ -13,7 +13,7 @@ import org.jsoup.select.Elements
 import java.lang.Exception
 import java.net.URI
 
-class UrlDocReader(private val url: String) {
+class WebsiteCardCutter(private val url: String) {
 
     private var doc: Document
     private val meta: Elements

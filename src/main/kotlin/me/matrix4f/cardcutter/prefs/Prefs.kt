@@ -7,8 +7,8 @@ import java.nio.file.StandardOpenOption
 
 object Prefs {
 
-    private val path = Paths.get("CCSettings.json")
-    private val gson = GsonBuilder().setPrettyPrinting().create()
+    public val path = Paths.get("CCSettings.json")
+    private val gson = GsonBuilder().setPrettyPrinting().setLenient().create()
     private var prefs = PrefsObject()
 
     init {
@@ -19,7 +19,13 @@ object Prefs {
 
     fun read() {
         if (Files.exists(path)) {
-            prefs = gson.fromJson(String(Files.readAllBytes(path)), PrefsObject::class.java)
+            val readObject: PrefsObject? = gson.fromJson(String(Files.readAllBytes(path)), PrefsObject::class.java)
+            // readObject is null if errors were found
+            if (readObject == null) {
+                save()
+            } else {
+                prefs = readObject
+            }
         } else {
             save()
         }
@@ -28,8 +34,7 @@ object Prefs {
     fun save() {
         Files.write(
             path,
-            gson.toJson(prefs, PrefsObject::class.java).toByteArray(),
-            StandardOpenOption.WRITE, StandardOpenOption.CREATE
+            gson.toJson(prefs, PrefsObject::class.java).toByteArray()
         )
     }
 }

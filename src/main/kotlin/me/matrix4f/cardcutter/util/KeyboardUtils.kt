@@ -1,15 +1,7 @@
 package me.matrix4f.cardcutter.util
 
-import me.matrix4f.cardcutter.CardCutterApplication
-import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
-import me.matrix4f.cardcutter.card.Timestamp
-import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
 import me.matrix4f.cardcutter.prefs.Prefs
-import me.matrix4f.cardcutter.ui.HtmlSelection
-import me.matrix4f.cardcutter.web.UrlDocReader
-import org.jsoup.Jsoup
-import java.awt.Desktop
 import java.awt.Toolkit
 import java.awt.Robot
 import java.awt.datatransfer.StringSelection

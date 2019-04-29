@@ -3,15 +3,21 @@ package me.matrix4f.cardcutter
 import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.image.Image
-import javafx.scene.layout.VBox
 import javafx.stage.Stage
-import me.matrix4f.cardcutter.ui.MainUI
-import me.matrix4f.cardcutter.util.recordTime
+import me.matrix4f.cardcutter.scihub.SciHubLoader
+import me.matrix4f.cardcutter.ui.CardCuttingUI
 import me.matrix4f.cardcutter.util.startTime
-import me.matrix4f.cardcutter.web.UrlDocReader
-import java.util.*
+import me.matrix4f.cardcutter.web.WebsiteCardCutter
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.nio.file.StandardOpenOption
 
-var ui: MainUI? = null
+var ui: CardCuttingUI? = null
+
+fun testSciHub() {
+    val sciHubLoader = SciHubLoader("10.5406/historypresent.4.1.0049")
+
+}
 
 class CardCutterApplication: Application() {
 
@@ -23,7 +29,7 @@ class CardCutterApplication: Application() {
         stage.height = HEIGHT
         stage.show()
 
-        ui = MainUI()
+        ui = CardCuttingUI()
         stage.scene = Scene(ui!!.initialize(), WIDTH, HEIGHT)
         ui!!.doDeferredLoad()
         stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
@@ -35,9 +41,12 @@ class CardCutterApplication: Application() {
 
         @JvmStatic
         fun main(args: Array<String>) {
+//            testSciHub()
+//            if (1 == 1)
+//                return
             if (args.size == 1) {
                 Thread {
-                    val reader = UrlDocReader(args[0])
+                    val reader = WebsiteCardCutter(args[0])
                     println(args[0])
                     while (ui?.loaded != true) {
                         // Wait
