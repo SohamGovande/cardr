@@ -188,19 +188,27 @@ class CardCuttingUI {
             publisher.get(),
             url.get()
         )
-        println(Arrays.toString(GraphicsEnvironment.getLocalGraphicsEnvironment().
-            getAvailableFontFamilyNames()))
+        println(Arrays.toString(Font.getFontNames().toTypedArray()))
+        println(Arrays.toString(Font.getFamilies().toTypedArray()))
         return """
-            |<style>
-                |body { background-color: #f4f4f4; }
-            |</style>
-            |<div id="copy">
-                |<div style="font-family: '${Prefs.get().fontName}';">
+            |<!DOCTYPE html>
+            |<html>
+            |<head>
+                |<style>
+                |   body { background-color: #f4f4f4; font-family: 'System'; }
+                |</style>
+            |</head>
+            |<body>
+                |<h2>Card Preview</h1>
+                |<div id="data">
+                |<div id="copy" style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}">
                     |<h4 style="font-size: '13pt';">${cardTag.get()}</h4>
                     |<span>${cite.toString(true)}</span>
-                    |<p>${cardBody.get()}</p>
+                    |<p>${cardBody.get()}</p>\
                 |</div>
-            |</div>""".trimMargin()
+                |</div>
+            |</body>
+            |</html>""".trimMargin()
     }
 
 

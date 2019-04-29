@@ -12,7 +12,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardOpenOption
 
-var ui: CardCuttingUI? = null
+lateinit var ui: CardCuttingUI
 
 fun testSciHub() {
     val sciHubLoader = SciHubLoader("10.5406/historypresent.4.1.0049")
@@ -30,8 +30,9 @@ class CardCutterApplication: Application() {
         stage.show()
 
         ui = CardCuttingUI()
-        stage.scene = Scene(ui!!.initialize(), WIDTH, HEIGHT)
-        ui!!.doDeferredLoad()
+        stage.scene = Scene(ui.initialize(), WIDTH, HEIGHT)
+        stage.scene.stylesheets.add(javaClass.getResource("/CCStyles.css").toExternalForm());
+        ui.doDeferredLoad()
         stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
     }
 
