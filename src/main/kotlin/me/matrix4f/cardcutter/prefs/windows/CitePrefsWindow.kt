@@ -12,6 +12,8 @@ import javafx.scene.text.Text
 import javafx.scene.web.WebView
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.prefs.PrefsObject
+import java.awt.Toolkit
+import java.awt.datatransfer.StringSelection
 
 class CitePrefsWindow: PrefsWindow("Settings - Card Format") {
 
@@ -30,7 +32,7 @@ class CitePrefsWindow: PrefsWindow("Settings - Card Format") {
 
         val header = Label("Cite Format Settings")
         header.font = Font.font(20.0)
-        header.style = "-fx-font-weight: bold;"
+//        header.style = "-fx-font-weight: bold;"
 
         val resetBtn = Button("Reset to Default")
         val infoBtn = Button("Macro List")
@@ -45,7 +47,6 @@ class CitePrefsWindow: PrefsWindow("Settings - Card Format") {
         authorNameAndDate.prefColumnCount = authorNameAndDateText.length+1
         authorNameAndDate.padding = Insets(1.0)
         authorNameAndDate.style = HOLLOW_TEXTFIELD_STYLE.replace("FONTSIZE", "16.0")
-
 
         restOfCite.text = Prefs.get().citeFormat
         restOfCite.prefWidth = 600.0
@@ -75,10 +76,28 @@ class CitePrefsWindow: PrefsWindow("Settings - Card Format") {
                 "<Title>",
                 "<Url>"
             ))
+
+            val copyBtn = Button("Copy")
+            copyBtn.prefWidth = 250.0
+            copyBtn.setOnAction {
+                if (list.selectionModel.selectedIndex != -1) {
+                    Toolkit.getDefaultToolkit().systemClipboard.setContents(
+                        StringSelection(list.selectionModel.selectedItem),
+                        null
+                    )
+                    alert.close()
+                }
+            }
+
+            val view = VBox()
+            view.children.add(list)
+            view.children.add(copyBtn)
+
             list.prefHeight = 150.0
-            alert.dialogPane.content = list
+            alert.dialogPane.content = view
             alert.show()
         }
+
         val applyBtn = Button("Apply")
         applyBtn.requestFocus()
         applyBtn.setOnAction {
