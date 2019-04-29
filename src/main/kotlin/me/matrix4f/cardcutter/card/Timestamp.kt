@@ -3,6 +3,7 @@ package me.matrix4f.cardcutter.card
 import com.sun.org.apache.xpath.internal.operations.Bool
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
+import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.util.currentDate
 
 class Timestamp {
@@ -15,9 +16,9 @@ class Timestamp {
         return if (hasYear()) year.get().toInt() else null;
     }
 
-    private fun hasDay(): Boolean = day.get().isNotEmpty()
-    private fun hasYear(): Boolean = year.get().isNotEmpty()
-    private fun hasMonth(): Boolean = month.get().isNotEmpty()
+    private fun hasDay(): Boolean = !day.get().isNullOrEmpty()
+    private fun hasYear(): Boolean = !year.get().isNullOrEmpty()
+    private fun hasMonth(): Boolean = !month.get().isNullOrEmpty()
 
     fun toString(fullDate: Boolean): String {
         val yearIntOrNull = yearAsInt()
@@ -34,11 +35,11 @@ class Timestamp {
                     return "${month.get().substring(0, 3)} ${year.get()}"
 
                 else
-                    return "${month.get()}-${day.get()}-${year.get()}"
+                    return "${month.get()}/${day.get()}/${year.get()}"
             } else {
                 val yearInt = yearIntOrNull.toInt()
                 val date = currentDate()
-                if (yearInt == date.year) {
+                if (yearInt == date.year && !Prefs.get().onlyCardYear) {
                     // Card is from this year
                     return "${month.get()}-${day.get()}";
                 } else {

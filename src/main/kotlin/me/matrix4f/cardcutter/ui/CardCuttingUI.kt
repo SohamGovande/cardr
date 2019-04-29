@@ -24,18 +24,13 @@ import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
-import me.matrix4f.cardcutter.util.HtmlSelection
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.prefs.windows.CitePrefsWindow
 import me.matrix4f.cardcutter.prefs.windows.FontPrefsWindow
-import me.matrix4f.cardcutter.util.OS
-import me.matrix4f.cardcutter.util.getOSType
-import me.matrix4f.cardcutter.util.pasteCardToVerbatim
-import me.matrix4f.cardcutter.util.recordTime
+import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
 import org.jsoup.Jsoup
 import java.awt.Desktop
-import java.awt.GraphicsEnvironment
 import java.awt.Toolkit
 import java.io.InputStream
 import java.net.URL
@@ -58,9 +53,12 @@ class CardCuttingUI {
 
     private val propertyUrlTextField = TextField()
     private val propertyPubTextField = TextField()
-    private val propertyDateDayTextField = TextField()
-    private val propertyDateMonthTextField = TextField()
-    private val propertyDateYearTextField = TextField()
+
+    private val propertyDayTF = TextField()
+    private val propertyMonthTF = TextField()
+    private val propertyYearTF = TextField()
+    private val propertyYearOnlyCB = CheckBox("Use '${currentDate().year - 2000}' for dates this year")
+
     private val propertyTitleTextField = TextField()
     private val cardTagTextField = TextField()
     private val urlTextField = TextField()
@@ -79,7 +77,7 @@ class CardCuttingUI {
 
     private val slashTextField = TextField("/")
     private val slashTextField2 = TextField("/")
-    private val dateHBox = HBox()
+    private val dateGrid = GridPane()
 
     private val cardDisplayArea = VBox()
     private val cardDisplayMenu = HBox()
@@ -173,6 +171,11 @@ class CardCuttingUI {
         component.textProperty().addListener(changeListenerUpdateHTML)
     }
 
+    private fun bindToRefreshWebView(component: CheckBox) {
+        component.textProperty().addListener(changeListenerUpdateHTML)
+    }
+
+
     private fun generateDefaultHTML(): String {
         return """
             |<style>
@@ -231,9 +234,9 @@ class CardCuttingUI {
             propertyPubTextField.textProperty().bindBidirectional(this.publisher)
             propertyUrlTextField.textProperty().bindBidirectional(this.url)
 
-            propertyDateDayTextField.textProperty().bindBidirectional(this.timestamp.day)
-            propertyDateMonthTextField.textProperty().bindBidirectional(this.timestamp.month)
-            propertyDateYearTextField.textProperty().bindBidirectional(this.timestamp.year)
+            propertyDayTF.textProperty().bindBidirectional(this.timestamp.day)
+            propertyMonthTF.textProperty().bindBidirectional(this.timestamp.month)
+            propertyYearTF.textProperty().bindBidirectional(this.timestamp.year)
 
             generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
         }
@@ -306,17 +309,17 @@ class CardCuttingUI {
         pGrid.add(Label("Publication"), 0, 1)
         pGrid.add(propertyPubTextField, 1, 1)
 
-        bindToRefreshWebView(propertyDateDayTextField)
-        propertyDateDayTextField.prefColumnCount = 2
-        propertyDateDayTextField.promptText = "31"
+        bindToRefreshWebView(propertyDayTF)
+        propertyDayTF.prefColumnCount = 2
+        propertyDayTF.promptText = "31"
 
-        bindToRefreshWebView(propertyDateMonthTextField)
-        propertyDateMonthTextField.prefColumnCount = 2
-        propertyDateMonthTextField.promptText = "01"
+        bindToRefreshWebView(propertyMonthTF)
+        propertyMonthTF.prefColumnCount = 2
+        propertyMonthTF.promptText = "01"
 
-        bindToRefreshWebView(propertyDateYearTextField)
-        propertyDateYearTextField.prefColumnCount = 4
-        propertyDateYearTextField.promptText = "2019"
+        bindToRefreshWebView(propertyYearTF)
+        propertyYearTF.prefColumnCount = 4
+        propertyYearTF.promptText = "2019"
 
         slashTextField.isEditable = false
         slashTextField.prefColumnCount = 1
@@ -328,14 +331,23 @@ class CardCuttingUI {
 
         pGrid.add(Label("Date"), 0, 2)
 
-        dateHBox.spacing = 10.0
-        dateHBox.children.add(propertyDateMonthTextField)
-        dateHBox.children.add(slashTextField)
-        dateHBox.children.add(propertyDateDayTextField)
-        dateHBox.children.add(slashTextField2)
-        dateHBox.children.add(propertyDateYearTextField)
+        bindToRefreshWebView(propertyYearOnlyCB)
+        propertyYearOnlyCB.isSelected = Prefs.get().onlyCardYear
+        propertyYearOnlyCB.setOnAction {
+            Prefs.get().onlyCardYear = propertyYearOnlyCB.isSelected
+            Prefs.save()
+        }
 
-        pGrid.add(dateHBox, 1, 2)
+        dateGrid.padding = Insets(10.0)
+        dateGrid.add(propertyMonthTF, 0, 0)
+        dateGrid.add(slashTextField, 1, 0)
+        dateGrid.add(propertyDayTF, 2, 0)
+        dateGrid.add(slashTextField2, 3, 0)
+        dateGrid.add(propertyYearTF, 4, 0)
+
+        dateGrid.add(propertyYearOnlyCB, 0, 1, 5, 1)
+
+        pGrid.add(dateGrid, 1, 2)
 
         bindToRefreshWebView(propertyTitleTextField)
         pGrid.add(Label("Title"), 0, 3)
@@ -413,9 +425,9 @@ class CardCuttingUI {
                     propertyPubTextField.textProperty().bindBidirectional(this.publisher)
                     propertyUrlTextField.textProperty().bindBidirectional(this.url)
 
-                    propertyDateDayTextField.textProperty().bindBidirectional(this.timestamp.day)
-                    propertyDateMonthTextField.textProperty().bindBidirectional(this.timestamp.month)
-                    propertyDateYearTextField.textProperty().bindBidirectional(this.timestamp.year)
+                    propertyDayTF.textProperty().bindBidirectional(this.timestamp.day)
+                    propertyMonthTF.textProperty().bindBidirectional(this.timestamp.month)
+                    propertyYearTF.textProperty().bindBidirectional(this.timestamp.year)
 
                     generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
                 }
