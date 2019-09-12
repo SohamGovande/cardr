@@ -69,7 +69,7 @@ class CardCuttingUI {
     var loaded = false
 
     private val panel = VBox()
-    private val searchBarPanel = HBox();
+    private val searchBarPanel = HBox()
     private val gotoUrlButton = Button("GO")
     private val bodyAreaPanel = HBox()
 
@@ -210,7 +210,7 @@ class CardCuttingUI {
     }
 
 
-    public fun getCardBodyHTML(): String {
+    private fun getCardBodyHTML(): String {
         if (Prefs.get().condense) {
             return "<p style=\"font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;\">${cardBody.get().replace("<p>","").replace("</p>","")}</p>"
         } else {
@@ -233,7 +233,7 @@ class CardCuttingUI {
             this.url = SimpleStringProperty(reader.getURL())
             this.title = SimpleStringProperty(reader.getTitle() ?: "")
             this.cardTag.set(title.get())
-            this.cardBody.set(reader.getBodyParagraphText(Prefs.get().condense))
+            this.cardBody.set(reader.getBodyParagraphText())
 
             propertyTitleTextField.textProperty().bindBidirectional(this.title)
             propertyPubTextField.textProperty().bindBidirectional(this.publisher)
@@ -387,7 +387,7 @@ class CardCuttingUI {
 
         pGrid.add(Label("Verbatim"), 0, 6)
 
-        exportToWordSettings.spacing = 5.0;
+        exportToWordSettings.spacing = 5.0
 
         val header = Label("Send Card to Verbatim")
         header.style = "-fx-font-weight: bold;"
@@ -395,13 +395,13 @@ class CardCuttingUI {
         header.textAlignment = TextAlignment.CENTER
         exportToWordSettings.children.add(header)
 
-        val exportToWordHBox = GridPane();
-        exportToWordHBox.hgap = 5.0;
+        val exportToWordHBox = GridPane()
+        exportToWordHBox.hgap = 5.0
 
 
         exportToWordHBox.add(Label("Window:"), 0, 0)
 
-        wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0);
+        wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0)
         exportToWordHBox.add(wordWindowList, 1, 0)
 
 
@@ -441,7 +441,7 @@ class CardCuttingUI {
                 this.url = SimpleStringProperty(reader.getURL())
                 this.title = SimpleStringProperty(reader.getTitle() ?: "")
                 this.cardTag.set(title.get())
-                this.cardBody.set(reader.getBodyParagraphText(Prefs.get().condense))
+                this.cardBody.set(reader.getBodyParagraphText())
 
                 Platform.runLater {
                     propertyTitleTextField.textProperty().bindBidirectional(this.title)
@@ -468,7 +468,7 @@ class CardCuttingUI {
         refreshBtn.isDisable = (getOSType() != OS.WINDOWS)
         refreshBtn.setOnAction { refreshWordWindows() }
 
-        exportBtn.isDisable = refreshBtn.isDisable;
+        exportBtn.isDisable = refreshBtn.isDisable
         exportBtn.setOnAction { sendCardToVerbatim() }
 
         // Load the refresh icon

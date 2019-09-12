@@ -16,6 +16,7 @@ import java.util.*
  * - Fox News
  * - Phys
  * - NY Times
+ * - The Atlantic
  */
 class CardBodyReader(private val hostName: String, private val doc: Document) {
 
@@ -50,6 +51,15 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
                 !it.hasClass("read-next") &&
                 !it.hasClass("read-next-link") &&
                 !it.hasClass("share-count")
+        }
+        return Elements(a)
+    }
+
+    private fun theatlantic(): Elements {
+        val a = doc.select(".l-article__container p").filter {
+            !it.text().startsWith("Updated on") &&
+                !it.hasClass("c-recirculation-link") &&
+                !it.hasClass("c-letters-cta__text")
         }
         return Elements(a)
     }
