@@ -13,7 +13,8 @@ import java.util.*
  * - Al Jazeera
  * - Vox
  * - Washington Post
- *
+ * - Fox News
+ * - Phys
  */
 class CardBodyReader(private val hostName: String, private val doc: Document) {
 
@@ -92,6 +93,13 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".story-body__inner p")
     }
 
+    private fun phys(): Elements {
+        val a = doc.select(".article-main p").filter {
+            !it.text().equals("Explore further")
+        }
+        return Elements(a)
+    }
+
     private fun thehill(): Elements {
         return doc.select(".field-name-body .field-items")
     }
@@ -153,7 +161,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
     fun getBodyParagraphs(): Elements {
         try {
             println(hostName)
-            return javaClass.getDeclaredMethod(hostName.replace(" ","")).invoke(this) as Elements
+            return javaClass.getDeclaredMethod(hostName
+                .replace(" ","")
+                .replace(".org", ""))
+                .invoke(this) as Elements
         } catch (e: Exception) {
 
             // NoSuchMethodException is normal, it means the host was unrecognized

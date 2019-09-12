@@ -115,6 +115,8 @@ class WebsiteCardCutter(private val url: String) {
     protected fun getAuthorFromName(name: String): Author {
         if (name.equals("BBC News"))
             return Author("", "BBC")
+        else if (name.equals("Phys"))
+            return Author("", "Phys")
 
         val lastSpace = name.trim().lastIndexOf(' ')
         if (lastSpace == -1)
@@ -138,6 +140,9 @@ class WebsiteCardCutter(private val url: String) {
 
 
     fun getAuthors(): Array<Author>? {
+        if (getPublication() == "Phys.org")
+            return arrayOf(getAuthorFromName("Phys"))
+
         var author: String? = null
         var authors: Array<Author>? = arrayOf()
 
