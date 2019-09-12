@@ -133,7 +133,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
     }
 
     private fun thehill(): Elements {
-        return doc.select(".field-name-body .field-items")
+        return doc.select("p")
     }
 
     private fun reuters(): Elements {

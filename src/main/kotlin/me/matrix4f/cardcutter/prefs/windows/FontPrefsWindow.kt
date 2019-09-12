@@ -43,10 +43,10 @@ class FontPrefsWindow: PrefsWindow("Settings - Font") {
         gp.add(Label("Size"), 0, 1)
         gp.add(sizeTF, 1, 1)
 
-        val header = Label("Font Settings")
+        val header = Label("Font")
         header.font = Font.font(20.0)
-        header.style = "-fx-font-weight: bold;"
-        val subheader = Label("NOTE: For the \"Send to Verbatim\" feature")
+        header.style = "-fx-font-family: 'Calibri Light';"
+//        val subheader = Label("NOTE: For the \"Send to Verbatim\" feature")
 
         val headerCardBody = Label("Card Body")
         headerCardBody.style = "-fx-font-weight: bold;"
@@ -67,14 +67,14 @@ class FontPrefsWindow: PrefsWindow("Settings - Font") {
         sizeTF.font = currentFont
 
         vbox.children.add(header)
-        vbox.children.add(subheader)
-        vbox.children.add(headerTagAndCite)
-        vbox.children.add(Label("This can only be changed from within Verbatim."))
-        vbox.children.add(headerCardBody)
+//        vbox.children.add(subheader)
+//        vbox.children.add(headerTagAndCite)
+//        vbox.children.add(Label("This can only be changed from within Verbatim."))
+//        vbox.children.add(headerCardBody)
         vbox.children.add(gp)
         vbox.children.add(applyBtn)
 
-        val scene = Scene(vbox, 300.0, 250.0)
+        val scene = Scene(vbox, 300.0, 140.0)
         return scene
     }
 }

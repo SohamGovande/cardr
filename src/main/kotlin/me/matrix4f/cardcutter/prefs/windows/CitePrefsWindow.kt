@@ -32,7 +32,7 @@ class CitePrefsWindow: PrefsWindow("Settings - Card Format") {
         vbox.padding = Insets(10.0)
         vbox.spacing = 10.0
 
-        val header = Label("Cite Format Settings")
+        val header = Label("Citation")
         header.font = Font.font(20.0)
 //        header.style = "-fx-font-weight: bold;"
 
