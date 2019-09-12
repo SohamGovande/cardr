@@ -96,7 +96,15 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             "div.c-entry-content h3, " +
             "div.c-entry-content ul, " +
             "div.c-entry-content ol")
+        return Elements(a)
+    }
 
+    private fun councilonforeignrelations(): Elements {
+        val a = doc.select(".body-content p").filter {
+            !it.text().contains("This article first appeared ") &&
+                !it.hasClass("more-on__title") &&
+                !it.hasClass("more-on__content")
+        }
         return Elements(a)
     }
 

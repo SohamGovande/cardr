@@ -182,6 +182,20 @@ class WebsiteCardCutter(private val url: String) {
         if (authors.isNotEmpty())
             return authors
 
+        authors = doc.select("div[data-share-authors]")
+            .map {
+                val authorsJson = JsonParser().parse(it.attr("data-share-authors").replace("&quot;","\"")).asJsonArray
+                authorsJson.map {
+                    Author(it.asJsonObject.get("first_name").asString, it.asJsonObject.get("last_name").asString)
+                }.toTypedArray()
+            }
+            .flatMap { it.asIterable() }
+            .distinct()
+            .toTypedArray()
+
+        if (authors.isNotEmpty())
+            return authors
+
         authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName")
             .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
             .flatMap { it.asIterable() }
