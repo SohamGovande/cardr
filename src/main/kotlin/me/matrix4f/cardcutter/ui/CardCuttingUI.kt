@@ -4,11 +4,11 @@ import javafx.application.Platform
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
 import javafx.beans.value.ObservableValue
-import javafx.scene.image.Image
-import javafx.scene.image.ImageView
 import javafx.collections.FXCollections
 import javafx.geometry.Insets
 import javafx.scene.control.*
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
@@ -16,7 +16,6 @@ import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
-import javafx.scene.text.Font
 import javafx.scene.text.TextAlignment
 import javafx.scene.web.WebView
 import me.matrix4f.cardcutter.CardCutterApplication
@@ -34,7 +33,6 @@ import java.awt.Desktop
 import java.awt.Toolkit
 import java.io.InputStream
 import java.net.URL
-import java.util.*
 
 class CardCuttingUI {
 
@@ -191,8 +189,6 @@ class CardCuttingUI {
             publisher.get(),
             url.get()
         )
-        println(Arrays.toString(Font.getFontNames().toTypedArray()))
-        println(Arrays.toString(Font.getFamilies().toTypedArray()))
         return """
             |<!DOCTYPE html>
             |<html>
@@ -202,12 +198,11 @@ class CardCuttingUI {
                 |</style>
             |</head>
             |<body>
-                |<h2>Card Preview</h1>
                 |<div id="data">
-                |<div id="copy" style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}">
-                    |<h4 style="font-size: '13pt';">${cardTag.get()}</h4>
+                |<div id="copy" style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;">
+                    |<h4 style="font-size: ${Prefs.get().fontSize+2}pt">${cardTag.get()}</h4>
                     |<span>${cite.toString(true)}</span>
-                    |<p>${cardBody.get()}</p>\
+                    |<p style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;">${cardBody.get()}</p>
                 |</div>
                 |</div>
             |</body>

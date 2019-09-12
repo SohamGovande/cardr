@@ -23,7 +23,7 @@ class CardCutterApplication: Application() {
 
     override fun start(stage: Stage) {
 
-        stage.title = "CardCutter for Debate"
+        stage.title = "Cardify for Debate"
         stage.isResizable = false
         stage.width = WIDTH
         stage.height = HEIGHT

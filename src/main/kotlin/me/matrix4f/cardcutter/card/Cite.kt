@@ -46,7 +46,7 @@ data class Cite(val authors: Array<Author>,
         return format.replace("<Author>", getAuthorName(false))
             .replace("<Qualifications>", getAuthorQualifications())
             .replace("<Date>", date.toString(true))
-            .replace("<CurrentDate>", "${now.monthValue}/${now.dayOfMonth}/${now.year}")
+            .replace("<CurrentDate>", "${now.monthValue}-${now.dayOfMonth}-${now.year}")
             .replace("<Publication>", publication)
             .replace("<Title>", title)
             .replace("<Url>", url)
@@ -55,7 +55,7 @@ data class Cite(val authors: Array<Author>,
     fun toString(html: Boolean): String {
         var nameAndDate = getNameAndDate()
         if (html) {
-            nameAndDate = (if(html) "<strong style='text-decoration:underline;'>" else "") + nameAndDate
+            nameAndDate = (if(html) "<strong style=\"text-decoration:underline;font-size: ${Prefs.get().fontSize+1}pt;\">" else "") + nameAndDate
             nameAndDate += "</strong>"
         }
 

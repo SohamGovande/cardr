@@ -185,6 +185,18 @@ class WebsiteCardCutter(private val url: String) {
 
         if (authors.isNotEmpty())
             return authors
+
+        val x = doc.select("div[itemprop='author'] [itemprop='name']")
+
+
+        authors = x
+            .map { authorMatcher.evaluateString(it.attr("content"))?.value ?: arrayOf(getAuthorFromName(it.attr("content"))) }
+            .flatMap { it.asIterable() }
+            .distinct()
+            .toTypedArray()
+
+        if (authors.isNotEmpty())
+            return authors
         return authorMatcher.evaluateDoc(doc)?.value
     }
 

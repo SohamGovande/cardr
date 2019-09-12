@@ -1,16 +1,31 @@
 package me.matrix4f.cardcutter.web.body
 
 import org.jsoup.nodes.Document
+import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
+import java.util.*
 
+/**
+ * Tailored to:
+ * - POLITICO
+ * - Reuters
+ * - NY Post
+ * - Al Jazeera
+ * - Vox
+ * - Washington Post
+ *
+ */
 class CardBodyReader(private val hostName: String, private val doc: Document) {
 
     private fun businessinsider(): Elements {
-        return  doc.select("div[data-piano-inline-content-wrapper] p")
+        return doc.select("div[data-piano-inline-content-wrapper] p")
     }
 
     private fun politico(): Elements {
-        return doc.select(".story-text p")
+        val a = doc.select(".story-text p").filter {
+            it.parent().tagName()!="figcaption" && it.classNames().size == 0 && !it.text().contains("Missing out on the latest scoops?")
+        }
+        return Elements(a)
     }
 
     private fun thinkprogress(): Elements {
@@ -21,8 +36,17 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".article__body p")
     }
 
-    private fun nypost(): Elements {
-        return doc.select(".entry-content p")
+    private fun newyorkpost(): Elements {
+        val a = doc.select(".entry-content p").filter {
+            !it.parent().hasClass("thankyou") &&
+                !it.parent().id().equals("footer-legal") &&
+                !it.hasClass("byline") &&
+                !it.hasClass("byline-date") &&
+                !it.hasClass("read-next") &&
+                !it.hasClass("read-next-link") &&
+                !it.hasClass("share-count")
+        }
+        return Elements(a)
     }
 
     private fun delawareonline(): Elements {
@@ -30,7 +54,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
     }
 
     private fun aljazeera(): Elements {
-        return doc.select(".article-p-wrapper p")
+        val a = doc.select(".article-p-wrapper p").filter {
+            !it.text().contains("The views expressed in this article are")
+        }
+        return Elements(a)
     }
 
     private fun wthr(): Elements {
@@ -46,13 +73,15 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
     }
 
     private fun vox(): Elements {
-        return doc.select("" +
+        val a = doc.select("" +
             "div.c-entry-content p, " +
             "div.c-entry-content blockquote, " +
             "div.c-entry-content p, " +
             "div.c-entry-content h3, " +
             "div.c-entry-content ul, " +
             "div.c-entry-content ol")
+
+        return Elements(a)
     }
 
     private fun cnn(): Elements { // Doesn't work - CNN waits to load the paragraphs
@@ -68,7 +97,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
     }
 
     private fun reuters(): Elements {
-        return doc.select(".StandardArticleBody_body p")
+        val a = doc.select(".StandardArticleBody_body p").filter {
+            !it.hasClass("Attribution_content")
+        }
+        return Elements(a)
     }
 
     private fun nytimes(): Elements {
@@ -76,7 +108,14 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
     }
 
     private fun foxnews(): Elements {
-        return doc.select(".article-body p")
+        val a = doc.select(".article-body p").filter {
+            if (it.children().size > 0) {
+                if (it.child(0).tagName().equals("strong"))
+                    return@filter false
+            }
+            return@filter true
+        }
+        return Elements(a)
     }
 
     private fun theverge(): Elements {
@@ -103,9 +142,18 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".field-body p")
     }
 
+    private fun thewashingtonpost() : Elements {
+        val a = doc.select("article p").filter {
+            !it.hasClass("interstitial-link ") &&
+                !it.hasClass("trailer")
+        }
+        return Elements(a)
+    }
+
     fun getBodyParagraphs(): Elements {
         try {
-            return javaClass.getDeclaredMethod(hostName).invoke(this) as Elements
+            println(hostName)
+            return javaClass.getDeclaredMethod(hostName.replace(" ","")).invoke(this) as Elements
         } catch (e: Exception) {
 
             // NoSuchMethodException is normal, it means the host was unrecognized

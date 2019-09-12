@@ -35,7 +35,7 @@ class Timestamp {
                     return "${month.get().substring(0, 3)} ${year.get()}"
 
                 else
-                    return "${month.get()}/${day.get()}/${year.get()}"
+                    return "${month.get()}-${day.get()}-${year.get()}"
             } else {
                 val yearInt = yearIntOrNull.toInt()
                 val date = currentDate()

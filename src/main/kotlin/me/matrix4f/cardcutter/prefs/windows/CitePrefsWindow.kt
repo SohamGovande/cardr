@@ -14,6 +14,8 @@ import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.prefs.PrefsObject
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
+import java.io.FileWriter
+import java.io.PrintWriter
 
 class CitePrefsWindow: PrefsWindow("Settings - Card Format") {
 
