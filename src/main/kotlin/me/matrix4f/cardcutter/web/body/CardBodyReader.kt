@@ -17,6 +17,7 @@ import java.util.*
  * - Phys
  * - NY Times
  * - The Atlantic
+ * - BBC
  */
 class CardBodyReader(private val hostName: String, private val doc: Document) {
 
@@ -104,7 +105,15 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
     }
 
     private fun bbc(): Elements {
-        return doc.select(".story-body__inner p")
+        val a = doc.select("p").filter {
+            !it.hasClass("twite__channel-text") &&
+                !it.hasClass("twite__copy-text") &&
+                !it.hasClass("twite__read-more") &&
+                !it.hasClass("twite__new-window") &&
+                !it.hasClass("twite__title") &&
+                !it.hasClass("heron__item-summary")
+        }
+        return Elements(a)
     }
 
     private fun phys(): Elements {
@@ -175,6 +184,8 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
     fun getBodyParagraphs(): Elements {
         try {
             println(hostName)
+            if (hostName.contains("bbc"))
+                return bbc()
             return javaClass.getDeclaredMethod(hostName
                 .replace(" ","")
                 .replace(".org", ""))
