@@ -1,5 +1,6 @@
 package me.matrix4f.cardcutter.web.body
 
+import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
@@ -191,13 +192,20 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
 
     fun getBodyParagraphs(): Elements {
         try {
-            println(hostName)
-            if (hostName.contains("bbc"))
-                return bbc()
-            return javaClass.getDeclaredMethod(hostName
+            val hostName = hostName
                 .replace(" ","")
-                .replace(".org", ""))
-                .invoke(this) as Elements
+                .replace(".org", "")
+
+            if (INCOMPATIBLE_SOURCES.contains(hostName)) {
+                return Jsoup.parse("<p>[Unfortunately, publisher \"${hostName.toUpperCase()}\" did not allow Cardify to view the article body. Please refer to the online version for article access.]</p>").body().children()
+            } else {
+                println("Loading article from publisher '" + hostName + "'")
+
+                if (hostName.contains("bbc"))
+                    return bbc()
+                return javaClass.getDeclaredMethod(hostName)
+                    .invoke(this) as Elements
+            }
         } catch (e: Exception) {
 
             // NoSuchMethodException is normal, it means the host was unrecognized
@@ -208,5 +216,14 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             // Default behavior
             return doc.getElementsByTag("p")
         }
+    }
+
+    companion object {
+        val INCOMPATIBLE_SOURCES = arrayOf(
+            "southchinamorningpost",
+            "bloomberg",
+            "cnn",
+            "wsj"
+        )
     }
 }
