@@ -191,10 +191,16 @@ class WebsiteCardCutter(private val url: String) {
         if (authors.isNotEmpty())
             return authors
 
-        val x = doc.select("div[itemprop='author'] [itemprop='name']")
+        authors = doc.select("p[itemprop='author'] [itemprop='name']")
+            .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+            .flatMap { it.asIterable() }
+            .distinct()
+            .toTypedArray()
 
+        if (authors.isNotEmpty())
+            return authors
 
-        authors = x
+        authors = doc.select("div[itemprop='author'] [itemprop='name']")
             .map { authorMatcher.evaluateString(it.attr("content"))?.value ?: arrayOf(getAuthorFromName(it.attr("content"))) }
             .flatMap { it.asIterable() }
             .distinct()
@@ -399,7 +405,7 @@ class WebsiteCardCutter(private val url: String) {
         return bodyParagraphElements as Elements
     }
 
-    fun getBodyParagraphText(condensed: Boolean): String {
+    fun getBodyParagraphText(): String {
         val sb = StringBuilder()
         getBodyParagraphs().forEach {
             sb.append("<p>")

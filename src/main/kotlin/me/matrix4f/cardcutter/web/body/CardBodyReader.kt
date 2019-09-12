@@ -15,6 +15,7 @@ import java.util.*
  * - Washington Post
  * - Fox News
  * - Phys
+ * - NY Times
  */
 class CardBodyReader(private val hostName: String, private val doc: Document) {
 
