@@ -24,7 +24,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
 
     private fun politico(): Elements {
         val a = doc.select(".story-text p").filter {
-            it.parent().tagName()!="figcaption" && it.classNames().size == 0 && !it.text().contains("Missing out on the latest scoops?")
+            it.parent().tagName()!="figcaption"
+                && it.classNames().size == 0
+                && !it.text().contains("Missing out on the latest scoops?")
+                && !it.text().contains("A daily play-by-play of congressional news in your inbox.")
         }
         return Elements(a)
     }

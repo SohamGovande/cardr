@@ -55,7 +55,7 @@ class CardCuttingUI {
     private val propertyDayTF = TextField()
     private val propertyMonthTF = TextField()
     private val propertyYearTF = TextField()
-    private val propertyYearOnlyCB = CheckBox("Use '${currentDate().year - 2000}' for dates this year")
+//    private val propertyYearOnlyCB = CheckBox("Use '${currentDate().year - 2000}' for dates this year")
 
     private val propertyTitleTextField = TextField()
     private val cardTagTextField = TextField()
@@ -173,7 +173,6 @@ class CardCuttingUI {
         component.textProperty().addListener(changeListenerUpdateHTML)
     }
 
-
     private fun generateDefaultHTML(): String {
         return """
             |<style>
@@ -200,9 +199,10 @@ class CardCuttingUI {
             |<body>
                 |<div id="data">
                 |<div id="copy" style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;">
-                    |<h4 style="font-size: ${Prefs.get().fontSize+2}pt">${cardTag.get()}</h4>
+                    |<h4 style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize+2}pt">${cardTag.get()}</h4>
                     |<span>${cite.toString(true)}</span>
-                    |<p style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;">${cardBody.get()}</p>
+                    |${getCardBodyHTML()}
+                    |
                 |</div>
                 |</div>
             |</body>
@@ -210,8 +210,18 @@ class CardCuttingUI {
     }
 
 
+    public fun getCardBodyHTML(): String {
+        if (Prefs.get().condense) {
+            return "<p style=\"font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;\">${cardBody.get().replace("<p>","").replace("</p>","")}</p>"
+        } else {
+            return cardBody.get().replace("<p>","<p style=\"font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;\">")
+        }
+    }
+
     private fun refreshHTML() {
-        Platform.runLater { cardWV.engine?.loadContent(generateHTMLContent()) }
+        Platform.runLater {
+            cardWV.engine?.loadContent(generateHTMLContent())
+        }
     }
 
     fun loadFromReader(reader: WebsiteCardCutter) {
@@ -223,7 +233,7 @@ class CardCuttingUI {
             this.url = SimpleStringProperty(reader.getURL())
             this.title = SimpleStringProperty(reader.getTitle() ?: "")
             this.cardTag.set(title.get())
-            this.cardBody.set(reader.getBodyParagraphText(true))
+            this.cardBody.set(reader.getBodyParagraphText(Prefs.get().condense))
 
             propertyTitleTextField.textProperty().bindBidirectional(this.title)
             propertyPubTextField.textProperty().bindBidirectional(this.publisher)
@@ -268,8 +278,26 @@ class CardCuttingUI {
         val fontMenuItem = MenuItem("Font")
         fontMenuItem.setOnAction { FontPrefsWindow().show() }
 
+        val condenseMenuItem = CheckMenuItem("Condense")
+        condenseMenuItem.isSelected = Prefs.get().condense
+        condenseMenuItem.setOnAction {
+            Prefs.get().condense = !Prefs.get().condense
+            Prefs.save()
+            refreshHTML()
+        }
+
+        val allowSmallDatesMenuItem = CheckMenuItem("Use MM-DD for ${currentDate().year}")
+        allowSmallDatesMenuItem.isSelected = Prefs.get().onlyCardYear
+        allowSmallDatesMenuItem.setOnAction {
+            Prefs.get().onlyCardYear = !Prefs.get().onlyCardYear
+            Prefs.save()
+            refreshHTML()
+        }
+
         settingsMenu.items.add(cardFormatMenuItem)
         settingsMenu.items.add(fontMenuItem)
+        settingsMenu.items.add(condenseMenuItem)
+        settingsMenu.items.add(allowSmallDatesMenuItem)
 
         menuBar.menus.add(toolsMenu)
         menuBar.menus.add(settingsMenu)
@@ -326,12 +354,12 @@ class CardCuttingUI {
 
         pGrid.add(Label("Date"), 0, 2)
 
-        bindToRefreshWebView(propertyYearOnlyCB)
-        propertyYearOnlyCB.isSelected = Prefs.get().onlyCardYear
-        propertyYearOnlyCB.setOnAction {
-            Prefs.get().onlyCardYear = propertyYearOnlyCB.isSelected
-            Prefs.save()
-        }
+//        bindToRefreshWebView(propertyYearOnlyCB)
+//        propertyYearOnlyCB.isSelected = Prefs.get().onlyCardYear
+//        propertyYearOnlyCB.setOnAction {
+//            Prefs.get().onlyCardYear = propertyYearOnlyCB.isSelected
+//            Prefs.save()
+//        }
 
         dateGrid.padding = Insets(10.0)
         dateGrid.add(propertyMonthTF, 0, 0)
@@ -340,7 +368,7 @@ class CardCuttingUI {
         dateGrid.add(slashTextField2, 3, 0)
         dateGrid.add(propertyYearTF, 4, 0)
 
-        dateGrid.add(propertyYearOnlyCB, 0, 1, 5, 1)
+//        dateGrid.add(propertyYearOnlyCB, 0, 1, 5, 1)
 
         pGrid.add(dateGrid, 1, 2)
 
@@ -413,7 +441,7 @@ class CardCuttingUI {
                 this.url = SimpleStringProperty(reader.getURL())
                 this.title = SimpleStringProperty(reader.getTitle() ?: "")
                 this.cardTag.set(title.get())
-                this.cardBody.set(reader.getBodyParagraphText(true))
+                this.cardBody.set(reader.getBodyParagraphText(Prefs.get().condense))
 
                 Platform.runLater {
                     propertyTitleTextField.textProperty().bindBidirectional(this.title)
@@ -509,7 +537,7 @@ class CardCuttingUI {
         if (wordWindowList.items.size > 0) {
             msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
         }
-        pasteCardToVerbatim(cardTag.get(), cite, cardBody.get())
+        pasteCardToVerbatim(cardTag.get(), cite, getCardBodyHTML())
     }
 
 }

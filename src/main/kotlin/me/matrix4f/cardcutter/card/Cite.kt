@@ -55,10 +55,10 @@ data class Cite(val authors: Array<Author>,
     fun toString(html: Boolean): String {
         var nameAndDate = getNameAndDate()
         if (html) {
-            nameAndDate = (if(html) "<strong style=\"text-decoration:underline;font-size: ${Prefs.get().fontSize+1}pt;\">" else "") + nameAndDate
-            nameAndDate += "</strong>"
+            nameAndDate = (if(html) "<strong style=\"text-decoration:underline;font-family: '${Prefs.get().fontName}', 'System';font-size: ${Prefs.get().fontSize+1}pt;\"><u>" else "") + nameAndDate
+            nameAndDate += "</u></strong>"
         }
 
-        return "${nameAndDate}${getDetailedInfo()}"
+        return "${nameAndDate}<span style=\"font-family: '${Prefs.get().fontName}', 'System';font-size: ${Prefs.get().fontSize}pt;\">${getDetailedInfo()}</span>"
     }
 }

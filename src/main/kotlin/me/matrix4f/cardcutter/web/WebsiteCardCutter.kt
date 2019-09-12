@@ -402,14 +402,12 @@ class WebsiteCardCutter(private val url: String) {
     fun getBodyParagraphText(condensed: Boolean): String {
         val sb = StringBuilder()
         getBodyParagraphs().forEach {
-            if (!condensed)
-                sb.append("")
+            sb.append("<p>")
 
             sb.append(it.text())
             sb.append(' ')
 
-            if (!condensed)
-                sb.append("")
+            sb.append("</p>")
         }
         sb.append("")
         return sb.toString()

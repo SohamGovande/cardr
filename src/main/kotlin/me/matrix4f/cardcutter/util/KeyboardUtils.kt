@@ -40,11 +40,11 @@ fun pasteCardToVerbatim(tag: String, cite: Cite, body: String) {
     r.keyRelease(KeyEvent.VK_END)
 
     val fontName = Prefs.get().fontName
-    val fontSizeEm = Prefs.get().fontSize/11.0
+    val fontSize = Prefs.get().fontSize
 
     val restOfPaste = """
-        <span style="font-family: $fontName;font-size:'${fontSizeEm}em';">${cite.getDetailedInfo().replace(" ", "&nbsp;")}</span>
-        <p style="font-family: $fontName;font-size:'${fontSizeEm}em';">${body}</p>
+        <span style="font-family: $fontName;font-size:'${fontSize}pt';">${cite.getDetailedInfo().replace(" ", "&nbsp;")}</span>
+        ${body}
     """.trimIndent()
     Toolkit.getDefaultToolkit().systemClipboard.setContents(HtmlSelection(restOfPaste), null)
     paste(r)
