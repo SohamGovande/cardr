@@ -126,7 +126,7 @@ class WebsiteCardCutter(private val url: String) {
     }
 
     protected fun getAuthorFromXML(): Array<Author>? {
-        var authorStr: String = findMeta("author", "og:article:author") ?: return null
+        var authorStr: String = findMeta("author", "dcterms.creator", "og:article:author") ?: return null
         if (authorStr.contains("www"))
             return null
         val parsed = authorMatcher.evaluateString(authorStr)

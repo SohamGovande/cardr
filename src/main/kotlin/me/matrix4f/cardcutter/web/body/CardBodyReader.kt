@@ -85,6 +85,12 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".o-article_block p")
     }
 
+    private fun foreignaffairsmagazine(): Elements {
+        return Elements(doc.select(".article-dropcap-body p").filter {
+            !it.hasClass("load-text")
+        })
+    }
+
     private fun foreignpolicy(): Elements {
         return doc.select(".post-content-main p")
     }
