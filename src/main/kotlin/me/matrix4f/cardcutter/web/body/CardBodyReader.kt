@@ -170,6 +170,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         })
     }
 
+    private fun theguardian(): Elements {
+        return Elements(doc.select(".content__article-body p"))
+    }
+
     private fun thehill(): Elements {
         return doc.select("p")
     }
