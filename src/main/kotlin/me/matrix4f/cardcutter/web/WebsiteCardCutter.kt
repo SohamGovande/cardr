@@ -397,6 +397,10 @@ class WebsiteCardCutter(private val url: String) {
 
     fun getTitle(): String? {
         if (titleString == null) {
+            if (getPublication() == "Apnews") {
+                return doc.select(".headline h1").text()
+            }
+
             if (metaJson.has("headline")) {
                 titleString = metaJson["headline"].asString
                 return titleString
