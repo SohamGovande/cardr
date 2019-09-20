@@ -22,7 +22,7 @@ import java.util.*
  * - Foreign Policy
  * - The Economist
  * - Associated Press
- *
+ * - National Interest
  */
 class CardBodyReader(private val hostName: String, private val doc: Document) {
 
@@ -172,6 +172,13 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
 
     private fun thehill(): Elements {
         return doc.select("p")
+    }
+
+    private fun thenationalinterest(): Elements {
+        return Elements(doc.select(".detail__content p").filter {
+            (it.classNames().size == 0 || it.hasClass("flfc"))
+                && !it.html().contains("<em>")
+        })
     }
 
     private fun thewashingtonpost() : Elements {
