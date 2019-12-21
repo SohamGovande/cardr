@@ -121,8 +121,10 @@ class WebsiteCardCutter(private val url: String) {
         val lastSpace = name.trim().lastIndexOf(' ')
         if (lastSpace == -1)
             return Author(SimpleStringProperty(""), SimpleStringProperty(name))
-        return Author(name.substring(0, lastSpace).trim(),
-                name.substring(lastSpace+1).trim())
+
+        val firstName = applyCorrectCapitalization(name.substring(0, lastSpace).trim())
+        val lastName = applyCorrectCapitalization(name.substring(lastSpace+1).trim())
+        return Author(firstName, lastName)
     }
 
     protected fun getAuthorFromXML(): Array<Author>? {
@@ -199,7 +201,7 @@ class WebsiteCardCutter(private val url: String) {
         if (authors.isNotEmpty())
             return authors
 
-        authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName")
+        authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName, .story-meta__authors .vcard")
             .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
             .flatMap { it.asIterable() }
             .distinct()
