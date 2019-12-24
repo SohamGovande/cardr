@@ -1,6 +1,5 @@
 package me.matrix4f.cardcutter.prefs.windows
 
-import javafx.beans.value.ObservableValue
 import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.control.Button
@@ -9,19 +8,20 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
+import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.prefs.Prefs
 
-class FontPrefsWindow: PrefsWindow("Settings - Font") {
+class FontPrefsWindow: ModalWindow("Settings - Font") {
 
     private val fontTF = TextField("Calibri")
     private val sizeTF = TextField("11")
 
-    override fun close() {
+    override fun close(event: WindowEvent?) {
         Prefs.get().fontName = fontTF.text
         Prefs.get().fontSize = sizeTF.text.toInt()
         Prefs.save()
 
-        super.close()
+        super.close(event)
     }
 
     override fun generateUI(): Scene {
@@ -45,7 +45,7 @@ class FontPrefsWindow: PrefsWindow("Settings - Font") {
 
         val header = Label("Font")
         header.font = Font.font(20.0)
-        header.style = "-fx-font-family: 'Calibri Light';"
+        header.style = "-fx-font-family: 'Calibri';"
 //        val subheader = Label("NOTE: For the \"Send to Verbatim\" feature")
 
         val headerCardBody = Label("Card Body")
@@ -56,7 +56,7 @@ class FontPrefsWindow: PrefsWindow("Settings - Font") {
         val applyBtn = Button("Apply")
         applyBtn.prefWidth = 300.0
         applyBtn.setOnAction {
-            close()
+            close(null)
         }
 
         val currentFont = Font.font(
@@ -75,6 +75,7 @@ class FontPrefsWindow: PrefsWindow("Settings - Font") {
         vbox.children.add(applyBtn)
 
         val scene = Scene(vbox, 300.0, 140.0)
+        scene.stylesheets.add(javaClass.getResource("/CCStyles.css").toExternalForm())
         return scene
     }
 }

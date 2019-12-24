@@ -1,0 +1,12 @@
+{
+  "lastUsedVersion": "V1.0.0",
+  "lastUsedVersionInt": 0,
+  "fontName": "Calibri",
+  "fontSize": 11,
+  "citeFormat": " (\u003cAuthor\u003e, \u003cQualifications\u003e\u003cDate\u003e, accessed on \u003cCurrentDate\u003e, \u003cPublication\u003e, \"\u003cTitle\u003e\", \u003cUrl\u003e)",
+  "onlyCardYear": false,
+  "condense": false,
+  "useEtAl": true,
+  "emailAddress": "vgsoham@gmail.com",
+  "accessToken": "4da4979c356d16ac"
+}

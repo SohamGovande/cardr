@@ -227,6 +227,16 @@ class WebsiteCardCutter(private val url: String) {
 
         if (authors.isNotEmpty())
             return authors
+
+        authors = doc.select("header .meta-line")
+            .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf()}
+            .flatMap { it.asIterable() }
+            .distinct()
+            .toTypedArray()
+
+        if (authors.isNotEmpty())
+            return authors
+
         return authorMatcher.evaluateDoc(doc)?.value
     }
 

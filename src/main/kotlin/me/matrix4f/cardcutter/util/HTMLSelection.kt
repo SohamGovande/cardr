@@ -11,7 +11,7 @@ import java.io.StringBufferInputStream
 import java.io.StringReader
 import java.util.ArrayList
 
-class HtmlSelection(private val html: String): Transferable {
+class HTMLSelection(private val html: String): Transferable {
 
     override fun getTransferDataFlavors(): Array<DataFlavor> {
         return htmlFlavors.toTypedArray()

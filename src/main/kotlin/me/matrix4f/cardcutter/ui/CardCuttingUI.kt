@@ -19,6 +19,9 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.TextAlignment
 import javafx.scene.web.WebView
 import me.matrix4f.cardcutter.CardCutterApplication
+import me.matrix4f.cardcutter.auth.CardifyUser
+import me.matrix4f.cardcutter.auth.SignInLauncherOptions
+import me.matrix4f.cardcutter.auth.SignInWindow
 import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
@@ -41,7 +44,7 @@ class CardCuttingUI {
     private var timestamp: Timestamp = Timestamp()
     private var publisher: StringProperty = SimpleStringProperty("")
     private var url: StringProperty = SimpleStringProperty("")
-    private var cardTag: StringProperty = SimpleStringProperty("TAG")
+    private var cardTag: StringProperty = SimpleStringProperty("")
     private val changeListenerUpdateHTML = { _: ObservableValue<out String>, _: String, _: String ->
         Unit
         // Sufficiently delay it to occur after the event goes through
@@ -59,7 +62,7 @@ class CardCuttingUI {
 
     private val propertyTitleTextField = TextField()
     private val cardTagTextField = TextField()
-    private val urlTextField = TextField()
+    private val urlTF = TextField()
 
     private val cardWV = WebView()
 
@@ -82,11 +85,229 @@ class CardCuttingUI {
 
     private val exportToWordSettings = VBox()
     private val copyBtn = Button("Copy to Clipboard")
+    private val deleteSelectedBtn = Button("Remove Selected Text")
     private val exportBtn = Button("Send to Verbatim")
 
     private val refreshBtn = Button()
 
     private val wordWindowList = ComboBox<String>()
+    private val removeWords = arrayListOf<String>()
+
+    private var currentUser = CardifyUser()
+
+    fun initialize(): VBox {
+        panel.children.add(VBox(generateMenuBar()))
+
+        searchBarPanel.spacing = 5.0
+        searchBarPanel.padding = Insets(5.0)
+
+        urlTF.promptText = "Paste a URL to get started"
+        urlTF.prefWidth = CardCutterApplication.WIDTH - 50
+        gotoUrlButton.prefWidth = 50.0
+        searchBarPanel.children.add(urlTF)
+        searchBarPanel.children.add(gotoUrlButton)
+
+        bodyAreaPanel.padding = Insets(5.0)
+
+        pGrid.hgap = 10.0
+        pGrid.vgap = 10.0
+        pGrid.prefWidth = 300.0
+        pGrid.prefHeight = CardCutterApplication.HEIGHT // Take up the rest remaining space
+
+        bindToRefreshWebView(propertyUrlTextField)
+        pGrid.add(Label("URL"), 0, 0)
+        pGrid.add(propertyUrlTextField, 1, 0)
+
+        bindToRefreshWebView(propertyPubTextField)
+        pGrid.add(Label("Publication"), 0, 1)
+        pGrid.add(propertyPubTextField, 1, 1)
+
+        bindToRefreshWebView(propertyDayTF)
+        propertyDayTF.prefColumnCount = 2
+        propertyDayTF.promptText = "31"
+
+        bindToRefreshWebView(propertyMonthTF)
+        propertyMonthTF.prefColumnCount = 2
+        propertyMonthTF.promptText = "01"
+
+        bindToRefreshWebView(propertyYearTF)
+        propertyYearTF.prefColumnCount = 4
+        propertyYearTF.promptText = "2019"
+
+        slashTextField.isEditable = false
+        slashTextField.prefColumnCount = 1
+        slashTextField.style = "-fx-background-color: #f4f4f4"
+
+        slashTextField2.isEditable = false
+        slashTextField2.prefColumnCount = 1
+        slashTextField2.style = "-fx-background-color: #f4f4f4"
+
+        pGrid.add(Label("Date"), 0, 2)
+
+        dateGrid.padding = Insets(10.0)
+        dateGrid.add(propertyMonthTF, 0, 0)
+        dateGrid.add(slashTextField, 1, 0)
+        dateGrid.add(propertyDayTF, 2, 0)
+        dateGrid.add(slashTextField2, 3, 0)
+        dateGrid.add(propertyYearTF, 4, 0)
+
+        pGrid.add(dateGrid, 1, 2)
+
+        bindToRefreshWebView(propertyTitleTextField)
+        pGrid.add(Label("Title"), 0, 3)
+        pGrid.add(propertyTitleTextField, 1, 3)
+
+        cardTagTextField.promptText = ""
+        cardTagTextField.textProperty().bindBidirectional(cardTag)
+
+        bindToRefreshWebView(cardTagTextField)
+        pGrid.add(Label("Card Tag"), 0, 4)
+        pGrid.add(cardTagTextField, 1, 4)
+        pGrid.add(Label("Authors"), 0, 5)
+
+        pGrid.columnConstraints.add(ColumnConstraints(60.0))
+        pGrid.columnConstraints.add(ColumnConstraints(225.0))
+
+        pGrid.add(Label("Verbatim"), 0, 6)
+
+        exportToWordSettings.spacing = 5.0
+
+        val header = Label("Send Card to Verbatim")
+        header.style = "-fx-font-weight: bold;"
+        header.prefWidth = 225.0
+        header.textAlignment = TextAlignment.CENTER
+        exportToWordSettings.children.add(header)
+
+        val exportToWordHBox = GridPane()
+        exportToWordHBox.hgap = 5.0
+
+        exportToWordHBox.add(Label("Window:"), 0, 0)
+
+        wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0)
+        exportToWordHBox.add(wordWindowList, 1, 0)
+
+        exportToWordHBox.add(refreshBtn, 2, 0)
+        exportToWordSettings.children.add(exportToWordHBox)
+
+        exportToWordSettings.children.add(exportBtn)
+        pGrid.add(exportToWordSettings, 1, 6)
+
+        cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
+        cardDisplayMenu.spacing = 5.0
+
+        cardDisplayMenu.children.add(copyBtn)
+        cardDisplayMenu.children.add(deleteSelectedBtn)
+
+        cardDisplayArea.children.add(cardDisplayMenu)
+        cardDisplayArea.children.add(cardWV)
+
+        bodyAreaPanel.children.add(pGrid)
+        bodyAreaPanel.children.add(cardDisplayArea)
+
+        panel.children.add(searchBarPanel)
+        panel.children.add(bodyAreaPanel)
+
+        recordTime("init main ui")
+        refreshWordWindows()
+        return panel
+    }
+
+    private fun visitURL(url: String) {
+        Thread {
+            currentUser.visitWebsite(url)
+        }.start()
+    }
+
+    fun doDeferredLoad() {
+        // Button actions
+        gotoUrlButton.setOnAction {
+            Thread {
+                val reader = WebsiteCardCutter(urlTF.text)
+                removeWords.clear()
+
+                this.authors = reader.getAuthors() ?: this.authors
+                this.timestamp = reader.getDate()
+                this.publisher = SimpleStringProperty(reader.getPublication())
+                this.url = SimpleStringProperty(reader.getURL())
+                this.title = SimpleStringProperty(reader.getTitle() ?: "")
+                this.cardTag.set(title.get())
+                this.cardBody.set(reader.getBodyParagraphText())
+
+                Platform.runLater {
+                    visitURL(urlTF.text)
+                    propertyTitleTextField.textProperty().bindBidirectional(this.title)
+                    propertyPubTextField.textProperty().bindBidirectional(this.publisher)
+                    propertyUrlTextField.textProperty().bindBidirectional(this.url)
+
+                    propertyDayTF.textProperty().bindBidirectional(this.timestamp.day)
+                    propertyMonthTF.textProperty().bindBidirectional(this.timestamp.month)
+                    propertyYearTF.textProperty().bindBidirectional(this.timestamp.year)
+
+                    generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
+                }
+            }.start()
+        }
+
+        copyBtn.setOnAction { copyCardToClipboard() }
+        deleteSelectedBtn.setOnAction { deleteSelectedText() }
+
+        val msWordInteractor = MSWordInteractor()
+        wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
+        if (!wordWindowList.items.isEmpty()) {
+            wordWindowList.selectionModel.select(0)
+        }
+
+        refreshBtn.isDisable = (getOSType() != OS.WINDOWS)
+        refreshBtn.setOnAction { refreshWordWindows() }
+
+        exportBtn.isDisable = refreshBtn.isDisable
+        exportBtn.setOnAction { sendCardToVerbatim() }
+
+        // Load the refresh icon
+        val refreshResource: InputStream? = javaClass.getResourceAsStream("/refresh.png")
+        if (refreshResource != null) {
+            val refreshBtnImage = Image(refreshResource, 20.0, 20.0, true, true)
+            refreshBtn.graphic = ImageView(refreshBtnImage)
+        } else {
+            refreshBtn.text = "Refresh"
+        }
+
+        urlTF.setOnKeyPressed {
+            if (it.isControlDown && it.text.equals("v")) {
+                Platform.runLater { gotoUrlButton.fire() }
+            }
+        }
+
+        // Web view default content
+        cardWV.engine.loadContent(generateDefaultHTML())
+
+        // Generate author grid box callback
+        generateAuthorGridBoxCallback = {
+            pGrid.children.remove(lastUI)
+            pGrid.requestLayout()
+            pGrid.add(it, 1, 5)
+            lastUI = it
+        }
+        generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
+
+        checkLoginStatus()
+        recordTime("finish deferred loading")
+        loaded = true
+    }
+
+    private fun checkLoginStatus() {
+        if (Prefs.get().emailAddress.isEmpty()
+            || Prefs.get().accessToken.isEmpty()) {
+            // Needs to sign in
+            SignInWindow(SignInLauncherOptions.WELCOME, currentUser).show()
+        } else {
+            val renewResult = currentUser.renew()
+            if (!renewResult.wasSuccessful()) {
+                // Access token has expired
+                SignInWindow(SignInLauncherOptions.TOKEN_EXPIRED, currentUser).show()
+            }
+        }
+    }
 
     private fun generateAuthorsGrid(regenerateUI: (GridPane) -> Unit): GridPane {
         val authorGrid = GridPane()
@@ -195,6 +416,18 @@ class CardCuttingUI {
                 |<style>
                 |   body { background-color: #f4f4f4; font-family: 'System'; }
                 |</style>
+                |<script>
+                |
+                | function getSelectionTextCustom() {
+                |     var text = "";
+                |     if (window.getSelection) {
+                |         text = window.getSelection().toString();
+                |     } else if (document.selection && document.selection.type != "Control") {
+                |         text = document.selection.createRange().text;
+                |     }
+                |     return text;
+                | }
+                |</script>
             |</head>
             |<body>
                 |<div id="data">
@@ -209,12 +442,15 @@ class CardCuttingUI {
             |</html>""".trimMargin()
     }
 
-
-    private fun getCardBodyHTML(): String {
+    private fun getCardBodyHTML(): String   {
         if (Prefs.get().condense) {
             return "<p style=\"font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;\">${cardBody.get().replace("<p>","").replace("</p>","")}</p>"
         } else {
-            return cardBody.get().replace("<p>","<p style=\"font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;\">")
+            var cardBody = cardBody.get()
+            for (remove in removeWords) {
+                cardBody = cardBody.replace(remove, "")
+            }
+            return cardBody.replace("<p>","<p style=\"font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;\">")
         }
     }
 
@@ -226,7 +462,7 @@ class CardCuttingUI {
 
     fun loadFromReader(reader: WebsiteCardCutter) {
         Platform.runLater {
-            this.urlTextField.text = reader.getURL()
+            this.urlTF.text = reader.getURL()
             this.authors = reader.getAuthors() ?: this.authors
             this.timestamp = reader.getDate()
             this.publisher = SimpleStringProperty(reader.getPublication())
@@ -251,255 +487,95 @@ class CardCuttingUI {
     private fun generateMenuBar(): MenuBar {
         val menuBar = MenuBar()
 
+        val accountMenu = Menu("Account")
+
+        val signUpMI = MenuItem("Sign up...")
+        signUpMI.setOnAction {
+            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/signup.html").toURI())
+        }
+
+        val signInMI = MenuItem("Sign in...")
+        signInMI.setOnAction { SignInWindow(SignInLauncherOptions.MANUAL_SIGNIN, currentUser).show() }
+        val historyMI = MenuItem("History")
+
+
+        historyMI.accelerator = KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN)
+        accountMenu.items.add(signUpMI)
+        accountMenu.items.add(signInMI)
+        accountMenu.items.add(SeparatorMenuItem())
+        accountMenu.items.add(historyMI)
+
         val toolsMenu = Menu("Tools")
-        val copyMenuItem = MenuItem("Copy card")
-        copyMenuItem.accelerator = KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
-        copyMenuItem.setOnAction { copyCardToClipboard() }
+        val copyMI = MenuItem("Copy card")
+        copyMI.accelerator = KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
+        copyMI.setOnAction { copyCardToClipboard() }
 
 
-        val refreshWindowsMenuItem  = MenuItem("Refresh MSWord")
-        refreshWindowsMenuItem.accelerator = KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN)
-        refreshWindowsMenuItem.setOnAction { refreshWordWindows() }
+        val refreshWordMI  = MenuItem("Refresh Word windows")
+        refreshWordMI.accelerator = KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN)
+        refreshWordMI.setOnAction { refreshWordWindows() }
 
-        val sendMenuItem = MenuItem("Send to Verbatim")
-        sendMenuItem.accelerator = KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
-        sendMenuItem.setOnAction { sendCardToVerbatim() }
+        val sendMI = MenuItem("Send to Verbatim")
+        sendMI.accelerator = KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
+        sendMI.setOnAction { sendCardToVerbatim() }
 
-        toolsMenu.items.add(copyMenuItem)
+        toolsMenu.items.add(copyMI)
         toolsMenu.items.add(SeparatorMenuItem())
-        toolsMenu.items.add(refreshWindowsMenuItem)
-        toolsMenu.items.add(sendMenuItem)
+        toolsMenu.items.add(refreshWordMI)
+        toolsMenu.items.add(sendMI)
 
         val settingsMenu = Menu("Settings")
 
-        val cardFormatMenuItem = MenuItem("Cite")
-        cardFormatMenuItem.setOnAction { CitePrefsWindow().show() }
+        val citeMI = MenuItem("Citation format...")
+        citeMI.setOnAction { CitePrefsWindow().show() }
 
-        val fontMenuItem = MenuItem("Font")
-        fontMenuItem.setOnAction { FontPrefsWindow().show() }
+        val fontMI = MenuItem("Font...")
+        fontMI.setOnAction { FontPrefsWindow().show() }
 
-        val condenseMenuItem = CheckMenuItem("Condense")
-        condenseMenuItem.isSelected = Prefs.get().condense
-        condenseMenuItem.setOnAction {
-            Prefs.get().condense = !Prefs.get().condense
+        val condenseMI = CheckMenuItem("Condense paragraphs")
+        condenseMI.isSelected = Prefs.get().condense
+        condenseMI.setOnAction {
+            Prefs.get().condense = condenseMI.isSelected
             Prefs.save()
             refreshHTML()
         }
 
-        val allowSmallDatesMenuItem = CheckMenuItem("Use MM-DD for ${currentDate().year}")
-        allowSmallDatesMenuItem.isSelected = Prefs.get().onlyCardYear
-        allowSmallDatesMenuItem.setOnAction {
-            Prefs.get().onlyCardYear = !Prefs.get().onlyCardYear
+        val useSmallDatesMI = CheckMenuItem("Use MM-DD for ${currentDate().year}")
+        useSmallDatesMI.isSelected = Prefs.get().onlyCardYear
+        useSmallDatesMI.setOnAction {
+            Prefs.get().onlyCardYear = !useSmallDatesMI.isSelected
             Prefs.save()
             refreshHTML()
         }
 
-        settingsMenu.items.add(cardFormatMenuItem)
-        settingsMenu.items.add(fontMenuItem)
-        settingsMenu.items.add(condenseMenuItem)
-        settingsMenu.items.add(allowSmallDatesMenuItem)
+        val useEtAlMI = CheckMenuItem("Use 'et al.' for >1 author")
+        useEtAlMI.isSelected = Prefs.get().useEtAl
+        useEtAlMI.setOnAction {
+            Prefs.get().useEtAl = useEtAlMI.isSelected
+            Prefs.save()
+            refreshHTML()
+        }
 
+        settingsMenu.items.add(citeMI)
+        settingsMenu.items.add(fontMI)
+        settingsMenu.items.add(condenseMI)
+        settingsMenu.items.add(useSmallDatesMI)
+        settingsMenu.items.add(useEtAlMI)
+
+        menuBar.menus.add(accountMenu)
         menuBar.menus.add(toolsMenu)
         menuBar.menus.add(settingsMenu)
         return menuBar
     }
 
-    fun initialize(): VBox {
-
-        panel.children.add(VBox(generateMenuBar()))
-
-        searchBarPanel.spacing = 5.0
-        searchBarPanel.padding = Insets(5.0)
-
-        urlTextField.promptText = "Paste URL"
-        urlTextField.prefWidth = CardCutterApplication.WIDTH - 50
-        gotoUrlButton.prefWidth = 50.0
-        searchBarPanel.children.add(urlTextField)
-        searchBarPanel.children.add(gotoUrlButton)
-
-        bodyAreaPanel.padding = Insets(5.0)
-
-        pGrid.hgap = 10.0
-        pGrid.vgap = 10.0
-        pGrid.prefWidth = 300.0
-        pGrid.prefHeight = CardCutterApplication.HEIGHT // Take up the rest remaining space
-
-        bindToRefreshWebView(propertyUrlTextField)
-        pGrid.add(Label("URL"), 0, 0)
-        pGrid.add(propertyUrlTextField, 1, 0)
-
-        bindToRefreshWebView(propertyPubTextField)
-        pGrid.add(Label("Publication"), 0, 1)
-        pGrid.add(propertyPubTextField, 1, 1)
-
-        bindToRefreshWebView(propertyDayTF)
-        propertyDayTF.prefColumnCount = 2
-        propertyDayTF.promptText = "31"
-
-        bindToRefreshWebView(propertyMonthTF)
-        propertyMonthTF.prefColumnCount = 2
-        propertyMonthTF.promptText = "01"
-
-        bindToRefreshWebView(propertyYearTF)
-        propertyYearTF.prefColumnCount = 4
-        propertyYearTF.promptText = "2019"
-
-        slashTextField.isEditable = false
-        slashTextField.prefColumnCount = 1
-        slashTextField.style = "-fx-background-color: #f4f4f4"
-
-        slashTextField2.isEditable = false
-        slashTextField2.prefColumnCount = 1
-        slashTextField2.style = "-fx-background-color: #f4f4f4"
-
-        pGrid.add(Label("Date"), 0, 2)
-
-//        bindToRefreshWebView(propertyYearOnlyCB)
-//        propertyYearOnlyCB.isSelected = Prefs.get().onlyCardYear
-//        propertyYearOnlyCB.setOnAction {
-//            Prefs.get().onlyCardYear = propertyYearOnlyCB.isSelected
-//            Prefs.save()
-//        }
-
-        dateGrid.padding = Insets(10.0)
-        dateGrid.add(propertyMonthTF, 0, 0)
-        dateGrid.add(slashTextField, 1, 0)
-        dateGrid.add(propertyDayTF, 2, 0)
-        dateGrid.add(slashTextField2, 3, 0)
-        dateGrid.add(propertyYearTF, 4, 0)
-
-//        dateGrid.add(propertyYearOnlyCB, 0, 1, 5, 1)
-
-        pGrid.add(dateGrid, 1, 2)
-
-        bindToRefreshWebView(propertyTitleTextField)
-        pGrid.add(Label("Title"), 0, 3)
-        pGrid.add(propertyTitleTextField, 1, 3)
-
-        cardTagTextField.textProperty().bindBidirectional(cardTag)
-        bindToRefreshWebView(cardTagTextField)
-        pGrid.add(Label("Card Tag"), 0, 4)
-        pGrid.add(cardTagTextField, 1, 4)
-        pGrid.add(Label("Authors"), 0, 5)
-
-        pGrid.columnConstraints.add(ColumnConstraints(60.0))
-        pGrid.columnConstraints.add(ColumnConstraints(225.0))
-
-        pGrid.add(Label("Verbatim"), 0, 6)
-
-        exportToWordSettings.spacing = 5.0
-
-        val header = Label("Send Card to Verbatim")
-        header.style = "-fx-font-weight: bold;"
-        header.prefWidth = 225.0
-        header.textAlignment = TextAlignment.CENTER
-        exportToWordSettings.children.add(header)
-
-        val exportToWordHBox = GridPane()
-        exportToWordHBox.hgap = 5.0
-
-
-        exportToWordHBox.add(Label("Window:"), 0, 0)
-
-        wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0)
-        exportToWordHBox.add(wordWindowList, 1, 0)
-
-
-
-        exportToWordHBox.add(refreshBtn, 2, 0)
-        exportToWordSettings.children.add(exportToWordHBox)
-
-        exportToWordSettings.children.add(exportBtn)
-        pGrid.add(exportToWordSettings, 1, 6)
-
-        cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
-        cardDisplayMenu.spacing = 5.0
-
-        cardDisplayMenu.children.add(copyBtn)
-
-        cardDisplayArea.children.add(cardDisplayMenu)
-        cardDisplayArea.children.add(cardWV)
-
-        bodyAreaPanel.children.add(pGrid)
-        bodyAreaPanel.children.add(cardDisplayArea)
-
-        panel.children.add(searchBarPanel)
-        panel.children.add(bodyAreaPanel)
-
-        recordTime("init main ui")
-        return panel
-    }
-
-    fun doDeferredLoad() {
-        // Button actions
-        gotoUrlButton.setOnAction {
-            Thread {
-                val reader = WebsiteCardCutter(urlTextField.text)
-                this.authors = reader.getAuthors() ?: this.authors
-                this.timestamp = reader.getDate()
-                this.publisher = SimpleStringProperty(reader.getPublication())
-                this.url = SimpleStringProperty(reader.getURL())
-                this.title = SimpleStringProperty(reader.getTitle() ?: "")
-                this.cardTag.set(title.get())
-                this.cardBody.set(reader.getBodyParagraphText())
-
-                Platform.runLater {
-                    propertyTitleTextField.textProperty().bindBidirectional(this.title)
-                    propertyPubTextField.textProperty().bindBidirectional(this.publisher)
-                    propertyUrlTextField.textProperty().bindBidirectional(this.url)
-
-                    propertyDayTF.textProperty().bindBidirectional(this.timestamp.day)
-                    propertyMonthTF.textProperty().bindBidirectional(this.timestamp.month)
-                    propertyYearTF.textProperty().bindBidirectional(this.timestamp.year)
-
-                    generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
-                }
-            }.start()
-        }
-
-        copyBtn.setOnAction { copyCardToClipboard() }
-
-        val msWordInteractor = MSWordInteractor()
-        wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
-        if (!wordWindowList.items.isEmpty()) {
-            wordWindowList.selectionModel.select(0)
-        }
-
-        refreshBtn.isDisable = (getOSType() != OS.WINDOWS)
-        refreshBtn.setOnAction { refreshWordWindows() }
-
-        exportBtn.isDisable = refreshBtn.isDisable
-        exportBtn.setOnAction { sendCardToVerbatim() }
-
-        // Load the refresh icon
-        val refreshResource: InputStream? = javaClass.getResourceAsStream("/refresh.png")
-        if (refreshResource != null) {
-            val refreshBtnImage = Image(refreshResource, 20.0, 20.0, true, true)
-            refreshBtn.graphic = ImageView(refreshBtnImage)
-        } else {
-            refreshBtn.text = "Refresh"
-        }
-
-        urlTextField.setOnKeyPressed {
-            if (it.isControlDown && it.text.equals("v")) {
-                Platform.runLater { gotoUrlButton.fire() }
+    private fun deleteSelectedText() {
+        val selection = cardWV.engine.executeScript("getSelectionTextCustom()") as String
+        for (str in selection.split('\n')) {
+            if (str.isNotBlank()) {
+                removeWords.add(str)
             }
         }
-
-        // Web view default content
-        cardWV.engine.loadContent(generateDefaultHTML())
-
-        // Generate author grid box callback
-        generateAuthorGridBoxCallback = {
-            pGrid.children.remove(lastUI)
-            pGrid.requestLayout()
-            pGrid.add(it, 1, 5)
-            lastUI = it
-        }
-        generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
-
-        recordTime("finish deferred loading")
-        loaded = true
+        refreshHTML()
     }
 
     private fun refreshWordWindows() {
@@ -515,7 +591,7 @@ class CardCuttingUI {
         Toolkit.getDefaultToolkit()
             .systemClipboard
             .setContents(
-                HtmlSelection(
+                HTMLSelection(
                     Jsoup.parseBodyFragment(generateHTMLContent()).getElementById("copy").html()
                 ),
                 null

@@ -11,7 +11,12 @@ data class Cite(val authors: Array<Author>,
 
     private fun getAuthorName(useShortName: Boolean): String {
         if (authors.size > 1) {
+            if (Prefs.get().useEtAl && useShortName) {
+                return "${authors[0].toString(useShortName)} et al."
+            }
+
             // Multiple authors - create a list (e.g. "Brooks, Wolfsworth, and Ikenberry")
+
             val builder = StringBuilder(authors[0].toString(useShortName))
             for (i in 1 until (authors.size - 1))
                 builder.append(", ").append(authors[i].toString(useShortName))

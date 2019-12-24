@@ -42,11 +42,12 @@ fun pasteCardToVerbatim(tag: String, cite: Cite, body: String) {
     val fontName = Prefs.get().fontName
     val fontSize = Prefs.get().fontSize
 
+    // TODO: Fix line spacing & awkward line breaks
     val restOfPaste = """
         <span style="font-family: $fontName;font-size:'${fontSize}pt';">${cite.getDetailedInfo().replace(" ", "&nbsp;")}</span>
         ${body}
     """.trimIndent()
-    Toolkit.getDefaultToolkit().systemClipboard.setContents(HtmlSelection(restOfPaste), null)
+    Toolkit.getDefaultToolkit().systemClipboard.setContents(HTMLSelection(restOfPaste), null)
     paste(r)
 
     /*msWord.setShiftKeyState(true)

@@ -14,16 +14,10 @@ import java.nio.file.StandardOpenOption
 
 lateinit var ui: CardCuttingUI
 
-fun testSciHub() {
-    val sciHubLoader = SciHubLoader("10.5406/historypresent.4.1.0049")
-
-}
-
 class CardCutterApplication: Application() {
 
     override fun start(stage: Stage) {
-
-        stage.title = "Cardify for Debate"
+        stage.title = "CardifyDebate $CURRENT_VERSION"
         stage.isResizable = false
         stage.width = WIDTH
         stage.height = HEIGHT
@@ -32,27 +26,25 @@ class CardCutterApplication: Application() {
         ui = CardCuttingUI()
         stage.scene = Scene(ui.initialize(), WIDTH, HEIGHT)
         stage.scene.stylesheets.add(javaClass.getResource("/CCStyles.css").toExternalForm());
-        ui.doDeferredLoad()
         stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
+        ui.doDeferredLoad()
     }
 
     companion object {
         const val WIDTH = 800.0
         const val HEIGHT = 600.0
 
+        const val CURRENT_VERSION = "V1.0.0"
+        const val CURRENT_VERSION_INT = 0
+
         @JvmStatic
         fun main(args: Array<String>) {
-//            testSciHub()
-//            if (1 == 1)
-//                return
             if (args.size == 1) {
                 Thread {
                     val reader = WebsiteCardCutter(args[0])
                     println(args[0])
-                    while (ui?.loaded != true) {
-                        // Wait
-                    }
-                    ui?.loadFromReader(reader)
+                    while (!ui.loaded) { }
+                    ui.loadFromReader(reader)
                 }.start()
             }
             startTime()

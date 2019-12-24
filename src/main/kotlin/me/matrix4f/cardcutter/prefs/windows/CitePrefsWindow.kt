@@ -1,6 +1,5 @@
 package me.matrix4f.cardcutter.prefs.windows
 
-import javafx.application.Platform
 import javafx.collections.FXCollections
 import javafx.geometry.Insets
 import javafx.scene.Scene
@@ -8,23 +7,20 @@ import javafx.scene.control.*
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
-import javafx.scene.text.Text
-import javafx.scene.web.WebView
+import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.prefs.PrefsObject
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
-import java.io.FileWriter
-import java.io.PrintWriter
 
-class CitePrefsWindow: PrefsWindow("Settings - Card Format") {
+class CitePrefsWindow: ModalWindow("Settings - Cite Format") {
 
     private val restOfCite = TextField(Prefs.get().citeFormat)
 
-    override fun close() {
+    override fun close(event: WindowEvent?) {
         Prefs.get().citeFormat = restOfCite.text
         Prefs.save()
-        super.close()
+        super.close(event)
     }
 
     override fun generateUI(): Scene {
@@ -32,9 +28,9 @@ class CitePrefsWindow: PrefsWindow("Settings - Card Format") {
         vbox.padding = Insets(10.0)
         vbox.spacing = 10.0
 
-        val header = Label("Citation")
+        val header = Label("Cite Format")
+        header.style = "-fx-font-family: 'Calibri';"
         header.font = Font.font(20.0)
-//        header.style = "-fx-font-weight: bold;"
 
         val resetBtn = Button("Reset to Default")
         val infoBtn = Button("Macro List")
@@ -103,7 +99,7 @@ class CitePrefsWindow: PrefsWindow("Settings - Card Format") {
         val applyBtn = Button("Apply")
         applyBtn.requestFocus()
         applyBtn.setOnAction {
-            close()
+            close(null)
         }
 
         vbox.children.add(header)
@@ -112,7 +108,7 @@ class CitePrefsWindow: PrefsWindow("Settings - Card Format") {
         vbox.children.add(applyBtn)
 
         val scene = Scene(vbox, 600.0, 150.0)
-
+        scene.stylesheets.add(javaClass.getResource("/CCStyles.css").toExternalForm())
         return scene
     }
 

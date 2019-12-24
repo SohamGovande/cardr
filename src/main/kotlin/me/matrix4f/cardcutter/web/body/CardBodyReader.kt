@@ -23,6 +23,8 @@ import java.util.*
  * - The Economist
  * - Associated Press
  * - National Interest
+ * - Council on Foreign Relations
+ * - Cato Institute
  */
 class CardBodyReader(private val hostName: String, private val doc: Document) {
 
@@ -65,12 +67,15 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
     }
 
     private fun councilonforeignrelations(): Elements {
-        val a = doc.select(".body-content p").filter {
+        return Elements(doc.select(".body-content p").filter {
             !it.text().contains("This article first appeared ") &&
                 !it.hasClass("more-on__title") &&
                 !it.hasClass("more-on__content")
-        }
-        return Elements(a)
+        })
+    }
+
+    private fun catoinstitute(): Elements {
+        return Elements(doc.select("article p"))
     }
 
     private fun dailywire(): Elements {
@@ -136,8 +141,21 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
 
     private fun politico(): Elements {
         val a = doc.select(".story-text p").filter {
+            val tagFilter = if (it.classNames().size == 0) {
+                true
+            } else {
+                var retVal = false
+                for (name in it.classNames()) {
+                    if (name.contains("paragraph")) {
+                        retVal = true
+                    }
+                }
+                retVal
+            }
+
             it.parent().tagName()!="figcaption"
-                && it.classNames().size == 0
+                && !it.parent().hasClass("twitter-tweet")
+                && tagFilter
                 && !it.text().contains("Missing out on the latest scoops?")
                 && !it.text().contains("A daily play-by-play of congressional news in your inbox.")
         }
