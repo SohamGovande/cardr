@@ -71,3 +71,13 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 .idea/caches/build_file_checksums.ser
+
+
+/cardcutter_cpp/.vs/
+/cardcutter_cpp/bin/
+/cardcutter_cpp/RegeditInstallChrome/Debug/
+/cardcutter_cpp/NativeDllInterface/Debug/
+/cardcutter_cpp/CardifyChromeApp/Debug/
+/cardcutter_cpp/CardCutterLauncher/Debug/
+/cardcutter_cpp/RegeditInstallChrome/Release/
+/cardcutter_cpp/RegeditInstallChrome/x64/

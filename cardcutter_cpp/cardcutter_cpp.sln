@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.168
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NativeDllInterface", "NativeDllInterface\NativeDllInterface.vcxproj", "{CBA09BB4-2E36-493F-A13F-31B197FA311C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CardCutterLauncher", "CardCutterLauncher\CardCutterLauncher.vcxproj", "{E4852BB5-12C7-4EB5-8260-4CBF168F5C30}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RegeditInstallChrome", "RegeditInstallChrome\RegeditInstallChrome.vcxproj", "{EA286A66-8783-4A54-885E-73A182069370}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CardifyChromeApp", "CardifyChromeApp\CardifyChromeApp.vcxproj", "{8DEAC403-9A44-477C-8E7D-DFE5E38742A7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CBA09BB4-2E36-493F-A13F-31B197FA311C}.Debug|x64.ActiveCfg = Debug|x64
+		{CBA09BB4-2E36-493F-A13F-31B197FA311C}.Debug|x64.Build.0 = Debug|x64
+		{CBA09BB4-2E36-493F-A13F-31B197FA311C}.Debug|x86.ActiveCfg = Debug|Win32
+		{CBA09BB4-2E36-493F-A13F-31B197FA311C}.Debug|x86.Build.0 = Debug|Win32
+		{CBA09BB4-2E36-493F-A13F-31B197FA311C}.Release|x64.ActiveCfg = Release|x64
+		{CBA09BB4-2E36-493F-A13F-31B197FA311C}.Release|x64.Build.0 = Release|x64
+		{CBA09BB4-2E36-493F-A13F-31B197FA311C}.Release|x86.ActiveCfg = Release|Win32
+		{CBA09BB4-2E36-493F-A13F-31B197FA311C}.Release|x86.Build.0 = Release|Win32
+		{E4852BB5-12C7-4EB5-8260-4CBF168F5C30}.Debug|x64.ActiveCfg = Debug|x64
+		{E4852BB5-12C7-4EB5-8260-4CBF168F5C30}.Debug|x64.Build.0 = Debug|x64
+		{E4852BB5-12C7-4EB5-8260-4CBF168F5C30}.Debug|x86.ActiveCfg = Debug|Win32
+		{E4852BB5-12C7-4EB5-8260-4CBF168F5C30}.Debug|x86.Build.0 = Debug|Win32
+		{E4852BB5-12C7-4EB5-8260-4CBF168F5C30}.Release|x64.ActiveCfg = Release|x64
+		{E4852BB5-12C7-4EB5-8260-4CBF168F5C30}.Release|x64.Build.0 = Release|x64
+		{E4852BB5-12C7-4EB5-8260-4CBF168F5C30}.Release|x86.ActiveCfg = Release|Win32
+		{E4852BB5-12C7-4EB5-8260-4CBF168F5C30}.Release|x86.Build.0 = Release|Win32
+		{EA286A66-8783-4A54-885E-73A182069370}.Debug|x64.ActiveCfg = Debug|x64
+		{EA286A66-8783-4A54-885E-73A182069370}.Debug|x64.Build.0 = Debug|x64
+		{EA286A66-8783-4A54-885E-73A182069370}.Debug|x86.ActiveCfg = Debug|Win32
+		{EA286A66-8783-4A54-885E-73A182069370}.Debug|x86.Build.0 = Debug|Win32
+		{EA286A66-8783-4A54-885E-73A182069370}.Release|x64.ActiveCfg = Release|x64
+		{EA286A66-8783-4A54-885E-73A182069370}.Release|x64.Build.0 = Release|x64
+		{EA286A66-8783-4A54-885E-73A182069370}.Release|x86.ActiveCfg = Release|Win32
+		{EA286A66-8783-4A54-885E-73A182069370}.Release|x86.Build.0 = Release|Win32
+		{8DEAC403-9A44-477C-8E7D-DFE5E38742A7}.Debug|x64.ActiveCfg = Debug|x64
+		{8DEAC403-9A44-477C-8E7D-DFE5E38742A7}.Debug|x64.Build.0 = Debug|x64
+		{8DEAC403-9A44-477C-8E7D-DFE5E38742A7}.Debug|x86.ActiveCfg = Debug|Win32
+		{8DEAC403-9A44-477C-8E7D-DFE5E38742A7}.Debug|x86.Build.0 = Debug|Win32
+		{8DEAC403-9A44-477C-8E7D-DFE5E38742A7}.Release|x64.ActiveCfg = Release|x64
+		{8DEAC403-9A44-477C-8E7D-DFE5E38742A7}.Release|x64.Build.0 = Release|x64
+		{8DEAC403-9A44-477C-8E7D-DFE5E38742A7}.Release|x86.ActiveCfg = Release|Win32
+		{8DEAC403-9A44-477C-8E7D-DFE5E38742A7}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {913353B4-740F-49B5-89EF-0B8C96304026}
+	EndGlobalSection
+EndGlobal
