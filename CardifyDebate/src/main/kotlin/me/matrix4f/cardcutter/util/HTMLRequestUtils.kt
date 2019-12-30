@@ -57,5 +57,4 @@ fun makePOSTRequest(url: String, params: List<NameValuePair>): String? {
             {"func":"local_io","status":"error","reason":"${e.javaClass.simpleName} due to ${e.message}","additional_info":"Read log file"}
         """.trimIndent()
     }
-    return ""
 }

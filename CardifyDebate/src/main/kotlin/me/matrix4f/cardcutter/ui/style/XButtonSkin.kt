@@ -18,30 +18,8 @@ class XButtonSkin(control: Button): ButtonSkin(control) {
         val onHoverColorChange = ColorAdjust()
         onHoverColorChange.brightness = 0.0
 
-        val invalidationListener = InvalidationListener {
-
-        }
         control.effect = onHoverColorChange
 
-        {
-            // Border
-            val color = Timeline(
-                KeyFrame(Duration.seconds(0.0), KeyValue(control.borderProperty(), control.border, Interpolator.LINEAR)),
-                KeyFrame(Duration.seconds(ANIM_LENGTH*5), KeyValue(
-                    control.borderProperty(),
-                    Border(BorderStroke(
-                        Color.web("#1F85DE"),
-                        BorderStrokeStyle.SOLID,
-                        CornerRadii.EMPTY,
-                        BorderWidths(2.0)
-                    )),
-                    Interpolator.LINEAR
-                ))
-            )
-            color.cycleCount = 1
-            color.isAutoReverse = false
-            color.play()
-        }
         control.setOnMouseEntered {
             // Background color
             val bg = Timeline(
