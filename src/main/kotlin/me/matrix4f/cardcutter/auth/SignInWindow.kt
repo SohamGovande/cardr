@@ -34,13 +34,14 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
     private fun onClickContinueBtn() {
         val result = currentUser.login(emailTF.text, passwordTF.text)
         if (result.wasSuccessful()) {
-            readyToClose = true
-            close(null)
+            readyToClose = true;
+            super.window.close()
 
             val alert = Alert(AlertType.INFORMATION)
             alert.title = "Success"
             alert.headerText = "Sucessfully logged in"
             alert.contentText = "You may continue to use Cardify."
+
 
             alert.showAndWait()
         } else {

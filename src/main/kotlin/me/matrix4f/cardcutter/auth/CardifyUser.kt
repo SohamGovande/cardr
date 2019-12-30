@@ -15,11 +15,12 @@ import java.nio.charset.StandardCharsets
 class CardifyUser {
 
     fun visitWebsite(url: String) {
-        val result = makeCardifyRequest("update_history", mutableListOf(
+        val result = makeCardifyRequest("upd_history", mutableListOf(
             BasicNameValuePair("email", Prefs.get().emailAddress),
             BasicNameValuePair("token", Prefs.get().accessToken),
             BasicNameValuePair("url", url)
         ))
+        println(result)
         // Ignore the result (for now)
     }
 

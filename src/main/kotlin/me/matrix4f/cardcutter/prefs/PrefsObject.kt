@@ -10,7 +10,7 @@ class PrefsObject {
     var fontName = "Calibri"
     var fontSize = 11
     var citeFormat = DEFAULT_CITE_FORMAT
-    var onlyCardYear = false
+    var onlyCardYear = true
     var condense = true
     var useEtAl = true
     var emailAddress = ""

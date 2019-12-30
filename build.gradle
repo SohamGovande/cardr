@@ -33,15 +33,14 @@ jar {
 
 // Output to build/libs/shadow.jar
 shadowJar {
-    baseName = 'cardcutter_main'
+    baseName = 'CardifyDebate'
     classifier = null
     version = null
 
     doLast {
         copy {
-            from 'build/libs/cardcutter_main.jar'
-            into "C:\\Users\\vgsoh\\CardifyDebate\\native" +
-                    ""
+            from 'build/libs/CardifyDebate.jar'
+            into "C:\\Users\\vgsoh\\CardifyDebate_dev\\native"
         }
     }
 }
