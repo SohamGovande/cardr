@@ -1,0 +1,4 @@
+.button {
+    -fx-background-color: #DFDFDF;
+    -fx-skin: "me.matrix4f.cardcutter.ui.style.XButtonSkin";
+}

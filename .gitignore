@@ -4,27 +4,27 @@
 CardifySettings.json
 
 # User-specific stuff
-.idea/**/workspace.xml
-.idea/**/tasks.xml
-.idea/**/usage.statistics.xml
-.idea/**/dictionaries
-.idea/**/shelf
+*/.idea/**/workspace.xml
+*/.idea/**/tasks.xml
+*/.idea/**/usage.statistics.xml
+*/.idea/**/dictionaries
+*/.idea/**/shelf
 
 # Generated files
-.idea/**/contentModel.xml
+*/.idea/**/contentModel.xml
 
 # Sensitive or high-churn files
-.idea/**/dataSources/
-.idea/**/dataSources.ids
-.idea/**/dataSources.local.xml
-.idea/**/sqlDataSources.xml
-.idea/**/dynamic.xml
-.idea/**/uiDesigner.xml
-.idea/**/dbnavigator.xml
+*/.idea/**/dataSources/
+*/.idea/**/dataSources.ids
+*/.idea/**/dataSources.local.xml
+*/.idea/**/sqlDataSources.xml
+*/.idea/**/dynamic.xml
+*/.idea/**/uiDesigner.xml
+*/.idea/**/dbnavigator.xml
 
 # Gradle
-.idea/**/gradle.xml
-.idea/**/libraries
+*/.idea/**/gradle.xml
+*/.idea/**/libraries
 
 # Gradle and Maven with auto-import
 # When using Gradle or Maven with auto-import, you should exclude module files,
@@ -43,22 +43,22 @@ CardifySettings.json
 cmake-build-*/
 
 # Mongo Explorer plugin
-.idea/**/mongoSettings.xml
+*/.idea/**/mongoSettings.xml
 
 # File-based project format
 *.iws
 
 # IntelliJ
-out/
+*/out/
 
 # mpeltonen/sbt-idea plugin
-.idea_modules/
+*/.idea_modules/
 
 # JIRA plugin
-atlassian-ide-plugin.xml
+*/atlassian-ide-plugin.xml
 
 # Cursive Clojure plugin
-.idea/replstate.xml
+*/.idea/replstate.xml
 
 # Crashlytics plugin (for Android Studio and IntelliJ)
 com_crashlytics_export_strings.xml
@@ -67,17 +67,17 @@ crashlytics-build.properties
 fabric.properties
 
 # Editor-based Rest Client
-.idea/httpRequests
+*/.idea/httpRequests
 
 # Android studio 3.1+ serialized cache file
-.idea/caches/build_file_checksums.ser
+*/.idea/caches/build_file_checksums.ser
 
 
-/cardcutter_cpp/.vs/
-/cardcutter_cpp/bin/
-/cardcutter_cpp/RegeditInstallChrome/Debug/
-/cardcutter_cpp/NativeDllInterface/Debug/
-/cardcutter_cpp/CardifyChromeApp/Debug/
-/cardcutter_cpp/CardCutterLauncher/Debug/
-/cardcutter_cpp/RegeditInstallChrome/Release/
-/cardcutter_cpp/RegeditInstallChrome/x64/
+/CardifyCPPWindows/.vs/
+/CardifyCPPWindows/bin/
+/CardifyCPPWindows/RegeditInstallChrome/Debug/
+/CardifyCPPWindows/NativeDllInterface/Debug/
+/CardifyCPPWindows/CardifyChromeApp/Debug/
+/CardifyCPPWindows/CardCutterLauncher/Debug/
+/CardifyCPPWindows/RegeditInstallChrome/Release/
+/CardifyCPPWindows/RegeditInstallChrome/x64/

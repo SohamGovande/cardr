@@ -1,0 +1,619 @@
+package me.matrix4f.cardcutter.ui
+
+import javafx.application.Platform
+import javafx.beans.property.SimpleStringProperty
+import javafx.beans.property.StringProperty
+import javafx.beans.value.ObservableValue
+import javafx.collections.FXCollections
+import javafx.geometry.Insets
+import javafx.scene.control.*
+import javafx.scene.image.Image
+import javafx.scene.image.ImageView
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyCodeCombination
+import javafx.scene.input.KeyCombination
+import javafx.scene.layout.ColumnConstraints
+import javafx.scene.layout.GridPane
+import javafx.scene.layout.HBox
+import javafx.scene.layout.VBox
+import javafx.scene.text.TextAlignment
+import javafx.scene.web.WebView
+import me.matrix4f.cardcutter.CardCutterApplication
+import me.matrix4f.cardcutter.auth.CardifyUser
+import me.matrix4f.cardcutter.auth.SignInLauncherOptions
+import me.matrix4f.cardcutter.auth.SignInWindow
+import me.matrix4f.cardcutter.card.Author
+import me.matrix4f.cardcutter.card.Cite
+import me.matrix4f.cardcutter.card.Timestamp
+import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
+import me.matrix4f.cardcutter.prefs.Prefs
+import me.matrix4f.cardcutter.prefs.windows.CitePrefsWindow
+import me.matrix4f.cardcutter.prefs.windows.FontPrefsWindow
+import me.matrix4f.cardcutter.util.*
+import me.matrix4f.cardcutter.web.WebsiteCardCutter
+import org.jsoup.Jsoup
+import java.awt.Desktop
+import java.awt.Toolkit
+import java.io.InputStream
+import java.net.URL
+
+class CardCuttingUI {
+
+    private var authors: Array<Author> = arrayOf(Author(SimpleStringProperty(""), SimpleStringProperty("")))
+    private var title: StringProperty = SimpleStringProperty("")
+    private var timestamp: Timestamp = Timestamp()
+    private var publisher: StringProperty = SimpleStringProperty("")
+    private var url: StringProperty = SimpleStringProperty("")
+    private var cardTag: StringProperty = SimpleStringProperty("")
+    private val changeListenerUpdateHTML = { _: ObservableValue<out String>, _: String, _: String ->
+        Unit
+        // Sufficiently delay it to occur after the event goes through
+        refreshHTML()
+    }
+    private val cardBody: StringProperty = SimpleStringProperty("")
+
+    private val propertyUrlTextField = TextField()
+    private val propertyPubTextField = TextField()
+
+    private val propertyDayTF = TextField()
+    private val propertyMonthTF = TextField()
+    private val propertyYearTF = TextField()
+//    private val propertyYearOnlyCB = CheckBox("Use '${currentDate().year - 2000}' for dates this year")
+
+    private val propertyTitleTextField = TextField()
+    private val cardTagTextField = TextField()
+    private val urlTF = TextField()
+
+    private val cardWV = WebView()
+
+    private var lastUI: GridPane? = null
+    private val pGrid = GridPane()
+    private var generateAuthorGridBoxCallback: (GridPane) -> Unit = {}
+    var loaded = false
+
+    private val panel = VBox()
+    private val searchBarPanel = HBox()
+    private val gotoUrlButton = Button("GO")
+    private val bodyAreaPanel = HBox()
+
+    private val slashTextField = TextField("/")
+    private val slashTextField2 = TextField("/")
+    private val dateGrid = GridPane()
+
+    private val cardDisplayArea = VBox()
+    private val cardDisplayMenu = HBox()
+
+    private val exportToWordSettings = VBox()
+    private val copyBtn = Button("Copy to Clipboard")
+    private val deleteSelectedBtn = Button("Remove Selected Text")
+    private val exportBtn = Button("Send to Verbatim")
+
+    private val refreshBtn = Button()
+
+    private val wordWindowList = ComboBox<String>()
+    private val removeWords = arrayListOf<String>()
+
+    private var currentUser = CardifyUser()
+
+    fun initialize(): VBox {
+        panel.children.add(VBox(generateMenuBar()))
+
+        searchBarPanel.spacing = 5.0
+        searchBarPanel.padding = Insets(5.0)
+
+        urlTF.promptText = "Paste a URL to get started"
+        urlTF.prefWidth = CardCutterApplication.WIDTH - 50
+        gotoUrlButton.prefWidth = 50.0
+        searchBarPanel.children.add(urlTF)
+        searchBarPanel.children.add(gotoUrlButton)
+
+        bodyAreaPanel.padding = Insets(5.0)
+
+        pGrid.hgap = 10.0
+        pGrid.vgap = 10.0
+        pGrid.prefWidth = 300.0
+        pGrid.prefHeight = CardCutterApplication.HEIGHT // Take up the rest remaining space
+
+        bindToRefreshWebView(propertyUrlTextField)
+        pGrid.add(Label("URL"), 0, 0)
+        pGrid.add(propertyUrlTextField, 1, 0)
+
+        bindToRefreshWebView(propertyPubTextField)
+        pGrid.add(Label("Publication"), 0, 1)
+        pGrid.add(propertyPubTextField, 1, 1)
+
+        bindToRefreshWebView(propertyDayTF)
+        propertyDayTF.prefColumnCount = 2
+        propertyDayTF.promptText = "31"
+
+        bindToRefreshWebView(propertyMonthTF)
+        propertyMonthTF.prefColumnCount = 2
+        propertyMonthTF.promptText = "01"
+
+        bindToRefreshWebView(propertyYearTF)
+        propertyYearTF.prefColumnCount = 4
+        propertyYearTF.promptText = "2019"
+
+        slashTextField.isEditable = false
+        slashTextField.prefColumnCount = 1
+        slashTextField.style = "-fx-background-color: #f4f4f4"
+
+        slashTextField2.isEditable = false
+        slashTextField2.prefColumnCount = 1
+        slashTextField2.style = "-fx-background-color: #f4f4f4"
+
+        pGrid.add(Label("Date"), 0, 2)
+
+        dateGrid.padding = Insets(10.0)
+        dateGrid.add(propertyMonthTF, 0, 0)
+        dateGrid.add(slashTextField, 1, 0)
+        dateGrid.add(propertyDayTF, 2, 0)
+        dateGrid.add(slashTextField2, 3, 0)
+        dateGrid.add(propertyYearTF, 4, 0)
+
+        pGrid.add(dateGrid, 1, 2)
+
+        bindToRefreshWebView(propertyTitleTextField)
+        pGrid.add(Label("Title"), 0, 3)
+        pGrid.add(propertyTitleTextField, 1, 3)
+
+        cardTagTextField.promptText = ""
+        cardTagTextField.textProperty().bindBidirectional(cardTag)
+
+        bindToRefreshWebView(cardTagTextField)
+        pGrid.add(Label("Card Tag"), 0, 4)
+        pGrid.add(cardTagTextField, 1, 4)
+        pGrid.add(Label("Authors"), 0, 5)
+
+        pGrid.columnConstraints.add(ColumnConstraints(60.0))
+        pGrid.columnConstraints.add(ColumnConstraints(225.0))
+
+        pGrid.add(Label("Verbatim"), 0, 6)
+
+        exportToWordSettings.spacing = 5.0
+
+        val header = Label("Send Card to Verbatim")
+        header.style = "-fx-font-weight: bold;"
+        header.prefWidth = 225.0
+        header.textAlignment = TextAlignment.CENTER
+        exportToWordSettings.children.add(header)
+
+        val exportToWordHBox = GridPane()
+        exportToWordHBox.hgap = 5.0
+
+        exportToWordHBox.add(Label("Window:"), 0, 0)
+
+        wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0)
+        exportToWordHBox.add(wordWindowList, 1, 0)
+
+        exportToWordHBox.add(refreshBtn, 2, 0)
+        exportToWordSettings.children.add(exportToWordHBox)
+
+        exportToWordSettings.children.add(exportBtn)
+        pGrid.add(exportToWordSettings, 1, 6)
+
+        cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
+        cardDisplayMenu.spacing = 5.0
+
+        cardDisplayMenu.children.add(copyBtn)
+        cardDisplayMenu.children.add(deleteSelectedBtn)
+
+        cardDisplayArea.children.add(cardDisplayMenu)
+        cardDisplayArea.children.add(cardWV)
+
+        bodyAreaPanel.children.add(pGrid)
+        bodyAreaPanel.children.add(cardDisplayArea)
+
+        panel.children.add(searchBarPanel)
+        panel.children.add(bodyAreaPanel)
+
+        recordTime("init main ui")
+        refreshWordWindows()
+        return panel
+    }
+
+    private fun visitURL(url: String) {
+        Thread {
+            currentUser.visitWebsite(url)
+        }.start()
+    }
+
+    fun doDeferredLoad() {
+        // Button actions
+        gotoUrlButton.setOnAction {
+            Thread {
+                val reader = WebsiteCardCutter(urlTF.text)
+                removeWords.clear()
+
+                this.authors = reader.getAuthors() ?: this.authors
+                this.timestamp = reader.getDate()
+                this.publisher = SimpleStringProperty(reader.getPublication())
+                this.url = SimpleStringProperty(reader.getURL())
+                this.title = SimpleStringProperty(reader.getTitle() ?: "")
+                this.cardTag.set(title.get())
+                this.cardBody.set(reader.getBodyParagraphText())
+
+                Platform.runLater {
+                    visitURL(urlTF.text)
+                    propertyTitleTextField.textProperty().bindBidirectional(this.title)
+                    propertyPubTextField.textProperty().bindBidirectional(this.publisher)
+                    propertyUrlTextField.textProperty().bindBidirectional(this.url)
+
+                    propertyDayTF.textProperty().bindBidirectional(this.timestamp.day)
+                    propertyMonthTF.textProperty().bindBidirectional(this.timestamp.month)
+                    propertyYearTF.textProperty().bindBidirectional(this.timestamp.year)
+
+                    generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
+                }
+            }.start()
+        }
+
+        copyBtn.setOnAction { copyCardToClipboard() }
+        deleteSelectedBtn.setOnAction { deleteSelectedText() }
+
+        val msWordInteractor = MSWordInteractor()
+        wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
+        if (!wordWindowList.items.isEmpty()) {
+            wordWindowList.selectionModel.select(0)
+        }
+
+        refreshBtn.isDisable = (getOSType() != OS.WINDOWS)
+        refreshBtn.setOnAction { refreshWordWindows() }
+
+        exportBtn.isDisable = refreshBtn.isDisable
+        exportBtn.setOnAction { sendCardToVerbatim() }
+
+        // Load the refresh icon
+        val refreshResource: InputStream? = javaClass.getResourceAsStream("/refresh.png")
+        if (refreshResource != null) {
+            val refreshBtnImage = Image(refreshResource, 20.0, 20.0, true, true)
+            refreshBtn.graphic = ImageView(refreshBtnImage)
+        } else {
+            refreshBtn.text = "Refresh"
+        }
+
+        urlTF.setOnKeyPressed {
+            if (it.isControlDown && it.text.equals("v")) {
+                Platform.runLater { gotoUrlButton.fire() }
+            }
+        }
+
+        // Web view default content
+        cardWV.engine.loadContent(generateDefaultHTML())
+
+        // Generate author grid box callback
+        generateAuthorGridBoxCallback = {
+            pGrid.children.remove(lastUI)
+            pGrid.requestLayout()
+            pGrid.add(it, 1, 5)
+            lastUI = it
+        }
+        generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
+
+        checkLoginStatus()
+        recordTime("finish deferred loading")
+        loaded = true
+    }
+
+    private fun checkLoginStatus() {
+        if (Prefs.get().emailAddress.isEmpty()
+            || Prefs.get().accessToken.isEmpty()) {
+            // Needs to sign in
+            SignInWindow(SignInLauncherOptions.WELCOME, currentUser).show()
+        } else {
+            val renewResult = currentUser.renew()
+            if (!renewResult.wasSuccessful()) {
+                // Access token has expired
+                SignInWindow(SignInLauncherOptions.TOKEN_EXPIRED, currentUser).show()
+            }
+        }
+    }
+
+    private fun generateAuthorsGrid(regenerateUI: (GridPane) -> Unit): GridPane {
+        val authorGrid = GridPane()
+        authorGrid.vgap = 2.0
+        authorGrid.hgap = 2.0
+
+        val addAuthor = Button("Add Author...")
+        addAuthor.prefWidth = 225.0
+        authorGrid.add(addAuthor, 0, 0, 3, 1)
+
+        var index = 0
+        var uiRowIndex = 1
+
+        for (author in authors) {
+            val authorGridFName = TextField()
+            authorGridFName.prefWidth = 100.0
+            authorGridFName.promptText = "First name"
+            authorGridFName.textProperty().bindBidirectional(author.firstName)
+            bindToRefreshWebView(authorGridFName)
+
+            val authorGridLName = TextField()
+            authorGridLName.promptText = "Last name"
+            authorGridLName.prefWidth = 100.0
+            authorGridLName.textProperty().bindBidirectional(author.lastName)
+            bindToRefreshWebView(authorGridLName)
+
+            val deleteAuthor = Button("X")
+            deleteAuthor.prefWidth = 25.0
+
+            val authorGridQuals = TextField()
+            authorGridQuals.promptText = "Qualifications"
+            authorGridQuals.textProperty().bindBidirectional(author.qualifications)
+            bindToRefreshWebView(authorGridQuals)
+
+            val searchQuals = Button("...")
+            searchQuals.prefWidth = 25.0
+
+            authorGrid.add(authorGridFName, 0, uiRowIndex)
+            authorGrid.add(authorGridLName, 1, uiRowIndex)
+            authorGrid.add(deleteAuthor, 2, uiRowIndex)
+            uiRowIndex++
+            authorGrid.add(authorGridQuals, 0, uiRowIndex, 2, 1)
+            authorGrid.add(searchQuals, 2, uiRowIndex)
+            uiRowIndex++
+
+
+            searchQuals.setOnAction {
+                val name = "${authorGridFName.text} ${authorGridLName.text}".trim().replace(" ", "%20")
+                if (name.isNotEmpty())
+                    Desktop.getDesktop().browse(URL("https://www.google.com/search?q=$name").toURI())
+            }
+            val finalIndex = index
+            deleteAuthor.setOnAction {
+                if (authors.size > 1) {
+                    val authorsMutable = authors.toMutableList()
+                    authorsMutable.removeAt(finalIndex)
+                    authors = authorsMutable.toTypedArray()
+
+                    regenerateUI(generateAuthorsGrid(regenerateUI))
+                    refreshHTML()
+                }
+            }
+
+            index++
+        }
+
+        addAuthor.setOnAction {
+            val authorsMutable = authors.toMutableList()
+            authorsMutable.add(Author(SimpleStringProperty(""), SimpleStringProperty("")))
+            authors = authorsMutable.toTypedArray()
+
+            regenerateUI(generateAuthorsGrid(regenerateUI))
+            refreshHTML()
+        }
+
+        return authorGrid
+    }
+
+    private fun bindToRefreshWebView(component: TextField) {
+        component.textProperty().addListener(changeListenerUpdateHTML)
+    }
+
+    private fun bindToRefreshWebView(component: CheckBox) {
+        component.textProperty().addListener(changeListenerUpdateHTML)
+    }
+
+    private fun generateDefaultHTML(): String {
+        return """
+            |<style>
+                |body { background-color: #f4f4f4; }
+            |</style>""".trimMargin()
+    }
+
+    private fun generateHTMLContent(): String {
+        val cite = Cite(
+            authors,
+            timestamp,
+            title.get(),
+            publisher.get(),
+            url.get()
+        )
+        return """
+            |<!DOCTYPE html>
+            |<html>
+            |<head>
+                |<style>
+                |   body { background-color: #f4f4f4; font-family: 'System'; }
+                |</style>
+                |<script>
+                |
+                | function getSelectionTextCustom() {
+                |     var text = "";
+                |     if (window.getSelection) {
+                |         text = window.getSelection().toString();
+                |     } else if (document.selection && document.selection.type != "Control") {
+                |         text = document.selection.createRange().text;
+                |     }
+                |     return text;
+                | }
+                |</script>
+            |</head>
+            |<body>
+                |<div id="data">
+                |<div id="copy" style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;">
+                    |<h4 style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize+2}pt">${cardTag.get()}</h4>
+                    |<span>${cite.toString(true)}</span>
+                    |${getCardBodyHTML()}
+                    |
+                |</div>
+                |</div>
+            |</body>
+            |</html>""".trimMargin()
+    }
+
+    private fun getCardBodyHTML(): String   {
+        if (Prefs.get().condense) {
+            return "<p style=\"font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;\">${cardBody.get().replace("<p>","").replace("</p>","")}</p>"
+        } else {
+            var cardBody = cardBody.get()
+            for (remove in removeWords) {
+                cardBody = cardBody.replace(remove, "")
+            }
+            return cardBody.replace("<p>","<p style=\"font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;\">")
+        }
+    }
+
+    private fun refreshHTML() {
+        Platform.runLater {
+            cardWV.engine?.loadContent(generateHTMLContent())
+        }
+    }
+
+    fun loadFromReader(reader: WebsiteCardCutter) {
+        Platform.runLater {
+            this.urlTF.text = reader.getURL()
+            this.authors = reader.getAuthors() ?: this.authors
+            this.timestamp = reader.getDate()
+            this.publisher = SimpleStringProperty(reader.getPublication())
+            this.url = SimpleStringProperty(reader.getURL())
+            this.title = SimpleStringProperty(reader.getTitle() ?: "")
+            this.cardTag.set(title.get())
+            this.cardBody.set(reader.getBodyParagraphText())
+
+            propertyTitleTextField.textProperty().bindBidirectional(this.title)
+            propertyPubTextField.textProperty().bindBidirectional(this.publisher)
+            propertyUrlTextField.textProperty().bindBidirectional(this.url)
+
+            propertyDayTF.textProperty().bindBidirectional(this.timestamp.day)
+            propertyMonthTF.textProperty().bindBidirectional(this.timestamp.month)
+            propertyYearTF.textProperty().bindBidirectional(this.timestamp.year)
+
+            generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
+        }
+
+    }
+
+    private fun generateMenuBar(): MenuBar {
+        val menuBar = MenuBar()
+
+        val accountMenu = Menu("Account")
+
+        val signUpMI = MenuItem("Sign up...")
+        signUpMI.setOnAction {
+            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/signup.html").toURI())
+        }
+
+        val signInMI = MenuItem("Sign in...")
+        signInMI.setOnAction { SignInWindow(SignInLauncherOptions.MANUAL_SIGNIN, currentUser).show() }
+        val historyMI = MenuItem("History")
+
+
+        historyMI.accelerator = KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN)
+        accountMenu.items.add(signUpMI)
+        accountMenu.items.add(signInMI)
+        accountMenu.items.add(SeparatorMenuItem())
+        accountMenu.items.add(historyMI)
+
+        val toolsMenu = Menu("Tools")
+        val copyMI = MenuItem("Copy card")
+        copyMI.accelerator = KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
+        copyMI.setOnAction { copyCardToClipboard() }
+
+
+        val refreshWordMI  = MenuItem("Refresh Word windows")
+        refreshWordMI.accelerator = KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN)
+        refreshWordMI.setOnAction { refreshWordWindows() }
+
+        val sendMI = MenuItem("Send to Verbatim")
+        sendMI.accelerator = KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
+        sendMI.setOnAction { sendCardToVerbatim() }
+
+        toolsMenu.items.add(copyMI)
+        toolsMenu.items.add(SeparatorMenuItem())
+        toolsMenu.items.add(refreshWordMI)
+        toolsMenu.items.add(sendMI)
+
+        val settingsMenu = Menu("Settings")
+
+        val citeMI = MenuItem("Citation format...")
+        citeMI.setOnAction { CitePrefsWindow().show() }
+
+        val fontMI = MenuItem("Font...")
+        fontMI.setOnAction { FontPrefsWindow().show() }
+
+        val condenseMI = CheckMenuItem("Condense paragraphs")
+        condenseMI.isSelected = Prefs.get().condense
+        condenseMI.setOnAction {
+            Prefs.get().condense = condenseMI.isSelected
+            Prefs.save()
+            refreshHTML()
+        }
+
+        val useSmallDatesMI = CheckMenuItem("Use MM-DD for ${currentDate().year}")
+        useSmallDatesMI.isSelected = Prefs.get().onlyCardYear
+        useSmallDatesMI.setOnAction {
+            Prefs.get().onlyCardYear = !useSmallDatesMI.isSelected
+            Prefs.save()
+            refreshHTML()
+        }
+
+        val useEtAlMI = CheckMenuItem("Use 'et al.' for >1 author")
+        useEtAlMI.isSelected = Prefs.get().useEtAl
+        useEtAlMI.setOnAction {
+            Prefs.get().useEtAl = useEtAlMI.isSelected
+            Prefs.save()
+            refreshHTML()
+        }
+
+        settingsMenu.items.add(citeMI)
+        settingsMenu.items.add(fontMI)
+        settingsMenu.items.add(condenseMI)
+        settingsMenu.items.add(useSmallDatesMI)
+        settingsMenu.items.add(useEtAlMI)
+
+        menuBar.menus.add(accountMenu)
+        menuBar.menus.add(toolsMenu)
+        menuBar.menus.add(settingsMenu)
+        return menuBar
+    }
+
+    private fun deleteSelectedText() {
+        val selection = cardWV.engine.executeScript("getSelectionTextCustom()") as String
+        for (str in selection.split('\n')) {
+            if (str.isNotBlank()) {
+                removeWords.add(str)
+            }
+        }
+        refreshHTML()
+    }
+
+    private fun refreshWordWindows() {
+        if (getOSType() != OS.WINDOWS)
+            return
+        wordWindowList.items = FXCollections.observableList(MSWordInteractor().getValidWordWindows())
+        if (!wordWindowList.items.isEmpty()) {
+            wordWindowList.selectionModel.select(0)
+        }
+    }
+
+    private fun copyCardToClipboard() {
+        Toolkit.getDefaultToolkit()
+            .systemClipboard
+            .setContents(
+                HTMLSelection(
+                    Jsoup.parseBodyFragment(generateHTMLContent()).getElementById("copy").html()
+                ),
+                null
+            )
+    }
+
+    private fun sendCardToVerbatim() {
+        if (getOSType() != OS.WINDOWS)
+            return
+
+        val msWord = MSWordInteractor()
+        val cite = Cite(
+            authors,
+            timestamp,
+            title.get(),
+            publisher.get(),
+            url.get()
+        )
+        if (wordWindowList.items.size > 0) {
+            msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
+        }
+        pasteCardToVerbatim(cardTag.get(), cite, getCardBodyHTML())
+    }
+
+}
