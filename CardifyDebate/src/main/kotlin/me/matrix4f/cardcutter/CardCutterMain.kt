@@ -37,7 +37,6 @@ class CardCutterApplication: Application() {
         const val CURRENT_VERSION = "V1.0.0"
         const val CURRENT_VERSION_INT = 0
 
-        @JvmStatic
         fun main(args: Array<String>) {
             if (args.size == 1) {
                 Thread {

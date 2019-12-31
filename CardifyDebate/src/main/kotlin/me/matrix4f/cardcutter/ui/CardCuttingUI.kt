@@ -254,10 +254,13 @@ class CardCuttingUI(private val stage: Stage) {
         copyBtn.setOnAction { copyCardToClipboard() }
         deleteSelectedBtn.setOnAction { deleteSelectedText() }
 
-        val msWordInteractor = MSWordInteractor()
-        wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
-        if (!wordWindowList.items.isEmpty()) {
-            wordWindowList.selectionModel.select(0)
+        if (getOSType() == OS.WINDOWS) {
+            val msWordInteractor = MSWordInteractor()
+            wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
+
+            if (!wordWindowList.items.isEmpty()) {
+                wordWindowList.selectionModel.select(0)
+            }
         }
 
         refreshBtn.isDisable = (getOSType() != OS.WINDOWS)
