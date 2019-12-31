@@ -134,7 +134,7 @@ class CardCuttingUI(private val stage: Stage) {
 
         bindToRefreshWebView(propertyYearTF)
         propertyYearTF.prefColumnCount = 4
-        propertyYearTF.promptText = "2019"
+        propertyYearTF.promptText = currentDate().year.toString()
 
         slashTextField.isEditable = false
         slashTextField.prefColumnCount = 1
