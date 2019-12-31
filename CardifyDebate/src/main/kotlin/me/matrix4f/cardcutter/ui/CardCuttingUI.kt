@@ -497,7 +497,7 @@ class CardCuttingUI(private val stage: Stage) {
 
         val signUpMI = MenuItem("Sign up...")
         signUpMI.setOnAction {
-            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/signup.html").toURI())
+            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/sign-up.html").toURI())
         }
 
         val signInMI = MenuItem("Sign in...")
