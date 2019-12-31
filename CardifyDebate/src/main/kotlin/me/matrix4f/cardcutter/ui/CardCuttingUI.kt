@@ -624,7 +624,7 @@ class CardCuttingUI(private val stage: Stage) {
 
     private fun updateWindowTitle(title: String) {
         Platform.runLater {
-            var trimmed = title.substring(0, Math.min(title.length, 25))
+            var trimmed = title.substring(0, Math.min(title.length, 100))
             if (title.length >= 100)
                 trimmed += "..."
             stage.title = "$trimmed - CardifyDebate ${CardCutterApplication.CURRENT_VERSION}"
