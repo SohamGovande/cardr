@@ -3,6 +3,7 @@ package me.matrix4f.cardcutter.ui
 import javafx.application.Platform
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
+import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.geometry.Insets
@@ -18,6 +19,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.scene.text.TextAlignment
 import javafx.scene.web.WebView
+import javafx.stage.Stage
 import me.matrix4f.cardcutter.CardCutterApplication
 import me.matrix4f.cardcutter.auth.CardifyUser
 import me.matrix4f.cardcutter.auth.SignInLauncherOptions
@@ -37,7 +39,7 @@ import java.awt.Toolkit
 import java.io.InputStream
 import java.net.URL
 
-class CardCuttingUI {
+class CardCuttingUI(private val stage: Stage) {
 
     private var authors: Array<Author> = arrayOf(Author(SimpleStringProperty(""), SimpleStringProperty("")))
     private var title: StringProperty = SimpleStringProperty("")
@@ -230,6 +232,7 @@ class CardCuttingUI {
                 this.publisher = SimpleStringProperty(reader.getPublication())
                 this.url = SimpleStringProperty(reader.getURL())
                 this.title = SimpleStringProperty(reader.getTitle() ?: "")
+                updateWindowTitle(reader.getTitle() ?: "")
                 this.cardTag.set(title.get())
                 this.cardBody.set(reader.getBodyParagraphText())
 
@@ -468,6 +471,9 @@ class CardCuttingUI {
             this.publisher = SimpleStringProperty(reader.getPublication())
             this.url = SimpleStringProperty(reader.getURL())
             this.title = SimpleStringProperty(reader.getTitle() ?: "")
+            updateWindowTitle(reader.getTitle() ?: "")
+            println("adsfasdfa")
+
             this.cardTag.set(title.get())
             this.cardBody.set(reader.getBodyParagraphText())
 
@@ -616,4 +622,12 @@ class CardCuttingUI {
         pasteCardToVerbatim(cardTag.get(), cite, getCardBodyHTML())
     }
 
+    private fun updateWindowTitle(title: String) {
+        Platform.runLater {
+            var trimmed = title.substring(0, Math.min(title.length, 25))
+            if (title.length >= 100)
+                trimmed += "..."
+            stage.title = "$trimmed - CardifyDebate ${CardCutterApplication.CURRENT_VERSION}"
+        }
+    }
 }

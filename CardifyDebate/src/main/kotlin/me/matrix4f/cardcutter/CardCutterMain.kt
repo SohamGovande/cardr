@@ -23,7 +23,7 @@ class CardCutterApplication: Application() {
         stage.height = HEIGHT
         stage.show()
 
-        ui = CardCuttingUI()
+        ui = CardCuttingUI(stage)
         stage.scene = Scene(ui.initialize(), WIDTH, HEIGHT)
         stage.scene.stylesheets.add(javaClass.getResource("/CCStyles.css").toExternalForm());
         stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))

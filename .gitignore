@@ -73,11 +73,11 @@ fabric.properties
 */.idea/caches/build_file_checksums.ser
 
 
-/CardifyCPPWindows/.vs/
-/CardifyCPPWindows/bin/
-/CardifyCPPWindows/RegeditInstallChrome/Debug/
-/CardifyCPPWindows/NativeDllInterface/Debug/
-/CardifyCPPWindows/CardifyChromeApp/Debug/
-/CardifyCPPWindows/CardCutterLauncher/Debug/
-/CardifyCPPWindows/RegeditInstallChrome/Release/
-/CardifyCPPWindows/RegeditInstallChrome/x64/
+/CardifyWindowsCPP/.vs/
+/CardifyWindowsCPP/bin/
+/CardifyWindowsCPP/RegeditInstallChrome/Debug/
+/CardifyWindowsCPP/NativeDllInterface/Debug/
+/CardifyWindowsCPP/CardifyChromeApp/Debug/
+/CardifyWindowsCPP/CardCutterLauncher/Debug/
+/CardifyWindowsCPP/RegeditInstallChrome/Release/
+/CardifyWindowsCPP/RegeditInstallChrome/x64/
