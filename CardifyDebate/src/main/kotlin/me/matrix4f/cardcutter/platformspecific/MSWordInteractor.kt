@@ -2,11 +2,7 @@ package me.matrix4f.cardcutter.platformspecific
 
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
-import me.matrix4f.cardcutter.util.is32Or64
-import java.util.Arrays
-import java.util.function.Predicate
-import java.util.stream.Collectors
-import java.util.stream.Stream
+import me.matrix4f.cardcutter.util.getProcessorBits
 
 class MSWordInteractor {
 
@@ -48,7 +44,7 @@ class MSWordInteractor {
     companion object {
         init {
             if (getOSType() == OS.WINDOWS) {
-                val processor = is32Or64();
+                val processor = getProcessorBits();
                 if (processor == 64)
                     System.loadLibrary("NativeDllInterface-x64")
                 else

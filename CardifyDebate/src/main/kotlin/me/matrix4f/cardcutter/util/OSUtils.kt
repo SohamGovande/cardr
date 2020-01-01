@@ -13,7 +13,7 @@ fun getOSType(): OS? {
 }
 
 
-fun is32Or64(): Int {
+fun getProcessorBits(): Int {
     return System.getProperty("sun.arch.data.model", "32").toInt()
 }
 

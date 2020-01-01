@@ -20,7 +20,6 @@ class CardifyUser {
             BasicNameValuePair("token", Prefs.get().accessToken),
             BasicNameValuePair("url", url)
         ))
-        println(result)
         // Ignore the result (for now)
     }
 

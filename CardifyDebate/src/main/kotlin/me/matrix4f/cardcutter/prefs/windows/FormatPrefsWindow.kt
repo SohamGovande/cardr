@@ -7,18 +7,19 @@ import javafx.scene.control.*
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
+import javafx.scene.web.HTMLEditor
 import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.prefs.PrefsObject
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
-class CitePrefsWindow: ModalWindow("Settings - Cite Format") {
+class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
 
-    private val restOfCite = TextField(Prefs.get().citeFormat)
+    private val editText = HTMLEditor()
 
     override fun close(event: WindowEvent?) {
-        Prefs.get().citeFormat = restOfCite.text
+        Prefs.get().cardFormat = editText.htmlText.replace("contenteditable=\"true\"","")
         Prefs.save()
         super.close(event)
     }
@@ -28,7 +29,7 @@ class CitePrefsWindow: ModalWindow("Settings - Cite Format") {
         vbox.padding = Insets(10.0)
         vbox.spacing = 10.0
 
-        val header = Label("Cite Format")
+        val header = Label("Card Format")
         header.style = "-fx-font-family: 'Calibri';"
         header.font = Font.font(20.0)
 
@@ -39,26 +40,19 @@ class CitePrefsWindow: ModalWindow("Settings - Cite Format") {
         btnHbox.children.add(resetBtn)
         btnHbox.children.add(infoBtn)
 
-        val authorNameAndDateText = "LastName, DateShort "
-        val authorNameAndDate = TextField(authorNameAndDateText)
-        authorNameAndDate.isEditable = false
-        authorNameAndDate.prefColumnCount = authorNameAndDateText.length+1
-        authorNameAndDate.padding = Insets(1.0)
-        authorNameAndDate.style = HOLLOW_TEXTFIELD_STYLE.replace("FONTSIZE", "16.0")
-
-        restOfCite.text = Prefs.get().citeFormat
-        restOfCite.prefWidth = 600.0
-        restOfCite.padding = Insets(1.0)
-        restOfCite.border = Border(BorderStroke(Color.web("#ddd"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT))
-        restOfCite.style = "-fx-font-size: 14.0;-fx-font-family: 'Calibri';-fx-background-color: '#f4f4f4';"
+        editText.htmlText = Prefs.get().cardFormat
+        editText.prefWidth = 600.0
+        editText.prefHeight = 400.0
+        editText.padding = Insets(1.0)
+        editText.border = Border(BorderStroke(Color.web("#ddd"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT))
+        editText.style = "-fx-font-size: 14.0;-fx-font-family: 'Calibri';-fx-background-color: '#f4f4f4';"
 
         val editHBox = HBox()
-        editHBox.children.add(authorNameAndDate)
-        editHBox.children.add(restOfCite)
+        editHBox.children.add(editText)
 
         editHBox.prefWidth = 600.0
 
-        resetBtn.setOnAction { restOfCite.text = PrefsObject.DEFAULT_CITE_FORMAT }
+        resetBtn.setOnAction { editText.htmlText = PrefsObject.DEFAULT_CARD_FORMAT }
         infoBtn.setOnAction {
             val alert = Alert(Alert.AlertType.NONE)
             alert.title = "Macros"
@@ -66,13 +60,15 @@ class CitePrefsWindow: ModalWindow("Settings - Cite Format") {
             alert.buttonTypes.add(ButtonType.CLOSE)
 
             val list = ListView<String>(FXCollections.observableArrayList(
-                "<Author>",
-                "<Qualifications>",
-                "<Date>",
-                "<CurrentDate>",
-                "<Publication>",
-                "<Title>",
-                "<Url>"
+                "{AuthorLastName}",
+                "{AuthorFullName}",
+                "{DateFull}",
+                "{DateShortened}",
+                "{Qualifications}",
+                "{CurrentDate}",
+                "{Publication}",
+                "{Title}",
+                "{Url}"
             ))
 
             val copyBtn = Button("Copy")
@@ -107,7 +103,7 @@ class CitePrefsWindow: ModalWindow("Settings - Cite Format") {
         vbox.children.add(btnHbox)
         vbox.children.add(applyBtn)
 
-        val scene = Scene(vbox, 600.0, 150.0)
+        val scene = Scene(vbox, 600.0, 400.0)
         scene.stylesheets.add(javaClass.getResource("/CCStyles.css").toExternalForm())
         return scene
     }

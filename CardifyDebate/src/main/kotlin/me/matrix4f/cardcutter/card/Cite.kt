@@ -9,7 +9,7 @@ data class Cite(val authors: Array<Author>,
                 val publication: String,
                 val url: String) {
 
-    private fun getAuthorName(useShortName: Boolean): String {
+    fun getAuthorName(useShortName: Boolean): String {
         if (authors.size > 1) {
             if (Prefs.get().useEtAl && useShortName) {
                 return "${authors[0].toString(useShortName)} et al."
@@ -32,38 +32,12 @@ data class Cite(val authors: Array<Author>,
         }
     }
 
-    private fun getAuthorQualifications(): String {
+    fun getAuthorQualifications(): String {
         val sb = StringBuilder()
 
         for (author in authors)
             if (author.qualifications.get().isNotEmpty())
                 sb.append(author.qualifications.get()).append(", ")
         return sb.toString()
-    }
-
-    fun getNameAndDate(): String {
-        return "${getAuthorName(true)}, ${date.toString(false)}"
-    }
-
-    fun getDetailedInfo(): String {
-        val format = Prefs.get().citeFormat
-        val now = currentDate()
-        return format.replace("<Author>", getAuthorName(false))
-            .replace("<Qualifications>", getAuthorQualifications())
-            .replace("<Date>", date.toString(true))
-            .replace("<CurrentDate>", "${now.monthValue}-${now.dayOfMonth}-${now.year}")
-            .replace("<Publication>", publication)
-            .replace("<Title>", title)
-            .replace("<Url>", url)
-    }
-
-    fun toString(html: Boolean): String {
-        var nameAndDate = getNameAndDate()
-        if (html) {
-            nameAndDate = (if(html) "<strong style=\"text-decoration:underline;font-family: '${Prefs.get().fontName}', 'System';font-size: ${Prefs.get().fontSize+1}pt;\"><u>" else "") + nameAndDate
-            nameAndDate += "</u></strong>"
-        }
-
-        return "${nameAndDate}<span style=\"font-family: '${Prefs.get().fontName}', 'System';font-size: ${Prefs.get().fontSize}pt;\">${getDetailedInfo()}</span>"
     }
 }

@@ -3,7 +3,6 @@ package me.matrix4f.cardcutter.ui
 import javafx.application.Platform
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
-import javafx.beans.value.ChangeListener
 import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.geometry.Insets
@@ -29,8 +28,7 @@ import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
 import me.matrix4f.cardcutter.prefs.Prefs
-import me.matrix4f.cardcutter.prefs.windows.CitePrefsWindow
-import me.matrix4f.cardcutter.prefs.windows.FontPrefsWindow
+import me.matrix4f.cardcutter.prefs.windows.FormatPrefsWindow
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
 import org.jsoup.Jsoup
@@ -38,6 +36,7 @@ import java.awt.Desktop
 import java.awt.Toolkit
 import java.io.InputStream
 import java.net.URL
+import java.util.function.Consumer
 
 class CardCuttingUI(private val stage: Stage) {
 
@@ -88,7 +87,7 @@ class CardCuttingUI(private val stage: Stage) {
     private val exportToWordSettings = VBox()
     private val copyBtn = Button("Copy to Clipboard")
     private val deleteSelectedBtn = Button("Remove Selected Text")
-    private val exportBtn = Button("Send to Verbatim")
+    private val exportBtn = Button("Send to Word")
 
     private val refreshBtn = Button()
 
@@ -407,62 +406,100 @@ class CardCuttingUI(private val stage: Stage) {
             |</style>""".trimMargin()
     }
 
-    private fun generateHTMLContent(): String {
-        val cite = Cite(
-            authors,
-            timestamp,
-            title.get(),
-            publisher.get(),
-            url.get()
+    private fun getFullHTML(): String {
+        val cite = createCite()
+        val spacePlaceholder = "sas8d9f7aj523kj5h123jkhsaf"
+        val doc = Jsoup.parse(Prefs.get().cardFormat.replace("&nbsp;",spacePlaceholder))
+
+        val now = currentDate()
+        val fontElements = doc.select("font")
+        val fontMap = mapOf(
+            Pair("1","8"),
+            Pair("2","10"),
+            Pair("3","11"),
+            Pair("4","13"),
+            Pair("5","18"),
+            Pair("6","24"),
+            Pair("7","36")
         )
-        return """
-            |<!DOCTYPE html>
-            |<html>
-            |<head>
-                |<style>
-                |   body { background-color: #f4f4f4; font-family: 'System'; }
-                |</style>
-                |<script>
-                |
-                | function getSelectionTextCustom() {
-                |     var text = "";
-                |     if (window.getSelection) {
-                |         text = window.getSelection().toString();
-                |     } else if (document.selection && document.selection.type != "Control") {
-                |         text = document.selection.createRange().text;
-                |     }
-                |     return text;
-                | }
-                |</script>
-            |</head>
-            |<body>
-                |<div id="data">
-                |<div id="copy" style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;">
-                    |<h4 style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize+2}pt">${cardTag.get()}</h4>
-                    |<span>${cite.toString(true)}</span>
-                    |${getCardBodyHTML()}
-                    |
-                |</div>
-                |</div>
-            |</body>
-            |</html>""".trimMargin()
+
+        for (elem in doc.select("span")) {
+            if (elem.hasAttr("style") && !elem.attr("style").contains("font-size")) {
+                elem.attr("style","${elem.attr("style")}font-size:${fontMap["3"]}pt;")
+            }
+        }
+
+        for (font in fontElements) {
+            var parent = font.parent()
+            while (!parent.tagName().equals("p") && !parent.tagName().equals("b") && !parent.tagName().matches(Regex("h."))) {
+                parent = parent.parent()
+            }
+            var style = ""
+            if (font.hasAttr("face"))
+                style += "font-family:'${font.attr("face")}';"
+            if (!font.hasAttr("size"))
+                 font.attr("size", "3") // 12pt font
+            style += "font-size:${fontMap[font.attr("size")]}pt;"
+            font.tagName("span")
+            font.attr("style",style)
+            font.removeAttr("face")
+            font.removeAttr("size")
+        }
+
+        for (elem in doc.allElements) {
+            if (elem.children().size > 0 && elem.ownText().length == 0)
+                continue
+            elem.html(
+                elem.html()
+                    .replace("{AuthorLastName}", cite.getAuthorName(true))
+                    .replace("{DateShortened}", cite.date.toString(false))
+                    .replace("{AuthorFullName}", cite.getAuthorName(false))
+                    .replace("{Qualifications}", cite.getAuthorQualifications())
+                    .replace("{DateFull}", cite.date.toString(true))
+                    .replace("{CurrentDate}", "${now.monthValue}-${now.dayOfMonth}-${now.year}")
+                    .replace("{Publication}", cite.publication)
+                    .replace("{Title}", cite.title)
+                    .replace("{Url}", cite.url)
+                    .replace("{Tag}", cardTag.value)
+                    .replace("{CardBody}", getCardBodyHTML())
+            )
+        }
+
+        doc.select("head")[0].html("""
+            <style>
+                body { background-color: #f4f4f4; font-family: 'System'; font-size: 11pt; }
+            </style> 
+        """.trimIndent())
+
+        for (elem in doc.select(".cardbody")) {
+            val oldStyle = elem.parent().attr("style")
+            elem.attr("style", "$oldStyle${if (oldStyle.contains("font-size:11pt;")) { "line-height:19px;" } else { "" }}margin-bottom:8px;margin-top:0px;")
+        }
+        for (elem in doc.select("h4")) {
+            elem.attr("style", "margin-bottom:-10px;margin-top:0px;")
+        }
+
+        val docHtml = doc.html().replace(spacePlaceholder, "&nbsp;")
+        return docHtml
     }
 
     private fun getCardBodyHTML(): String   {
         if (Prefs.get().condense) {
-            return "<p style=\"font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;\">${cardBody.get().replace("<p>","").replace("</p>","")}</p>"
+            /*  style="font-family: '${Prefs.get().fontName}', 'System'; font-size: $ */
+            return "<p class='cardbody'>${cardBody.get().replace("<p>","").replace("</p>","")}</p>"
         } else {
             var cardBody = cardBody.get()
             for (remove in removeWords) {
                 cardBody = cardBody.replace(remove, "")
             }
-            return cardBody.replace("<p>","<p style=\"font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;\">")
+            /*  style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;" */
+            return cardBody.replace("<p>","<p class='cardbody'>")
         }
     }
 
     private fun refreshHTML() {
         Platform.runLater {
-            cardWV.engine?.loadContent(generateHTMLContent())
+            cardWV.engine?.loadContent(getFullHTML())
         }
     }
 
@@ -475,7 +512,6 @@ class CardCuttingUI(private val stage: Stage) {
             this.url = SimpleStringProperty(reader.getURL())
             this.title = SimpleStringProperty(reader.getTitle() ?: "")
             updateWindowTitle(reader.getTitle() ?: "")
-            println("adsfasdfa")
 
             this.cardTag.set(title.get())
             this.cardBody.set(reader.getBodyParagraphText())
@@ -524,7 +560,7 @@ class CardCuttingUI(private val stage: Stage) {
         refreshWordMI.accelerator = KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN)
         refreshWordMI.setOnAction { refreshWordWindows() }
 
-        val sendMI = MenuItem("Send to Verbatim")
+        val sendMI = MenuItem("Send to Word")
         sendMI.accelerator = KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
         sendMI.setOnAction { sendCardToVerbatim() }
 
@@ -535,11 +571,14 @@ class CardCuttingUI(private val stage: Stage) {
 
         val settingsMenu = Menu("Settings")
 
-        val citeMI = MenuItem("Citation format...")
-        citeMI.setOnAction { CitePrefsWindow().show() }
-
-        val fontMI = MenuItem("Font...")
-        fontMI.setOnAction { FontPrefsWindow().show() }
+        val formatMI = MenuItem("Edit card and cite format...")
+        formatMI.setOnAction {
+            val window = FormatPrefsWindow()
+            window.addOnCloseListener(Consumer {
+                refreshHTML()
+            })
+            window.show()
+        }
 
         val condenseMI = CheckMenuItem("Condense paragraphs")
         condenseMI.isSelected = Prefs.get().condense
@@ -550,7 +589,7 @@ class CardCuttingUI(private val stage: Stage) {
         }
 
         val useSmallDatesMI = CheckMenuItem("Use MM-DD for ${currentDate().year}")
-        useSmallDatesMI.isSelected = Prefs.get().onlyCardYear
+        useSmallDatesMI.isSelected = !Prefs.get().onlyCardYear
         useSmallDatesMI.setOnAction {
             Prefs.get().onlyCardYear = !useSmallDatesMI.isSelected
             Prefs.save()
@@ -565,8 +604,7 @@ class CardCuttingUI(private val stage: Stage) {
             refreshHTML()
         }
 
-        settingsMenu.items.add(citeMI)
-        settingsMenu.items.add(fontMI)
+        settingsMenu.items.add(formatMI)
         settingsMenu.items.add(condenseMI)
         settingsMenu.items.add(useSmallDatesMI)
         settingsMenu.items.add(useEtAlMI)
@@ -601,7 +639,7 @@ class CardCuttingUI(private val stage: Stage) {
             .systemClipboard
             .setContents(
                 HTMLSelection(
-                    Jsoup.parseBodyFragment(generateHTMLContent()).getElementById("copy").html()
+                    Jsoup.parseBodyFragment(getFullHTML()).getElementsByTag("body")[0].html()
                 ),
                 null
             )
@@ -612,17 +650,10 @@ class CardCuttingUI(private val stage: Stage) {
             return
 
         val msWord = MSWordInteractor()
-        val cite = Cite(
-            authors,
-            timestamp,
-            title.get(),
-            publisher.get(),
-            url.get()
-        )
         if (wordWindowList.items.size > 0) {
             msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
         }
-        pasteCardToVerbatim(cardTag.get(), cite, getCardBodyHTML())
+        pasteCardToVerbatim(getFullHTML())
     }
 
     private fun updateWindowTitle(title: String) {
@@ -633,4 +664,12 @@ class CardCuttingUI(private val stage: Stage) {
             stage.title = "$trimmed - CardifyDebate ${CardCutterApplication.CURRENT_VERSION}"
         }
     }
+
+    private fun createCite() = Cite(
+        authors,
+        timestamp,
+        title.get(),
+        publisher.get(),
+        url.get()
+    )
 }
