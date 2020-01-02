@@ -4,13 +4,9 @@ import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Stage
-import me.matrix4f.cardcutter.scihub.SciHubLoader
 import me.matrix4f.cardcutter.ui.CardCuttingUI
 import me.matrix4f.cardcutter.util.startTime
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
-import java.nio.file.Files
-import java.nio.file.Paths
-import java.nio.file.StandardOpenOption
 
 lateinit var ui: CardCuttingUI
 

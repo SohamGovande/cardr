@@ -6,7 +6,9 @@ class PrefsObject {
 
     var lastUsedVersion = CardCutterApplication.CURRENT_VERSION
     var lastUsedVersionInt = CardCutterApplication.CURRENT_VERSION_INT
-    
+
+    var lastFirstLaunchVersion = -1
+
     var cardFormat = DEFAULT_CARD_FORMAT
     var onlyCardYear = true
     var condense = true
