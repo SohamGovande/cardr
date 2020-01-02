@@ -28,7 +28,7 @@ repositories {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'me.matrix4f.cardcutter.CardCutterApplication'
+        attributes 'Main-Class': 'me.matrix4f.cardcutter.CardCutterMainKt'
     }
 }
 
