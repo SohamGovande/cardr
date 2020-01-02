@@ -32,18 +32,18 @@ class CardCutterApplication: Application() {
 
         const val CURRENT_VERSION = "V1.0.0"
         const val CURRENT_VERSION_INT = 0
-
-        fun main(args: Array<String>) {
-            if (args.size == 1) {
-                Thread {
-                    val reader = WebsiteCardCutter(args[0])
-                    println(args[0])
-                    while (!ui.loaded) { }
-                    ui.loadFromReader(reader)
-                }.start()
-            }
-            startTime()
-            launch(CardCutterApplication::class.java)
-        }
     }
+}
+
+fun main(args: Array<String>) {
+    if (args.size == 1) {
+        Thread {
+            val reader = WebsiteCardCutter(args[0])
+            println(args[0])
+            while (!ui.loaded) { }
+            ui.loadFromReader(reader)
+        }.start()
+    }
+    startTime()
+    Application.launch(CardCutterApplication::class.java)
 }
