@@ -73,7 +73,7 @@ int main(int argc, char** argv)
 
 			out << "Extracted URL: " << url << std::endl;
 
-			std::string command = "java -jar -Djava.library.path=\"dlls\" CardifyDebate.jar " + url;
+			std::string command = "..\\CardifyDebate.exe \"" + url + "\"";
 
 			out << "Running system command: " <<  command << std::endl;
 			out.close();
