@@ -104,11 +104,7 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
         vbox.children.add(applyBtn)
 
         val scene = Scene(vbox, 600.0, 400.0)
-        scene.stylesheets.add(javaClass.getResource("/CCStyles.css").toExternalForm())
+        scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm())
         return scene
-    }
-
-    companion object {
-        const val HOLLOW_TEXTFIELD_STYLE = "-fx-font-weight: bold; -fx-font-family: 'Calibri';-fx-font-size: FONTSIZE;-fx-background-color: '#f4f4f4';-fx-faint-focus-color: transparent;-fx-focus-color: transparent;"
     }
 }

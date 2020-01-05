@@ -19,7 +19,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.TextAlignment
 import javafx.scene.web.WebView
 import javafx.stage.Stage
-import me.matrix4f.cardcutter.CardCutterApplication
+import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.auth.CardifyUser
 import me.matrix4f.cardcutter.auth.SignInLauncherOptions
 import me.matrix4f.cardcutter.auth.SignInWindow
@@ -31,6 +31,7 @@ import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.prefs.windows.FormatPrefsWindow
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
+import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import java.awt.Desktop
 import java.awt.Toolkit
@@ -59,7 +60,6 @@ class CardCuttingUI(private val stage: Stage) {
     private val propertyDayTF = TextField()
     private val propertyMonthTF = TextField()
     private val propertyYearTF = TextField()
-//    private val propertyYearOnlyCB = CheckBox("Use '${currentDate().year - 2000}' for dates this year")
 
     private val propertyTitleTextField = TextField()
     private val cardTagTextField = TextField()
@@ -97,13 +97,15 @@ class CardCuttingUI(private val stage: Stage) {
     private var currentUser = CardifyUser()
 
     fun initialize(): VBox {
+        logger.info("Generating menu bar")
         panel.children.add(VBox(generateMenuBar()))
 
+        logger.info("Creating UI components")
         searchBarPanel.spacing = 5.0
         searchBarPanel.padding = Insets(5.0)
 
         urlTF.promptText = "Paste a URL to get started"
-        urlTF.prefWidth = CardCutterApplication.WIDTH - 50
+        urlTF.prefWidth = CardifyDebate.WIDTH - 50
         gotoUrlButton.prefWidth = 50.0
         searchBarPanel.children.add(urlTF)
         searchBarPanel.children.add(gotoUrlButton)
@@ -113,7 +115,7 @@ class CardCuttingUI(private val stage: Stage) {
         pGrid.hgap = 10.0
         pGrid.vgap = 10.0
         pGrid.prefWidth = 300.0
-        pGrid.prefHeight = CardCutterApplication.HEIGHT // Take up the rest remaining space
+        pGrid.prefHeight = CardifyDebate.HEIGHT // Take up the rest remaining space
 
         bindToRefreshWebView(propertyUrlTextField)
         pGrid.add(Label("URL"), 0, 0)
@@ -208,7 +210,7 @@ class CardCuttingUI(private val stage: Stage) {
         panel.children.add(searchBarPanel)
         panel.children.add(bodyAreaPanel)
 
-        recordTime("init main ui")
+        logger.info("Initializing Word windows")
         refreshWordWindows()
         return panel
     }
@@ -268,6 +270,7 @@ class CardCuttingUI(private val stage: Stage) {
         exportBtn.isDisable = refreshBtn.isDisable
         exportBtn.setOnAction { sendCardToVerbatim() }
 
+        logger.info("Loading refresh icon")
         // Load the refresh icon
         val refreshResource: InputStream? = javaClass.getResourceAsStream("/refresh.png")
         if (refreshResource != null) {
@@ -278,7 +281,7 @@ class CardCuttingUI(private val stage: Stage) {
         }
 
         urlTF.setOnKeyPressed {
-            if (it.isControlDown && it.text.equals("v")) {
+            if (it.isControlDown && it.text == "v") {
                 Platform.runLater { gotoUrlButton.fire() }
             }
         }
@@ -295,8 +298,8 @@ class CardCuttingUI(private val stage: Stage) {
         }
         generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
 
+        logger.info("Checking login status")
         checkLoginStatus()
-        recordTime("finish deferred loading")
         loaded = true
     }
 
@@ -304,10 +307,12 @@ class CardCuttingUI(private val stage: Stage) {
         if (Prefs.get().emailAddress.isEmpty()
             || Prefs.get().accessToken.isEmpty()) {
             // Needs to sign in
+            logger.info("User needs to sign in - first time")
             SignInWindow(SignInLauncherOptions.WELCOME, currentUser).show()
         } else {
             val renewResult = currentUser.renew()
             if (!renewResult.wasSuccessful()) {
+                logger.info("User needs to sign in - token expired")
                 // Access token has expired
                 SignInWindow(SignInLauncherOptions.TOKEN_EXPIRED, currentUser).show()
             }
@@ -392,10 +397,6 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun bindToRefreshWebView(component: TextField) {
-        component.textProperty().addListener(changeListenerUpdateHTML)
-    }
-
-    private fun bindToRefreshWebView(component: CheckBox) {
         component.textProperty().addListener(changeListenerUpdateHTML)
     }
 
@@ -661,7 +662,7 @@ class CardCuttingUI(private val stage: Stage) {
             var trimmed = title.substring(0, Math.min(title.length, 100))
             if (title.length >= 100)
                 trimmed += "..."
-            stage.title = "$trimmed - CardifyDebate ${CardCutterApplication.CURRENT_VERSION}"
+            stage.title = "$trimmed - CardifyDebate ${CardifyDebate.CURRENT_VERSION}"
         }
     }
 
@@ -672,4 +673,8 @@ class CardCuttingUI(private val stage: Stage) {
         publisher.get(),
         url.get()
     )
+
+    companion object {
+        private val logger = LogManager.getLogger(CardCuttingUI::class.java)
+    }
 }

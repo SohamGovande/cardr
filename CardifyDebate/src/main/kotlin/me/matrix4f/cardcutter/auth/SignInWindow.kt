@@ -119,7 +119,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         vbox.children.add(continueBtn)
 
         val scene = Scene(vbox, 300.0, 200.0)
-        scene.stylesheets.add(javaClass.getResource("/CCStyles.css").toExternalForm())
+        scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm())
         return scene
     }
 

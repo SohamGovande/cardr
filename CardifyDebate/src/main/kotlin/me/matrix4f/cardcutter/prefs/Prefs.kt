@@ -1,7 +1,7 @@
 package me.matrix4f.cardcutter.prefs
 
 import com.google.gson.GsonBuilder
-import me.matrix4f.cardcutter.CardCutterApplication
+import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.firstlaunch.onFirstLaunch
 import me.matrix4f.cardcutter.firstlaunch.showFirstLaunchError
 import java.nio.file.Files
@@ -28,17 +28,17 @@ object Prefs {
                 save()
             } else {
                 var keepSettings = true
-                if (readObject.lastUsedVersionInt < CardCutterApplication.CURRENT_VERSION_INT) { }
+                if (readObject.lastUsedVersionInt < CardifyDebate.CURRENT_VERSION_INT) { }
                 if (keepSettings) {
                     prefs = readObject
                 } else {
                     save()
                 }
 
-                if (prefs.lastFirstLaunchVersion < CardCutterApplication.CURRENT_VERSION_INT) {
+                if (prefs.lastFirstLaunchVersion < CardifyDebate.CURRENT_VERSION_INT) {
                     val error = onFirstLaunch()
                     if (error == null) {
-                        prefs.lastFirstLaunchVersion = CardCutterApplication.CURRENT_VERSION_INT
+                        prefs.lastFirstLaunchVersion = CardifyDebate.CURRENT_VERSION_INT
                         save()
                     } else {
                         showFirstLaunchError(error)
@@ -48,7 +48,7 @@ object Prefs {
         } else {
             val error = onFirstLaunch()
             if (error == null) {
-                prefs.lastFirstLaunchVersion = CardCutterApplication.CURRENT_VERSION_INT
+                prefs.lastFirstLaunchVersion = CardifyDebate.CURRENT_VERSION_INT
                 save()
             } else {
                 showFirstLaunchError(error)

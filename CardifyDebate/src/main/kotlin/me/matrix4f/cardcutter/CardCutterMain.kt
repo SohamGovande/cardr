@@ -5,25 +5,39 @@ import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import me.matrix4f.cardcutter.ui.CardCuttingUI
-import me.matrix4f.cardcutter.util.startTime
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
+import org.apache.logging.log4j.LogManager
 
 lateinit var ui: CardCuttingUI
 
-class CardCutterApplication: Application() {
+class CardifyDebate: Application() {
 
     override fun start(stage: Stage) {
+        logger.info("Launched Cardify")
         stage.title = "CardifyDebate $CURRENT_VERSION"
         stage.isResizable = false
         stage.width = WIDTH
         stage.height = HEIGHT
+        logger.info("Initialized window properties")
         stage.show()
+        logger.info("Window shown")
 
-        ui = CardCuttingUI(stage)
-        stage.scene = Scene(ui.initialize(), WIDTH, HEIGHT)
-        stage.scene.stylesheets.add(javaClass.getResource("/CCStyles.css").toExternalForm());
-        stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
-        ui.doDeferredLoad()
+        logger.info("Loading window components...")
+        try {
+            ui = CardCuttingUI(stage)
+            stage.scene = Scene(ui.initialize(), WIDTH, HEIGHT)
+
+            logger.info("Loading styles.css")
+            stage.scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm());
+            logger.info("Loading window icon")
+            stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
+
+            logger.info("Loading deferred components")
+            ui.doDeferredLoad()
+            logger.info("... Success")
+        } catch (e: Exception) {
+            logger.error("Error loading window", e)
+        }
     }
 
     companion object {
@@ -32,6 +46,7 @@ class CardCutterApplication: Application() {
 
         const val CURRENT_VERSION = "V1.0.0"
         const val CURRENT_VERSION_INT = 0
+        val logger = LogManager.getLogger(CardifyDebate::class.java)
     }
 }
 
@@ -44,6 +59,5 @@ fun main(args: Array<String>) {
             ui.loadFromReader(reader)
         }.start()
     }
-    startTime()
-    Application.launch(CardCutterApplication::class.java)
+    Application.launch(CardifyDebate::class.java)
 }

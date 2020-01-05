@@ -1,11 +1,11 @@
 package me.matrix4f.cardcutter.prefs
 
-import me.matrix4f.cardcutter.CardCutterApplication
+import me.matrix4f.cardcutter.CardifyDebate
 
 class PrefsObject {
 
-    var lastUsedVersion = CardCutterApplication.CURRENT_VERSION
-    var lastUsedVersionInt = CardCutterApplication.CURRENT_VERSION_INT
+    var lastUsedVersion = CardifyDebate.CURRENT_VERSION
+    var lastUsedVersionInt = CardifyDebate.CURRENT_VERSION_INT
 
     var lastFirstLaunchVersion = -1
 
