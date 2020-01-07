@@ -9,6 +9,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.Logger
 import org.apache.logging.log4j.core.LoggerContext
 import java.io.File
+import java.nio.file.Files
 import java.nio.file.Paths
 
 lateinit var ui: CardCuttingUI
@@ -25,16 +26,16 @@ fun main(args: Array<String>) {
     }
     var dataDir = ""
     if (getOSType() == OS.MAC) {
-        val dataDirFile = Paths.get(
-            System.getProperty("user.home"), "CardifyDebate"
-        ).toFile()
-        dataDirFile.mkdir()
-        dataDir = dataDirFile.absolutePath + File.separator
+        println("Detected macOS, changing data directory...")
+        val dataDirFileExt = Paths.get(
+            System.getProperty("user.home"), "CardifyDebate", "test.txt"
+        )
+        Files.createDirectories(dataDirFileExt.parent)
+        dataDir = dataDirFileExt.parent.toFile().canonicalPath + File.separator
     }
     System.setProperty("cardifydebate.data.dir", dataDir)
     (LogManager.getContext(false) as LoggerContext).configLocation = CardifyDebate::class.java.getResource("/log4j2.xml").toURI()
-
-    CardifyDebate.logger.info("Loaded logger data directory: '${System.getProperty("cardifydebate.data.dir")}'")
+    CardifyDebate.logger.info("Set logger data directory to '$dataDir'")
 
     Application.launch(CardifyDebate::class.java)
 }

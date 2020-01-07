@@ -4,7 +4,7 @@ fun getOSType(): OS? {
     val os = System.getProperty("os.name").toLowerCase()
     if (os.contains("win")) {
         return OS.WINDOWS
-    } else if (os.contains("osx")) {
+    } else if (os.contains("osx") || os.contains("mac") || os.contains("os x")) {
         return OS.MAC
     } else if (os.contains("nix") || os.contains("aix") || os.contains("nux")) {
         return OS.LINUX
