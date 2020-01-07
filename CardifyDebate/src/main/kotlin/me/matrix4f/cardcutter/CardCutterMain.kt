@@ -18,7 +18,6 @@ fun main(args: Array<String>) {
     if (args.size == 1) {
         Thread {
             val reader = WebsiteCardCutter(args[0])
-            println(args[0])
             @Suppress("SENSELESS_COMPARISON")
             while (ui == null || !ui.loaded) { }
             ui.loadFromReader(reader)
