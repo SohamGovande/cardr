@@ -5,9 +5,8 @@ import me.matrix4f.cardcutter.util.makeCardifyRequest
 import me.matrix4f.cardcutter.prefs.Prefs
 import jdk.nashorn.internal.runtime.ScriptingFunctions.readLine
 import org.apache.http.message.BasicNameValuePair
-import java.io.InputStreamReader
-import java.io.BufferedReader
-import java.io.DataOutputStream
+import org.apache.logging.log4j.LogManager
+import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
 import java.nio.charset.StandardCharsets
@@ -31,18 +30,28 @@ class CardifyUser {
     }
 
     fun login(email: String, password: String): CardifyResult {
-        val result = makeCardifyRequest("login", mutableListOf(
-            BasicNameValuePair("email", email),
-            BasicNameValuePair("password", password)
-        ))
-        if (result.wasSuccessful()) {
-            val extraInfo = result.getEmbeddedInfo()
-            val token = extraInfo["token"]!!
+        try {
+            val result = makeCardifyRequest("login", mutableListOf(
+                BasicNameValuePair("email", email),
+                BasicNameValuePair("password", password)
+            ))
+            if (result.wasSuccessful()) {
+                val extraInfo = result.getEmbeddedInfo()
+                val token = extraInfo["token"]!!
 
-            Prefs.get().accessToken = token
-            Prefs.get().emailAddress = email
-            Prefs.save()
+                Prefs.get().accessToken = token
+                Prefs.get().emailAddress = email
+                Prefs.save()
+            }
+            return result
+        } catch (e: Exception) {
+            val baos = ByteArrayOutputStream()
+            e.printStackTrace(PrintWriter(baos))
+            return CardifyResult("login","error",e.javaClass.name,baos.toString("UTF-8"))
         }
-        return result
+    }
+
+    companion object {
+        val logger = LogManager.getLogger(CardifyUser::class.java)
     }
 }

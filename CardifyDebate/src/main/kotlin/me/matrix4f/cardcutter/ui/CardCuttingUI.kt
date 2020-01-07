@@ -21,8 +21,8 @@ import javafx.scene.web.WebView
 import javafx.stage.Stage
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.auth.CardifyUser
-import me.matrix4f.cardcutter.auth.SignInLauncherOptions
-import me.matrix4f.cardcutter.auth.SignInWindow
+import me.matrix4f.cardcutter.prefs.windows.SignInLauncherOptions
+import me.matrix4f.cardcutter.prefs.windows.SignInWindow
 import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
@@ -94,7 +94,7 @@ class CardCuttingUI(private val stage: Stage) {
     private val wordWindowList = ComboBox<String>()
     private val removeWords = arrayListOf<String>()
 
-    private var currentUser = CardifyUser()
+    var currentUser = CardifyUser()
 
     fun initialize(): VBox {
         logger.info("Generating menu bar")
@@ -281,7 +281,7 @@ class CardCuttingUI(private val stage: Stage) {
         }
 
         urlTF.setOnKeyPressed {
-            if (it.isControlDown && it.text == "v") {
+            if ((it.isControlDown || it.isMetaDown) && it.text == "v") {
                 Platform.runLater { gotoUrlButton.fire() }
             }
         }
@@ -304,6 +304,8 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun checkLoginStatus() {
+        if (CardifyDebate.IS_FIRST_LAUNCH)
+            return
         if (Prefs.get().emailAddress.isEmpty()
             || Prefs.get().accessToken.isEmpty()) {
             // Needs to sign in
@@ -558,10 +560,12 @@ class CardCuttingUI(private val stage: Stage) {
 
 
         val refreshWordMI  = MenuItem("Refresh Word windows")
+        refreshWordMI.isDisable = getOSType() != OS.WINDOWS
         refreshWordMI.accelerator = KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN)
         refreshWordMI.setOnAction { refreshWordWindows() }
 
         val sendMI = MenuItem("Send to Word")
+        sendMI.isDisable = getOSType() != OS.WINDOWS
         sendMI.accelerator = KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
         sendMI.setOnAction { sendCardToVerbatim() }
 

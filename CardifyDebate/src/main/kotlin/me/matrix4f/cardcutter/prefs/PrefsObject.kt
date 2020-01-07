@@ -19,4 +19,8 @@ class PrefsObject {
     companion object {
         const val DEFAULT_CARD_FORMAT = "<html dir=\"ltr\"><head></head><body ><h4><font face=\"Calibri\" size=\"4\">{Tag}</font></h4><p><font face=\"Calibri\"><b><font size=\"4\">{AuthorLastName},&nbsp;</font></b><font size=\"4\"><b>{DateShortened}</b></font>&nbsp;</font><span style=\"font-family: Calibri;\">({AuthorFullName}, {Qualifications}{DateFull}, accessed on {CurrentDate}, {Publication}, \"{Title}\", {Url})</span></p><p><font face=\"Calibri\">{CardBody}</font></p></body></html>"
     }
+
+    override fun toString(): String {
+        return "PrefsObject(lastUsedVersion='$lastUsedVersion', lastUsedVersionInt=$lastUsedVersionInt, lastFirstLaunchVersion=$lastFirstLaunchVersion, cardFormat='$cardFormat', onlyCardYear=$onlyCardYear, condense=$condense, useEtAl=$useEtAl, emailAddress='$emailAddress', accessToken='$accessToken')"
+    }
 }

@@ -26,6 +26,7 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
 
     override fun generateUI(): Scene {
         val vbox = VBox()
+        vbox.style = "-fx-background-color:#f4f4f4;"
         vbox.padding = Insets(10.0)
         vbox.spacing = 10.0
 

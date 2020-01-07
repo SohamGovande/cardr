@@ -10,20 +10,18 @@ import org.apache.logging.log4j.LogManager
 class CardifyDebate: Application() {
 
     override fun start(stage: Stage) {
-        logger.info("Launched Cardify")
-        stage.title = "CardifyDebate $CURRENT_VERSION"
-        stage.isResizable = false
-        stage.width = WIDTH
-        stage.height = HEIGHT
-        logger.info("Initialized window properties")
-        stage.show()
-        logger.info("Window shown")
-
-        if (MAC_DEBUG_MODE)
-            return
-
-        logger.info("Loading window components...")
         try {
+            logger.info("Launched Cardify")
+            stage.title = "CardifyDebate $CURRENT_VERSION"
+            stage.isResizable = false
+            stage.width = WIDTH
+            stage.height = HEIGHT
+            logger.info("Initialized window properties")
+            stage.show()
+            logger.info("Window shown")
+
+            logger.info("Loading window components...")
+
             ui = CardCuttingUI(stage)
             stage.scene = Scene(ui.initialize(), WIDTH, HEIGHT)
 
@@ -46,7 +44,7 @@ class CardifyDebate: Application() {
 
         const val CURRENT_VERSION = "V1.0.0"
         const val CURRENT_VERSION_INT = 0
-        const val MAC_DEBUG_MODE = true
+        var IS_FIRST_LAUNCH = false
         val logger = LogManager.getLogger(CardifyDebate::class.java)
     }
 }

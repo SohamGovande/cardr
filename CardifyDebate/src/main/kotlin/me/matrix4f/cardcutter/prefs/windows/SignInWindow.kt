@@ -1,5 +1,7 @@
-package me.matrix4f.cardcutter.auth
+package me.matrix4f.cardcutter.prefs.windows
 
+import javafx.application.Platform
+import javafx.event.ActionEvent
 import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.control.*
@@ -10,7 +12,8 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.stage.StageStyle
 import javafx.stage.WindowEvent
-import me.matrix4f.cardcutter.prefs.windows.ModalWindow
+import me.matrix4f.cardcutter.auth.CardifyUser
+import me.matrix4f.cardcutter.prefs.Prefs
 import java.awt.Desktop
 import java.net.URL
 
@@ -19,6 +22,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
 
     private val emailTF = TextField()
     private val passwordTF = PasswordField()
+    private val continueBtn = Button("Continue")
     private var readyToClose = false
 
     init {
@@ -26,38 +30,44 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
     }
 
     override fun close(event: WindowEvent?) {
-        if (!readyToClose) {
+        if (!readyToClose && (Prefs.get().emailAddress.isEmpty() || Prefs.get().accessToken.isEmpty())) {
+            System.exit(0)
             event?.consume()
         }
     }
 
-    private fun onClickContinueBtn() {
-        val result = currentUser.login(emailTF.text, passwordTF.text)
-        if (result.wasSuccessful()) {
-            readyToClose = true;
-            super.window.close()
+    private fun onClickContinueBtn(e: ActionEvent) {
+        continueBtn.text = "Processing..."
+        Thread {
+            val result = currentUser.login(emailTF.text, passwordTF.text)
+            Platform.runLater {
+                continueBtn.text = "Continue"
+                if (result.wasSuccessful()) {
+                    readyToClose = true;
+                    super.window.close()
 
-            val alert = Alert(AlertType.INFORMATION)
-            alert.title = "Success"
-            alert.headerText = "Sucessfully logged in"
-            alert.contentText = "You may continue to use Cardify."
+                    val alert = Alert(AlertType.INFORMATION)
+                    alert.title = "Success"
+                    alert.headerText = "Sucessfully logged in"
+                    alert.contentText = "You may continue to use Cardify."
 
 
-            alert.showAndWait()
-        } else {
-            val alert = Alert(AlertType.ERROR)
-            alert.title = "Error"
-            alert.headerText = "Login error: ${result.reason}"
-            alert.contentText = "An error occurred while logging in. \n\n" +
-                "Here's what we know—\n" +
-                "Performing action: ${result.func}\n" +
-                "Status: ${result.status}\n" +
-                "Reason: ${result.reason}\n" +
-                "Additional info: ${result.additional_info}"
+                    alert.showAndWait()
+                } else {
+                    val alert = Alert(AlertType.ERROR)
+                    alert.title = "Error"
+                    alert.headerText = "Login error: ${result.reason}"
+                    alert.contentText = "An error occurred while logging in. \n\n" +
+                        "Here's what we know—\n" +
+                        "Performing action: ${result.func}\n" +
+                        "Status: ${result.status}\n" +
+                        "Reason: ${result.reason}\n" +
+                        "Additional info: ${result.additional_info}"
 
-            alert.showAndWait()
-
-        }
+                    alert.showAndWait()
+                }
+            }
+        }.start()
     }
 
     private fun generateStatusMessage(): String {
@@ -70,6 +80,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
 
     override fun generateUI(): Scene {
         val vbox = VBox()
+        vbox.style = "-fx-background-color:#f4f4f4;"
         vbox.spacing = 5.0
         vbox.padding = Insets(10.0)
 
@@ -106,11 +117,8 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         val headerTagAndCite = Label("Tag and Cite")
         headerTagAndCite.style = "-fx-font-weight: bold;"
 
-        val continueBtn = Button("Continue")
         continueBtn.prefWidth = 300.0
-        continueBtn.setOnAction {
-            onClickContinueBtn()
-        }
+        continueBtn.setOnAction(this::onClickContinueBtn)
 
         vbox.children.add(header)
         vbox.children.add(subheader)

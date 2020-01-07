@@ -2,7 +2,14 @@ package me.matrix4f.cardcutter
 
 import javafx.application.Application
 import me.matrix4f.cardcutter.ui.CardCuttingUI
+import me.matrix4f.cardcutter.util.OS
+import me.matrix4f.cardcutter.util.getOSType
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.core.Logger
+import org.apache.logging.log4j.core.LoggerContext
+import java.io.File
+import java.nio.file.Paths
 
 lateinit var ui: CardCuttingUI
 
@@ -11,9 +18,23 @@ fun main(args: Array<String>) {
         Thread {
             val reader = WebsiteCardCutter(args[0])
             println(args[0])
-            while (!ui.loaded) { }
+            @Suppress("SENSELESS_COMPARISON")
+            while (ui == null || !ui.loaded) { }
             ui.loadFromReader(reader)
         }.start()
     }
+    var dataDir = ""
+    if (getOSType() == OS.MAC) {
+        val dataDirFile = Paths.get(
+            System.getProperty("user.home"), "CardifyDebate"
+        ).toFile()
+        dataDirFile.mkdir()
+        dataDir = dataDirFile.absolutePath + File.separator
+    }
+    System.setProperty("cardifydebate.data.dir", dataDir)
+    (LogManager.getContext(false) as LoggerContext).configLocation = CardifyDebate::class.java.getResource("/log4j2.xml").toURI()
+
+    CardifyDebate.logger.info("Loaded logger data directory: '${System.getProperty("cardifydebate.data.dir")}'")
+
     Application.launch(CardifyDebate::class.java)
 }
