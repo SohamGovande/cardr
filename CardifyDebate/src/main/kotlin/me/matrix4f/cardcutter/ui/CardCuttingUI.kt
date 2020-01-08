@@ -596,7 +596,7 @@ class CardCuttingUI(private val stage: Stage) {
         formatMI.setOnAction {
             val window = FormatPrefsWindow()
             window.addOnCloseListener(Consumer {
-                refreshHTML()
+                Platform.runLater { refreshHTML() }
             })
             window.show()
         }

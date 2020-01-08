@@ -1,5 +1,6 @@
 package me.matrix4f.cardcutter.web.body
 
+import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -27,6 +28,8 @@ import java.util.*
  * - Cato Institute
  */
 class CardBodyReader(private val hostName: String, private val doc: Document) {
+
+    private val logger = LogManager.getLogger(javaClass)
 
     private fun aljazeera(): Elements {
         val a = doc.select(".article-p-wrapper p").filter {
@@ -251,7 +254,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             if (INCOMPATIBLE_SOURCES.contains(hostName)) {
                 return Jsoup.parse("<p>[Unfortunately, publisher \"${hostName.toUpperCase()}\" did not allow Cardify to view the article body. Please refer to the online version for article access.]</p>").body().children()
             } else {
-                println("Loading article from publisher '" + hostName + "'")
+                logger.info("Loading article from publisher '" + hostName + "'")
 
                 if (hostName.contains("bbc"))
                     return bbc()

@@ -7,6 +7,7 @@ import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.body.CardBodyReader
+import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
@@ -15,6 +16,7 @@ import java.net.URI
 
 class WebsiteCardCutter(private val url: String) {
 
+    private val logger = LogManager.getLogger(javaClass)
     private var doc: Document
     private val meta: Elements
     private var metaJson: JsonObject
@@ -33,8 +35,8 @@ class WebsiteCardCutter(private val url: String) {
             doc = Jsoup.connect(url).get()
         } catch (e: Exception) {
             doc = Jsoup.parse("<html></html>")
-            println("Unable to load URL: $url")
-            showErrorDialog("Error loading URL: ${e.javaClass.simpleName}", "A ${e.javaClass.simpleName} exception occurred while loading $url")
+            logger.error("Unable to load URL: $url", e)
+            showErrorDialog("Error loading URL: ${e.message}", "A ${e.javaClass.simpleName} exception occurred while loading $url")
         }
         meta = doc.getElementsByTag("meta")
         try {
