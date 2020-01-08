@@ -32,7 +32,7 @@ jar {
     }
 }
 
-// Output to build/libs/shadow.jar
+// Output to build/libs/CardifyDebate.jar
 shadowJar {
     baseName = 'CardifyDebate'
     classifier = null
@@ -47,7 +47,10 @@ shadowJar {
             from 'build/libs/CardifyDebate.jar'
             into "C:\\Users\\vgsoh\\Google Drive\\Debate\\CardifyDebate"
         }
-
+        copy {
+            from 'build/libs/CardifyDebate.jar'
+            into "C:\\Users\\vgsoh\\AppData\\Local\\CardifyDebate\\app"
+        }
     }
 }
 
