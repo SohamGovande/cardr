@@ -393,7 +393,7 @@ class WebsiteCardCutter(private val url: String) {
                     else
                         metaJson["publisher"].asJsonObject
 
-                publisher = jsonPublisher["name"].asString
+                publisher = jsonPublisher["name"]?.asString ?: "None found"
                 return publisher as String
             }
 

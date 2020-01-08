@@ -409,7 +409,7 @@ class CardCuttingUI(private val stage: Stage) {
             |</style>""".trimMargin()
     }
 
-    private fun getFullHTML(): String {
+    private fun generateFullHTML(): String {
         val cite = createCite()
         val spacePlaceholder = "sas8d9f7aj523kj5h123jkhsaf"
         val doc = Jsoup.parse(Prefs.get().cardFormat.replace("&nbsp;",spacePlaceholder))
@@ -474,12 +474,12 @@ class CardCuttingUI(private val stage: Stage) {
             </style> 
         """.trimIndent())
 
-        for (elem in doc.select(".cardbody")) {
+        for (elem in doc.select("p")) {
             val oldStyle = elem.parent().attr("style")
-            elem.attr("style", "$oldStyle${if (oldStyle.contains("font-size:11pt;")) { "line-height:19px;" } else { "" }}margin-bottom:8px;margin-top:0px;")
+            elem.attr("style", "$oldStyle${if (oldStyle.contains("font-size:11pt;")) { "line-height:19px;" } else { "" }}margin: 1px 0px 14px 0px; padding: 0px 0px 0px 0px;")
         }
         for (elem in doc.select("h4")) {
-            elem.attr("style", "margin-bottom:-10px;margin-top:0px;")
+            elem.attr("style", "padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;")
         }
 
         val docHtml = doc.html().replace(spacePlaceholder, "&nbsp;")
@@ -502,7 +502,7 @@ class CardCuttingUI(private val stage: Stage) {
 
     private fun refreshHTML() {
         Platform.runLater {
-            cardWV.engine?.loadContent(getFullHTML())
+            cardWV.engine?.loadContent(generateFullHTML())
         }
     }
 
@@ -647,7 +647,7 @@ class CardCuttingUI(private val stage: Stage) {
             .systemClipboard
             .setContents(
                 HTMLSelection(
-                    Jsoup.parseBodyFragment(getFullHTML()).getElementsByTag("body")[0].html()
+                    Jsoup.parseBodyFragment(generateFullHTML()).getElementsByTag("body")[0].html()
                 ),
                 null
             )
@@ -661,7 +661,7 @@ class CardCuttingUI(private val stage: Stage) {
         if (wordWindowList.items.size > 0) {
             msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
         }
-        pasteCardToVerbatim(getFullHTML())
+        pasteCardToVerbatim(generateFullHTML())
     }
 
     private fun updateWindowTitle(title: String) {

@@ -45,7 +45,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
                 continueBtn.text = "Continue"
                 continueBtn.isDisable = false
                 if (result.wasSuccessful()) {
-                    readyToClose = true;
+                    readyToClose = true
                     super.window.close()
 
 //                    val alert = Alert(AlertType.INFORMATION)
