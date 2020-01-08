@@ -544,7 +544,10 @@ class CardCuttingUI(private val stage: Stage) {
 
         val signInMI = MenuItem("Sign in...")
         signInMI.setOnAction { SignInWindow(SignInLauncherOptions.MANUAL_SIGNIN, currentUser).show() }
-        val historyMI = MenuItem("History")
+        val historyMI = MenuItem("Card History")
+        historyMI.setOnAction {
+            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/history.php?email=${Prefs.get().emailAddress}&token=${Prefs.get().accessToken}").toURI())
+        }
 
 
         historyMI.accelerator = KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN)
