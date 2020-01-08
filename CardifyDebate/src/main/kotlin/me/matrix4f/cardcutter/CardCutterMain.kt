@@ -19,10 +19,14 @@ val uiLock = Object()
 fun main(args: Array<String>) {
     if (args.size >= 1) {
         Thread {
-            synchronized(uiLock) {
-                val reader = WebsiteCardCutter(args[0])
-                uiLock.wait()
-                ui!!.loadFromReader(reader)
+            try {
+                synchronized(uiLock) {
+                    val reader = WebsiteCardCutter(args[0])
+                    uiLock.wait()
+                    ui!!.loadFromReader(reader)
+                }
+            } catch (e: Exception) {
+                CardifyDebate.logger.error("Error preloading page", e)
             }
         }.start()
     }

@@ -226,29 +226,33 @@ class CardCuttingUI(private val stage: Stage) {
         // Button actions
         gotoUrlButton.setOnAction {
             Thread {
-                val reader = WebsiteCardCutter(urlTF.text)
-                removeWords.clear()
+                try {
+                    val reader = WebsiteCardCutter(urlTF.text)
+                    removeWords.clear()
 
-                this.authors = reader.getAuthors() ?: this.authors
-                this.timestamp = reader.getDate()
-                this.publisher = SimpleStringProperty(reader.getPublication())
-                this.url = SimpleStringProperty(reader.getURL())
-                this.title = SimpleStringProperty(reader.getTitle() ?: "")
-                updateWindowTitle(reader.getTitle() ?: "")
-                this.cardTag.set(title.get())
-                this.cardBody.set(reader.getBodyParagraphText())
+                    this.authors = reader.getAuthors() ?: this.authors
+                    this.timestamp = reader.getDate()
+                    this.publisher = SimpleStringProperty(reader.getPublication())
+                    this.url = SimpleStringProperty(reader.getURL())
+                    this.title = SimpleStringProperty(reader.getTitle() ?: "")
+                    updateWindowTitle(reader.getTitle() ?: "")
+                    this.cardTag.set(title.get())
+                    this.cardBody.set(reader.getBodyParagraphText())
 
-                Platform.runLater {
-                    visitURL(urlTF.text)
-                    propertyTitleTextField.textProperty().bindBidirectional(this.title)
-                    propertyPubTextField.textProperty().bindBidirectional(this.publisher)
-                    propertyUrlTextField.textProperty().bindBidirectional(this.url)
+                    Platform.runLater {
+                        visitURL(urlTF.text)
+                        propertyTitleTextField.textProperty().bindBidirectional(this.title)
+                        propertyPubTextField.textProperty().bindBidirectional(this.publisher)
+                        propertyUrlTextField.textProperty().bindBidirectional(this.url)
 
-                    propertyDayTF.textProperty().bindBidirectional(this.timestamp.day)
-                    propertyMonthTF.textProperty().bindBidirectional(this.timestamp.month)
-                    propertyYearTF.textProperty().bindBidirectional(this.timestamp.year)
+                        propertyDayTF.textProperty().bindBidirectional(this.timestamp.day)
+                        propertyMonthTF.textProperty().bindBidirectional(this.timestamp.month)
+                        propertyYearTF.textProperty().bindBidirectional(this.timestamp.year)
 
-                    generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
+                        generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
+                    }
+                } catch (e: Exception) {
+                    logger.error("Error scraping page", e)
                 }
             }.start()
         }
