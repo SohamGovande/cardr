@@ -38,10 +38,12 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
 
     private fun onClickContinueBtn(e: ActionEvent) {
         continueBtn.text = "Processing..."
+        continueBtn.isDisable = true
         Thread {
             val result = currentUser.login(emailTF.text, passwordTF.text)
             Platform.runLater {
                 continueBtn.text = "Continue"
+                continueBtn.isDisable = false
                 if (result.wasSuccessful()) {
                     readyToClose = true;
                     super.window.close()
