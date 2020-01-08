@@ -13,15 +13,17 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
 
-lateinit var ui: CardCuttingUI
+var ui: CardCuttingUI? = null
+val uiLock = Object()
 
 fun main(args: Array<String>) {
-    if (args.size == 1) {
+    if (args.size >= 1) {
         Thread {
-            val reader = WebsiteCardCutter(args[0])
-            @Suppress("SENSELESS_COMPARISON")
-            while (ui == null || !ui.loaded) { }
-            ui.loadFromReader(reader)
+            synchronized(uiLock) {
+                val reader = WebsiteCardCutter(args[0])
+                uiLock.wait()
+                ui!!.loadFromReader(reader)
+            }
         }.start()
     }
 

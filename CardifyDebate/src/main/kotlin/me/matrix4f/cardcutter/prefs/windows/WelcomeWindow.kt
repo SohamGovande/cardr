@@ -22,7 +22,7 @@ class WelcomeWindow : ModalWindow("Welcome to Cardify!") {
 
     override fun close(event: WindowEvent?) {
         super.close(event)
-        SignInWindow(SignInLauncherOptions.WELCOME, ui.currentUser).show()
+        SignInWindow(SignInLauncherOptions.WELCOME, ui!!.currentUser).show()
     }
 
     override fun generateUI(): Scene {

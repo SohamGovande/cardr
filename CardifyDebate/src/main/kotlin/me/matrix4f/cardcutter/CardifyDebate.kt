@@ -23,7 +23,7 @@ class CardifyDebate: Application() {
             logger.info("Loading window components...")
 
             ui = CardCuttingUI(stage)
-            stage.scene = Scene(ui.initialize(), WIDTH, HEIGHT)
+            stage.scene = Scene(ui!!.initialize(), WIDTH, HEIGHT)
 
             logger.info("Loading styles.css")
             stage.scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm());
@@ -31,7 +31,10 @@ class CardifyDebate: Application() {
             stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
 
             logger.info("Loading deferred components")
-            ui.doDeferredLoad()
+            ui!!.doDeferredLoad()
+            synchronized(uiLock) {
+                uiLock.notifyAll()
+            }
             logger.info("... Success")
         } catch (e: Exception) {
             logger.error("Error loading window", e)
