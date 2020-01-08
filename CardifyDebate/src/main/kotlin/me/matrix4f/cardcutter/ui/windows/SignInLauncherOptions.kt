@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.prefs.windows
+package me.matrix4f.cardcutter.ui.windows
 
 enum class SignInLauncherOptions {
     WELCOME,

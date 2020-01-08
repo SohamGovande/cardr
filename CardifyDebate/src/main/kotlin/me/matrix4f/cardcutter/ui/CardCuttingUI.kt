@@ -21,14 +21,15 @@ import javafx.scene.web.WebView
 import javafx.stage.Stage
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.auth.CardifyUser
-import me.matrix4f.cardcutter.prefs.windows.SignInLauncherOptions
-import me.matrix4f.cardcutter.prefs.windows.SignInWindow
+import me.matrix4f.cardcutter.ui.windows.SignInLauncherOptions
+import me.matrix4f.cardcutter.ui.windows.SignInWindow
 import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
 import me.matrix4f.cardcutter.prefs.Prefs
-import me.matrix4f.cardcutter.prefs.windows.FormatPrefsWindow
+import me.matrix4f.cardcutter.ui.windows.FormatPrefsWindow
+import me.matrix4f.cardcutter.ui.windows.HistoryWindow
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
 import org.apache.logging.log4j.LogManager
@@ -545,12 +546,11 @@ class CardCuttingUI(private val stage: Stage) {
         val signInMI = MenuItem("Sign in...")
         signInMI.setOnAction { SignInWindow(SignInLauncherOptions.MANUAL_SIGNIN, currentUser).show() }
         val historyMI = MenuItem("Card History")
+        historyMI.accelerator = KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN)
         historyMI.setOnAction {
-            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/history.php?email=${Prefs.get().emailAddress}&token=${Prefs.get().accessToken}").toURI())
+            HistoryWindow().show()
         }
 
-
-        historyMI.accelerator = KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN)
         accountMenu.items.add(signUpMI)
         accountMenu.items.add(signInMI)
         accountMenu.items.add(SeparatorMenuItem())

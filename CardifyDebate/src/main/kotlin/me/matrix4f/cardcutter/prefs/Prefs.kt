@@ -4,7 +4,7 @@ import com.google.gson.GsonBuilder
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.prefs.firstlaunch.onFirstLaunch
 import me.matrix4f.cardcutter.prefs.firstlaunch.showFirstLaunchError
-import me.matrix4f.cardcutter.prefs.windows.WelcomeWindow
+import me.matrix4f.cardcutter.ui.windows.WelcomeWindow
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
 import org.apache.logging.log4j.LogManager
