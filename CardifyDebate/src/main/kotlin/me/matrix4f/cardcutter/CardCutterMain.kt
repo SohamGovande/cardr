@@ -11,6 +11,7 @@ import org.apache.logging.log4j.core.LoggerContext
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.*
 
 lateinit var ui: CardCuttingUI
 
@@ -23,6 +24,8 @@ fun main(args: Array<String>) {
             ui.loadFromReader(reader)
         }.start()
     }
+
+
     var dataDir = ""
     if (getOSType() == OS.MAC) {
         println("Detected macOS, changing data directory...")
@@ -35,6 +38,7 @@ fun main(args: Array<String>) {
     System.setProperty("cardifydebate.data.dir", dataDir)
     (LogManager.getContext(false) as LoggerContext).configLocation = CardifyDebate::class.java.getResource("/log4j2.xml").toURI()
     CardifyDebate.logger.info("Set logger data directory to '$dataDir'")
+    CardifyDebate.logger.info("Launching Cardify with the following arguments: ${Arrays.toString(args)}")
 
     Application.launch(CardifyDebate::class.java)
 }
