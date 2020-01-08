@@ -48,13 +48,12 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
                     readyToClose = true;
                     super.window.close()
 
-                    val alert = Alert(AlertType.INFORMATION)
-                    alert.title = "Success"
-                    alert.headerText = "Sucessfully logged in"
-                    alert.contentText = "You may continue to use Cardify."
-
-
-                    alert.showAndWait()
+//                    val alert = Alert(AlertType.INFORMATION)
+//                    alert.title = "Success"
+//                    alert.headerText = "Sucessfully logged in"
+//                    alert.contentText = "You may continue to use Cardify."
+//
+//                    alert.showAndWait()
                 } else {
                     val alert = Alert(AlertType.ERROR)
                     alert.title = "Error"
