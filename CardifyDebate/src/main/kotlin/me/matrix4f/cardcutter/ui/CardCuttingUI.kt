@@ -473,6 +473,17 @@ class CardCuttingUI(private val stage: Stage) {
             <style>
                 body { background-color: #f4f4f4; font-family: 'System'; font-size: 11pt; }
             </style> 
+            <script>
+                function getSelectionTextCustom() {
+                    var text = "";
+                    if (window.getSelection) {
+                        text = window.getSelection().toString();
+                    } else if (document.selection && document.selection.type != "Control") {
+                        text = document.selection.createRange().text;
+                    }
+                    return text;
+                }
+            </script>
         """.trimIndent())
 
         for (elem in doc.select("p")) {
@@ -487,16 +498,14 @@ class CardCuttingUI(private val stage: Stage) {
         return docHtml
     }
 
-    private fun getCardBodyHTML(): String   {
+    private fun getCardBodyHTML(): String {
+        var cardBody = cardBody.get()
+        for (remove in removeWords) {
+            cardBody = cardBody.replace(remove, "")
+        }
         if (Prefs.get().condense) {
-            /*  style="font-family: '${Prefs.get().fontName}', 'System'; font-size: $ */
-            return "<p class='cardbody'>${cardBody.get().replace("<p>","").replace("</p>","")}</p>"
+            return "<p class='cardbody'>${cardBody.replace("<p>","").replace("</p>","")}</p>"
         } else {
-            var cardBody = cardBody.get()
-            for (remove in removeWords) {
-                cardBody = cardBody.replace(remove, "")
-            }
-            /*  style="font-family: '${Prefs.get().fontName}', 'System'; font-size: ${Prefs.get().fontSize}pt;" */
             return cardBody.replace("<p>","<p class='cardbody'>")
         }
     }
