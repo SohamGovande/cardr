@@ -172,47 +172,49 @@ class CardCuttingUI(private val stage: Stage) {
         pGrid.columnConstraints.add(ColumnConstraints(60.0))
         pGrid.columnConstraints.add(ColumnConstraints(225.0))
 
-        pGrid.add(Label("Verbatim"), 0, 6)
+        if (getOSType() == OS.WINDOWS) {
+            pGrid.add(Label("Verbatim"), 0, 6)
 
-        exportToWordSettings.spacing = 5.0
+            exportToWordSettings.spacing = 5.0
 
-        val header = Label("Send Card to Verbatim")
-        header.style = "-fx-font-weight: bold;"
-        header.prefWidth = 225.0
-        header.textAlignment = TextAlignment.CENTER
-        exportToWordSettings.children.add(header)
+            val header = Label("Send Card to Verbatim")
+            header.style = "-fx-font-weight: bold;"
+            header.prefWidth = 225.0
+            header.textAlignment = TextAlignment.CENTER
+            exportToWordSettings.children.add(header)
 
-        val exportToWordHBox = GridPane()
-        exportToWordHBox.hgap = 5.0
+            val exportToWordHBox = GridPane()
+            exportToWordHBox.hgap = 5.0
 
-        exportToWordHBox.add(Label("Window:"), 0, 0)
+            exportToWordHBox.add(Label("Window:"), 0, 0)
 
-        wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0)
-        exportToWordHBox.add(wordWindowList, 1, 0)
+            wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0)
+            exportToWordHBox.add(wordWindowList, 1, 0)
 
-        exportToWordHBox.add(refreshBtn, 2, 0)
-        exportToWordSettings.children.add(exportToWordHBox)
+            exportToWordHBox.add(refreshBtn, 2, 0)
+            exportToWordSettings.children.add(exportToWordHBox)
 
-        exportToWordSettings.children.add(exportBtn)
-        pGrid.add(exportToWordSettings, 1, 6)
+            exportToWordSettings.children.add(exportBtn)
+            pGrid.add(exportToWordSettings, 1, 6)
 
-        cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
-        cardDisplayMenu.spacing = 5.0
+            cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
+            cardDisplayMenu.spacing = 5.0
 
-        cardDisplayMenu.children.add(copyBtn)
-        cardDisplayMenu.children.add(deleteSelectedBtn)
+            cardDisplayMenu.children.add(copyBtn)
+            cardDisplayMenu.children.add(deleteSelectedBtn)
 
-        cardDisplayArea.children.add(cardDisplayMenu)
-        cardDisplayArea.children.add(cardWV)
+            cardDisplayArea.children.add(cardDisplayMenu)
+            cardDisplayArea.children.add(cardWV)
 
-        bodyAreaPanel.children.add(pGrid)
-        bodyAreaPanel.children.add(cardDisplayArea)
+            bodyAreaPanel.children.add(pGrid)
+            bodyAreaPanel.children.add(cardDisplayArea)
 
-        panel.children.add(searchBarPanel)
-        panel.children.add(bodyAreaPanel)
+            panel.children.add(searchBarPanel)
+            panel.children.add(bodyAreaPanel)
 
-        logger.info("Initializing Word windows")
-        refreshWordWindows()
+            logger.info("Initializing Word windows")
+            refreshWordWindows()
+        }
         return panel
     }
 
@@ -587,8 +589,10 @@ class CardCuttingUI(private val stage: Stage) {
 
         toolsMenu.items.add(copyMI)
         toolsMenu.items.add(SeparatorMenuItem())
-        toolsMenu.items.add(refreshWordMI)
-        toolsMenu.items.add(sendMI)
+        if (getOSType() == OS.WINDOWS) {
+            toolsMenu.items.add(refreshWordMI)
+            toolsMenu.items.add(sendMI)
+        }
 
         val settingsMenu = Menu("Settings")
 
