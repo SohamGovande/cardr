@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import me.matrix4f.cardcutter.auth.CardifyResult
 import org.apache.http.NameValuePair
 import org.apache.http.client.entity.UrlEncodedFormEntity
+import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.message.BasicNameValuePair
@@ -57,4 +58,17 @@ fun makePOSTRequest(url: String, params: List<NameValuePair>): String? {
             {"func":"local_io","status":"error","reason":"${e.javaClass.simpleName} due to ${e.message}","additional_info":"Read log file"}
         """.trimIndent()
     }
+}
+
+
+@Throws(IOException::class)
+fun makeRequest(url: String): String? {
+    val client = HttpClientBuilder.create()
+        .build()
+    val request = HttpGet(url)
+    request.setHeader("User-Agent", "Java client");
+
+    val response = client.execute(request);
+
+    return response.entity.content.bufferedReader().use(BufferedReader::readText)
 }

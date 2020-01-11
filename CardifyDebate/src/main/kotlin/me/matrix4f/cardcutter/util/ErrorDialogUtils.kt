@@ -40,7 +40,7 @@ private fun sendLog(msg: String) {
 
 fun showErrorDialog(e: Exception) {
     val sendBT = ButtonType("Send Log File", ButtonBar.ButtonData.OK_DONE)
-    val continueBT = ButtonType("Continue", ButtonBar.ButtonData.CANCEL_CLOSE)
+    val continueBT = ButtonType("Continue", ButtonBar.ButtonData.OK_DONE)
     val exitBT = ButtonType("Exit", ButtonBar.ButtonData.CANCEL_CLOSE)
 
     val alert = Alert(Alert.AlertType.ERROR, "", sendBT, continueBT, exitBT)
