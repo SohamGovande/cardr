@@ -251,6 +251,7 @@ class CardCuttingUI(private val stage: Stage) {
                         generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
                     }
                 } catch (e: Exception) {
+                    showErrorDialog("Error reading page: ${e.message}", "A ${e.javaClass.simpleName} exception occurred while loading $url")
                     logger.error("Error scraping page", e)
                 }
             }.start()
@@ -632,16 +633,20 @@ class CardCuttingUI(private val stage: Stage) {
 
         val aboutMenu = Menu("About")
 
-        val creditsMI = MenuItem("Credits")
+        val creditsMI = MenuItem("Credits...")
         creditsMI.setOnAction { CreditsWindow().show() }
-        val websiteMI = MenuItem("Cardify Website")
+        val donateMI = MenuItem("Support development/donate...")
+        donateMI.setOnAction { Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/donate.html").toURI()) }
+
+        val websiteMI = MenuItem("Visit website...")
         websiteMI.setOnAction { Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz").toURI()) }
-        val chromeMI = MenuItem("Cardify Chrome Extension")
+        val chromeMI = MenuItem("Get Chrome Extension...")
         chromeMI.setOnAction { Desktop.getDesktop().browse(URL("https://chrome.google.com/webstore/detail/cardifydebate/ifdnjffggmmjiammdpklgldliaaempce").toURI()) }
-        val githubMI = MenuItem("Contribute on GitHub")
+        val githubMI = MenuItem("Contribute on GitHub...")
         githubMI.setOnAction { Desktop.getDesktop().browse(URL("https://www.github.com/SohamGovande/CardifyDebate").toURI()) }
 
         aboutMenu.items.add(creditsMI)
+        aboutMenu.items.add(donateMI)
         aboutMenu.items.add(SeparatorMenuItem())
         aboutMenu.items.add(websiteMI)
         aboutMenu.items.add(chromeMI)
