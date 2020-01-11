@@ -46,7 +46,7 @@ class CardifyDebate: Application() {
         const val HEIGHT = 600.0
 
         const val CURRENT_VERSION = "V1.0.0"
-        const val CURRENT_VERSION_INT = 0
+        const val CURRENT_VERSION_INT = 1
         var IS_FIRST_LAUNCH = false
         val logger = LogManager.getLogger(CardifyDebate::class.java)
     }
