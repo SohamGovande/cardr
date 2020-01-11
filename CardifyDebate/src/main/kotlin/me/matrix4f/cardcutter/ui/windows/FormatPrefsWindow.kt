@@ -31,7 +31,6 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
         vbox.spacing = 10.0
 
         val header = Label("Card Format")
-        header.style = "-fx-font-family: 'Calibri';"
         header.font = Font.font(20.0)
 
         val resetBtn = Button("Reset to Default")

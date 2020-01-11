@@ -21,15 +21,12 @@ import javafx.scene.web.WebView
 import javafx.stage.Stage
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.auth.CardifyUser
-import me.matrix4f.cardcutter.ui.windows.SignInLauncherOptions
-import me.matrix4f.cardcutter.ui.windows.SignInWindow
 import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
 import me.matrix4f.cardcutter.prefs.Prefs
-import me.matrix4f.cardcutter.ui.windows.FormatPrefsWindow
-import me.matrix4f.cardcutter.ui.windows.HistoryWindow
+import me.matrix4f.cardcutter.ui.windows.*
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
 import org.apache.logging.log4j.LogManager
@@ -628,15 +625,32 @@ class CardCuttingUI(private val stage: Stage) {
             Prefs.save()
             refreshHTML()
         }
-
         settingsMenu.items.add(formatMI)
         settingsMenu.items.add(condenseMI)
         settingsMenu.items.add(useSmallDatesMI)
         settingsMenu.items.add(useEtAlMI)
 
+        val aboutMenu = Menu("About")
+
+        val creditsMI = MenuItem("Credits")
+        creditsMI.setOnAction { CreditsWindow().show() }
+        val websiteMI = MenuItem("Cardify Website")
+        websiteMI.setOnAction { Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz").toURI()) }
+        val chromeMI = MenuItem("Cardify Chrome Extension")
+        chromeMI.setOnAction { Desktop.getDesktop().browse(URL("https://chrome.google.com/webstore/detail/cardifydebate/ifdnjffggmmjiammdpklgldliaaempce").toURI()) }
+        val githubMI = MenuItem("Contribute on GitHub")
+        githubMI.setOnAction { Desktop.getDesktop().browse(URL("https://www.github.com/SohamGovande/CardifyDebate").toURI()) }
+
+        aboutMenu.items.add(creditsMI)
+        aboutMenu.items.add(SeparatorMenuItem())
+        aboutMenu.items.add(websiteMI)
+        aboutMenu.items.add(chromeMI)
+        aboutMenu.items.add(githubMI)
+
         menuBar.menus.add(accountMenu)
         menuBar.menus.add(toolsMenu)
         menuBar.menus.add(settingsMenu)
+        menuBar.menus.add(aboutMenu)
         return menuBar
     }
 

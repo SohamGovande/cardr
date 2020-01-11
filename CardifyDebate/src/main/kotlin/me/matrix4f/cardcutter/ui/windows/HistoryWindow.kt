@@ -23,7 +23,6 @@ class HistoryWindow: ModalWindow("Card History") {
         vbox.spacing = 10.0
 
         val header = Label("Card History")
-        header.style = "-fx-font-family: 'Calibri';"
         header.font = Font.font(20.0)
 
         webView.engine.load("http://cardifydebate.x10.bz/history.php?email=${Prefs.get().emailAddress}&token=${Prefs.get().accessToken}")
