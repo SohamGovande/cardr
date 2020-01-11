@@ -194,24 +194,25 @@ class CardCuttingUI(private val stage: Stage) {
             exportToWordSettings.children.add(exportBtn)
             pGrid.add(exportToWordSettings, 1, 6)
 
-            cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
-            cardDisplayMenu.spacing = 5.0
-
-            cardDisplayMenu.children.add(copyBtn)
-            cardDisplayMenu.children.add(deleteSelectedBtn)
-
-            cardDisplayArea.children.add(cardDisplayMenu)
-            cardDisplayArea.children.add(cardWV)
-
-            bodyAreaPanel.children.add(pGrid)
-            bodyAreaPanel.children.add(cardDisplayArea)
-
-            panel.children.add(searchBarPanel)
-            panel.children.add(bodyAreaPanel)
-
-            logger.info("Initializing Word windows")
-            refreshWordWindows()
         }
+
+        cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
+        cardDisplayMenu.spacing = 5.0
+
+        cardDisplayMenu.children.add(copyBtn)
+        cardDisplayMenu.children.add(deleteSelectedBtn)
+
+        cardDisplayArea.children.add(cardDisplayMenu)
+        cardDisplayArea.children.add(cardWV)
+
+        bodyAreaPanel.children.add(pGrid)
+        bodyAreaPanel.children.add(cardDisplayArea)
+
+        panel.children.add(searchBarPanel)
+        panel.children.add(bodyAreaPanel)
+
+        logger.info("Initializing Word windows")
+        refreshWordWindows()
         return panel
     }
 
