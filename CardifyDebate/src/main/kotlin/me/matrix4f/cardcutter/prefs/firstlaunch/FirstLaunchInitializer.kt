@@ -111,7 +111,6 @@ private fun onFirstLaunchMacOS() {
     val result = stdout.toString().replace("\n", " ")
     logger.info("Command '$cmd' returned '$result'")
 
-
     if (!jsonPath.toFile().exists())
         throw FirstLaunchException("Unable to download Chrome App Native JSON.")
     if (!executablePath.toFile().exists())
@@ -130,40 +129,4 @@ fun onFirstLaunch(): Exception? {
     } catch (e: Exception) {
         e
     }
-}
-
-fun showFirstLaunchError(e: Exception) {
-    val sendButtonType = ButtonType("Send Error Output", ButtonBar.ButtonData.OK_DONE)
-    val closeButtonType = ButtonType("Close Without Reporting", ButtonBar.ButtonData.CANCEL_CLOSE)
-
-    val alert = Alert(Alert.AlertType.ERROR, "", closeButtonType, sendButtonType)
-    alert.headerText = "Uh-oh! There was an error."
-    alert.contentText = "We encountered an unknown error of type ${e.javaClass.simpleName}: ${e.message}. We apologize for the inconvenience. Please kindly select \"Send Error Output\" to share the error log with the developers so that they can fix the bug or help you out. We apologize for the inconvenience."
-    val result = alert.showAndWait()
-    if (result.orElse(closeButtonType) == sendButtonType) {
-        val baos = ByteArrayOutputStream()
-        val writer = PrintWriter(baos)
-        e.printStackTrace(writer)
-        writer.close()
-
-        sendLog(baos.toString())
-    }
-    System.exit(0)
-}
-
-private fun urlEncode(str: String): String {
-    return try {
-        URLEncoder.encode(str, "UTF-8").replace("+", "%20")
-    } catch (e: UnsupportedEncodingException) {
-        throw RuntimeException(e)
-    }
-}
-
-private fun sendLog(msg: String) {
-    val desktop = Desktop.getDesktop()
-    val message = "mailto:sohamthedeveloper@gmail.com?" +
-        "subject=${urlEncode("Cardify Windows Installer Error")}" +
-        "&body=${urlEncode(msg)}"
-    val uri = URI.create(message)
-    desktop.mail(uri)
 }

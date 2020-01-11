@@ -3,10 +3,10 @@ package me.matrix4f.cardcutter.prefs
 import com.google.gson.GsonBuilder
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.prefs.firstlaunch.onFirstLaunch
-import me.matrix4f.cardcutter.prefs.firstlaunch.showFirstLaunchError
 import me.matrix4f.cardcutter.ui.windows.WelcomeWindow
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
+import me.matrix4f.cardcutter.util.showErrorDialog
 import org.apache.logging.log4j.LogManager
 import java.nio.file.Files
 import java.nio.file.Path
@@ -82,7 +82,7 @@ object Prefs {
                 WelcomeWindow().show()
             } else {
                 logger.error("Error occurred while executing first launch tasks", error)
-                showFirstLaunchError(error)
+                showErrorDialog(error)
             }
         }
     }
