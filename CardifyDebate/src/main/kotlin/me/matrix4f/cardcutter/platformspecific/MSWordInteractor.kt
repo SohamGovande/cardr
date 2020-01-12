@@ -39,8 +39,6 @@ class MSWordInteractor {
      */
     external fun selectWordWindow(title: String): Boolean
 
-    external fun setShiftKeyState(pressed: Boolean)
-
     companion object {
         init {
             if (getOSType() == OS.WINDOWS) {
