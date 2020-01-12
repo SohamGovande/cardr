@@ -4,6 +4,7 @@ import com.sun.org.apache.xpath.internal.operations.Bool
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
 import me.matrix4f.cardcutter.prefs.Prefs
+import me.matrix4f.cardcutter.util.convertMonthNumberToName
 import me.matrix4f.cardcutter.util.currentDate
 
 class Timestamp {
@@ -28,11 +29,18 @@ class Timestamp {
             if (fullDate) {
                 // Either we don't know the month or neither the month and the day
                 if (!hasMonth() || (!hasMonth() && !hasDay()))
-                    return year.toString()
+                    return year.get().toString()
 
                 // We know the month and year but not the day (e.g. Jan 19)
-                else if (!hasDay())
-                    return "${month.get().substring(0, 3)} ${year.get()}"
+                else if (!hasDay()) {
+                    if (month.get().length <= 2) {
+                        // Month is a number
+                        return "${convertMonthNumberToName(month.get())} ${year.get()}"
+                    } else {
+                        // Month is a string (jan/feb/mar)
+                        return "${month.get().substring(0, 3)} ${year.get()}"
+                    }
+                }
 
                 else
                     return "${month.get()}-${day.get()}-${year.get()}"

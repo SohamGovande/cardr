@@ -28,6 +28,24 @@ fun convertMonthNameToNumber(word: String): String {
     }
 }
 
+fun convertMonthNumberToName(num: String): String {
+    return when(num.toLowerCase()) {
+       "1" -> "January"
+       "2" -> "February"
+       "3" -> "March"
+       "4" -> "April"
+       "5" -> "May"
+       "6" -> "June"
+       "7" -> "July"
+       "8" -> "August"
+       "9" -> "September"
+       "10" -> "October"
+       "11" -> "November"
+       "12" -> "December"
+        else -> "No month"
+    }
+}
+
 fun ensureYYYYFormat(yy: String): String {
     if (yy.length == 2) return "20$yy"
     return yy
