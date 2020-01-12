@@ -226,10 +226,6 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".RichTextArticleBody-body p")
     }
 
-    private fun wsj(): Elements {
-        return doc.select(".wsj-snippet-body p")
-    }
-
     private fun wthr(): Elements {
         return doc.select(".field-items p")
     }
@@ -277,7 +273,8 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             "southchinamorningpost",
             "bloomberg",
             "cnn",
-            "wsj"
+            "wsj",
+            "wallstreetjournal"
         )
     }
 }
