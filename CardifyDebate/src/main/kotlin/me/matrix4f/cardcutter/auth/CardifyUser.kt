@@ -45,6 +45,7 @@ class CardifyUser {
             }
             return result
         } catch (e: Exception) {
+            logger.error("Login", e)
             val baos = ByteArrayOutputStream()
             e.printStackTrace(PrintWriter(baos))
             return CardifyResult("login","error",e.javaClass.name,baos.toString("UTF-8"))
