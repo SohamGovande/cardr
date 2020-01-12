@@ -8,9 +8,11 @@ import org.apache.http.client.methods.HttpGet
 import org.apache.http.client.methods.HttpPost
 import org.apache.http.impl.client.HttpClientBuilder
 import org.apache.http.message.BasicNameValuePair
+import org.apache.logging.log4j.LogManager
 import java.io.BufferedReader
 import java.io.IOException
 
+private val logger = LogManager.getLogger("me.matrix4f.cardcutter.util.HTMLRequestUtils")
 
 fun makeCardifyRequest(function: String, params: MutableList<BasicNameValuePair>): CardifyResult {
     params.add(BasicNameValuePair("function", function))
@@ -53,7 +55,7 @@ fun makePOSTRequest(url: String, params: List<NameValuePair>): String? {
 
         return response.entity.content.bufferedReader().use(BufferedReader::readText)
     } catch (e: IOException) {
-        e.printStackTrace()
+        logger.error("Error in local IO making HTTP POST request", e)
         return """
             {"func":"local_io","status":"error","reason":"${e.javaClass.simpleName} due to ${e.message}","additional_info":"Read log file"}
         """.trimIndent()

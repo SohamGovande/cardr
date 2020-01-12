@@ -259,8 +259,9 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         } catch (e: Exception) {
 
             // NoSuchMethodException is normal, it means the host was unrecognized
-            if (!(e is NoSuchMethodException))
-                e.printStackTrace()
+            if (!(e is NoSuchMethodException)) {
+                logger.error("Error reading card body", e)
+            }
 
             /* if (e is NoSuchMethodException) */
             // Default behavior
@@ -276,5 +277,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             "wsj",
             "wallstreetjournal"
         )
+
+        val logger = LogManager.getLogger(CardBodyReader::class.java)
     }
 }

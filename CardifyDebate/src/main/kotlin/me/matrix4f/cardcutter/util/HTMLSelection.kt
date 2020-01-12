@@ -2,6 +2,7 @@
 
 package me.matrix4f.cardcutter.util
 
+import org.apache.logging.log4j.LogManager
 import java.awt.datatransfer.DataFlavor
 import java.awt.datatransfer.Transferable
 import java.awt.datatransfer.UnsupportedFlavorException
@@ -35,6 +36,7 @@ class HTMLSelection(private val html: String): Transferable {
 
     companion object {
         private val htmlFlavors = ArrayList<DataFlavor>()
+        val logger = LogManager.getLogger(HTMLSelection::class.java)
 
         init {
             try {
@@ -42,7 +44,7 @@ class HTMLSelection(private val html: String): Transferable {
                 htmlFlavors.add(DataFlavor("text/html;class=java.io.Reader"))
                 htmlFlavors.add(DataFlavor("text/html;charset=unicode;class=java.io.InputStream"))
             } catch (ex: ClassNotFoundException) {
-                ex.printStackTrace()
+                logger.error("Unable to add HTMLSelection class", ex)
             }
         }
     }

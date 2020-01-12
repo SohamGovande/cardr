@@ -1,5 +1,6 @@
 package me.matrix4f.cardcutter.util
 
+import org.apache.logging.log4j.LogManager
 import org.jsoup.nodes.Document
 import java.lang.Exception
 
@@ -16,7 +17,7 @@ class AuthorRegexMatcher {
             try {
                 return pair.second(matchResult.groups)
             } catch (e: Exception) {
-                e.printStackTrace()
+                logger.error("Error evaluating author name in String", e)
             }
         }
         return null
@@ -36,11 +37,15 @@ class AuthorRegexMatcher {
                 try {
                     return pair.second(matchResult.groups)
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    logger.error("Error processing author name in document", e)
                     continue
                 }
             }
         }
         return null
+    }
+
+    companion object {
+        val logger = LogManager.getLogger(AuthorRegexMatcher::class.java)
     }
 }
