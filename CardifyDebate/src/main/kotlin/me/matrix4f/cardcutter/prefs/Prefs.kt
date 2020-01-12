@@ -56,6 +56,10 @@ object Prefs {
                     runFirstLaunch()
                 }
             } else {
+                if (getOSType() == OS.MAC) {
+                    prefs.cardFormat = prefs.cardFormat.replace("Calibri", "Helvetica")
+                    save()
+                }
                 runFirstLaunch()
             }
         } catch (e: Exception) {
