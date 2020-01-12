@@ -68,6 +68,9 @@ private fun onFirstLaunchMacOS() {
     logger.info("Entered macOS First Launch")
     logger.info("Creating paths...")
     val jsonPath = Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Google", "Chrome", "NativeMessagingHosts", "me.matrix4f.cardify.json")
+    if (!jsonPath.parent.parent.toFile().exists())
+        throw FirstLaunchException("No Google Chrome installation detected")
+
     val executablePath = Paths.get(System.getProperty("user.home"), "CardifyDebate", "CardifyChromeApp")
     val executableZipPath = Paths.get(System.getProperty("user.home"), "CardifyDebate", "CardifyChromeApp.zip")
     Files.createDirectories(executablePath.parent)
