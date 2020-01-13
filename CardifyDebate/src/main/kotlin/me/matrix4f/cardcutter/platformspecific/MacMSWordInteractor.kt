@@ -1,16 +1,10 @@
 package me.matrix4f.cardcutter.platformspecific
 
-import me.matrix4f.cardcutter.util.OS
-import me.matrix4f.cardcutter.util.getOSType
-import me.matrix4f.cardcutter.util.getProcessorBits
 import org.apache.commons.exec.CommandLine
 import org.apache.commons.exec.DefaultExecutor
 import org.apache.commons.exec.PumpStreamHandler
 import org.apache.logging.log4j.LogManager
-import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.InputStreamReader
 
 
 class MacMSWordInteractor {
@@ -42,7 +36,7 @@ class MacMSWordInteractor {
         return selectWordWindow(docName)
     }
 
-    fun runCommand(cmd: String): String {
+    private fun runCommand(cmd: String): String {
         val stdout = ByteArrayOutputStream()
 
         val stdoutPsh = PumpStreamHandler(stdout)

@@ -170,32 +170,29 @@ class CardCuttingUI(private val stage: Stage) {
         pGrid.columnConstraints.add(ColumnConstraints(60.0))
         pGrid.columnConstraints.add(ColumnConstraints(225.0))
 
-        if (getOSType() == OS.WINDOWS || true) {
-            pGrid.add(Label("Verbatim"), 0, 6)
+        pGrid.add(Label("Verbatim"), 0, 6)
 
-            exportToWordSettings.spacing = 5.0
+        exportToWordSettings.spacing = 5.0
 
-            val header = Label("Send Card to Verbatim")
-            header.style = "-fx-font-weight: bold;"
-            header.prefWidth = 225.0
-            header.textAlignment = TextAlignment.CENTER
-            exportToWordSettings.children.add(header)
+        val header = Label("Send Card to Verbatim")
+        header.style = "-fx-font-weight: bold;"
+        header.prefWidth = 225.0
+        header.textAlignment = TextAlignment.CENTER
+        exportToWordSettings.children.add(header)
 
-            val exportToWordHBox = GridPane()
-            exportToWordHBox.hgap = 5.0
+        val exportToWordHBox = GridPane()
+        exportToWordHBox.hgap = 5.0
 
-            exportToWordHBox.add(Label("Window:"), 0, 0)
+        exportToWordHBox.add(Label("Window:"), 0, 0)
 
-            wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0)
-            exportToWordHBox.add(wordWindowList, 1, 0)
+        wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0)
+        exportToWordHBox.add(wordWindowList, 1, 0)
 
-            exportToWordHBox.add(refreshBtn, 2, 0)
-            exportToWordSettings.children.add(exportToWordHBox)
+        exportToWordHBox.add(refreshBtn, 2, 0)
+        exportToWordSettings.children.add(exportToWordHBox)
 
-            exportToWordSettings.children.add(exportBtn)
-            pGrid.add(exportToWordSettings, 1, 6)
-
-        }
+        exportToWordSettings.children.add(exportBtn)
+        pGrid.add(exportToWordSettings, 1, 6)
 
         cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
         cardDisplayMenu.spacing = 5.0
@@ -276,27 +273,9 @@ class CardCuttingUI(private val stage: Stage) {
                 wordWindowList.selectionModel.select(0)
             }
         }
-//
-//        if (getOSType() == OS.WINDOWS) {
-//            val msWordInteractor = MSWordInteractor()
-//            wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
-//
-//            if (!wordWindowList.items.isEmpty()) {
-//                wordWindowList.selectionModel.select(0)
-//            }
-//        } else if (getOSType() == OS.MAC) {
-//            val msWordInteractor = MacMSWordInteractor()
-//            wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
-//
-//            if (!wordWindowList.items.isEmpty()) {
-//                wordWindowList.selectionModel.select(0)
-//            }
-//        }
 
-        refreshBtn.isDisable = false
         refreshBtn.setOnAction { refreshWordWindows() }
 
-        exportBtn.isDisable = false
         exportBtn.setOnAction { sendCardToVerbatim() }
 
         logger.info("Loading refresh icon")
@@ -600,12 +579,10 @@ class CardCuttingUI(private val stage: Stage) {
 
 
         val refreshWordMI  = MenuItem("Refresh Word windows")
-        refreshWordMI.isDisable = getOSType() != OS.WINDOWS
         refreshWordMI.accelerator = KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN)
         refreshWordMI.setOnAction { refreshWordWindows() }
 
         val sendMI = MenuItem("Send to Word")
-        sendMI.isDisable = getOSType() != OS.WINDOWS
         sendMI.accelerator = KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
         sendMI.setOnAction { sendCardToVerbatim() }
 
