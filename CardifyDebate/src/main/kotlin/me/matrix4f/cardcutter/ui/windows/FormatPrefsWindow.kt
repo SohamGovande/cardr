@@ -4,6 +4,7 @@ import javafx.collections.FXCollections
 import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.control.*
+import javafx.scene.image.Image
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
@@ -105,6 +106,7 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
 
         val scene = Scene(vbox, 600.0, 400.0)
         scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm())
+        super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
     }
 }
