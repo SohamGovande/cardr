@@ -1,7 +1,4 @@
 package me.matrix4f.cardcutter.prefs.firstlaunch
-import javafx.scene.control.Alert
-import javafx.scene.control.ButtonBar
-import javafx.scene.control.ButtonType
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
@@ -11,11 +8,8 @@ import org.apache.commons.exec.DefaultExecutor
 import org.apache.commons.exec.PumpStreamHandler
 import org.apache.commons.io.IOUtils
 import org.apache.logging.log4j.LogManager
-import java.awt.Desktop
 import java.io.*
-import java.net.URI
 import java.net.URL
-import java.net.URLEncoder
 import java.nio.channels.Channels
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -89,7 +83,7 @@ private fun onFirstLaunchMacOS() {
     logger.info("Opening data stream for executable file...")
     dataStream = URL("http://cardifydebate.x10.bz/data/CardifyChromeAppMac.zip").openStream()
     logger.info("Downloading executable file...")
-    val fos = FileOutputStream(executableZipPath.toFile())
+    var fos = FileOutputStream(executableZipPath.toFile())
     fos.channel.transferFrom(Channels.newChannel(dataStream), 0, Long.MAX_VALUE)
     dataStream.close()
     fos.close()
@@ -114,6 +108,31 @@ private fun onFirstLaunchMacOS() {
     val result = stdout.toString().replace("\n", " ")
     logger.info("Command '$cmd' returned '$result'")
 
+    val macScriptsPath = Paths.get(System.getProperty("user.home"), "CardifyDebate", "MacScripts")
+    Files.createDirectory(macScriptsPath)
+    val getWordWindowsScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "getWordWindows.scpt")
+    val selectWordWindowScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "selectWordWindow.scpt")
+
+    logger.info("Opening data stream for AppleScript 'getWordWindows'...")
+    dataStream = URL("http://cardifydebate.x10.bz/data/mac/MacScripts/getWordWindows.scpt").openStream()
+    logger.info("Downloading AppleScript file for 'getWordWindows'...")
+    fos = FileOutputStream(getWordWindowsScriptPath.toFile())
+    fos.channel.transferFrom(Channels.newChannel(dataStream), 0, Long.MAX_VALUE)
+    dataStream.close()
+    fos.close()
+
+    logger.info("Opening data stream for AppleScript 'selectWordWindow'...")
+    dataStream = URL("http://cardifydebate.x10.bz/data/mac/MacScripts/selectWordWindow.scpt").openStream()
+    logger.info("Downloading AppleScript file for 'selectWordWindow'...")
+    fos = FileOutputStream(selectWordWindowScriptPath.toFile())
+    fos.channel.transferFrom(Channels.newChannel(dataStream), 0, Long.MAX_VALUE)
+    dataStream.close()
+    fos.close()
+
+    if (!selectWordWindowScriptPath.toFile().exists())
+        throw FirstLaunchException("Unable to download AppleScript 'selectWordWindow'.")
+    if (!getWordWindowsScriptPath.toFile().exists())
+        throw FirstLaunchException("Unable to download AppleScript 'getWordWindows'.")
     if (!jsonPath.toFile().exists())
         throw FirstLaunchException("Unable to download Chrome App Native JSON.")
     if (!executablePath.toFile().exists())

@@ -5,9 +5,13 @@ import org.apache.commons.exec.DefaultExecutor
 import org.apache.commons.exec.PumpStreamHandler
 import org.apache.logging.log4j.LogManager
 import java.io.ByteArrayOutputStream
+import java.nio.file.Paths
 
 
 class MacMSWordInteractor {
+
+    val getWordWindowsFile = Paths.get(System.getProperty("user.home"), "CardifyDebate", "MacScripts", "getWordWindows.scpt").toFile()
+    val selectWordWindowFile = Paths.get(System.getProperty("user.home"), "CardifyDebate", "MacScripts", "selectWordWindow.scpt").toFile()
 
     /**
      * Use this API
@@ -22,7 +26,7 @@ class MacMSWordInteractor {
      * @return A string of all windows with Win32 class L"OpusApp"
      */
     fun getWordWindows(): Array<String> {
-        val cmd = "osascript MacScripts/getWordWindows.scpt"
+        val cmd = "osascript ${getWordWindowsFile.canonicalPath}"
         val ret  = runCommand(cmd).split(", ")
         return ret.toTypedArray();
     }
@@ -58,7 +62,7 @@ class MacMSWordInteractor {
      * @return Whether the operation was successful
      */
     fun selectWordWindow(title: String): Boolean {
-        val cmd = "osascript MacScripts/selectWordWindow.scpt \"$title\""
+        val cmd = "osascript ${selectWordWindowFile.canonicalPath} \"$title\""
         logger.info("Selecting word window $title using command '$cmd'")
         runCommand(cmd)
         return true
