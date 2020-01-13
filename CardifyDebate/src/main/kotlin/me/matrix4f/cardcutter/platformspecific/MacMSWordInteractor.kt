@@ -6,6 +6,7 @@ import me.matrix4f.cardcutter.util.getProcessorBits
 import org.apache.commons.exec.CommandLine
 import org.apache.commons.exec.DefaultExecutor
 import org.apache.commons.exec.PumpStreamHandler
+import org.apache.logging.log4j.LogManager
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -18,10 +19,7 @@ class MacMSWordInteractor {
      * Use this API
      * @return A list of all the titles of usable MS Word windows
      */
-    fun getValidWordWindows() = getWordWindows().iterator().asSequence()
-//        .filter { it.endsWith(" - Word") }
-//        .map { it.substring(0, it.length - " - Word".length) }
-        .toList()
+    fun getValidWordWindows() = getWordWindows().toList()
 
 
     /**
@@ -31,7 +29,6 @@ class MacMSWordInteractor {
      */
     fun getWordWindows(): Array<String> {
         val cmd = "osascript MacScripts/getWordWindows.scpt"
-//        val cmd = "echo test, test2"
         val ret  = runCommand(cmd).split(", ")
         return ret.toTypedArray();
     }
@@ -58,7 +55,7 @@ class MacMSWordInteractor {
         }
 
         val result = stdout.toString().replace("\n", "")
-        System.out.println("Command '$cmd' returned '$result'")
+        logger.info("Command '$cmd' returned '$result'")
         return result
     }
     /**
@@ -67,27 +64,13 @@ class MacMSWordInteractor {
      * @return Whether the operation was successful
      */
     fun selectWordWindow(title: String): Boolean {
-       // val cmd = "name=$title osascript src/main/kotlin/me/matrix4f/cardcutter/platformspecific/selectWordWindow.scpt"
-//        val cmd = "name=$title open src/main/kotlin/me/matrix4f/cardcutter/platformspecific/selectWordWindow.app"
-        System.out.println(title)
         val cmd = "osascript MacScripts/selectWordWindow.scpt \"$title\""
+        logger.info("Selecting word window $title using command '$cmd'")
         runCommand(cmd)
-//
         return true
     }
 
-    external fun setShiftKeyState(pressed: Boolean)
-
     companion object {
-        init {
-            if (getOSType() == OS.WINDOWS) {
-                val processor = getProcessorBits();
-                if (processor == 64)
-                    System.loadLibrary("NativeDllInterface-x64")
-                else
-                    System.loadLibrary("NativeDllInterface-Win32")
-            }
-        }
+        val logger = LogManager.getLogger(MacMSWordInteractor::class.java)
     }
-
 }
