@@ -40,7 +40,7 @@ CardifyDebate is a piece of software that makes it easier for high-school and co
 
 Cardify's Desktop Client is a program that creates debate cards for you. Once you paste in a webpage URL, you can easily manipulate attributes of the card (publication date, publisher, author(s), etc.) from the side panel. Cardify will automatically generate the citation, along with the card body, for you.
 
-The Desktop Client was written almost entirely in Kotlin, but uses parts of C++ for access to Windows-specific and uses AppleScript for access to macOS-specific APIs. 
+The Desktop Client was written almost entirely in Kotlin, but some parts use C++ (*/CardifyWindowsCPP/*) for access to Windows-specific and uses AppleScript for access to macOS-specific APIs. 
 
 **Chrome Extension:** *see /CardifyExtension/*
 
