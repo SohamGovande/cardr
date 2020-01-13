@@ -30,7 +30,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
     }
 
     override fun close(event: WindowEvent?) {
-        if (!readyToClose && (Prefs.get().emailAddress.isEmpty() || Prefs.get().accessToken.isEmpty())) {
+        if (!readyToClose && options != SignInLauncherOptions.MANUAL_SIGNIN) {
             System.exit(0)
             event?.consume()
         }
