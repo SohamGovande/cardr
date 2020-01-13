@@ -25,6 +25,7 @@ import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
+import me.matrix4f.cardcutter.platformspecific.MacMSWordInteractor
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.ui.windows.*
 import me.matrix4f.cardcutter.util.*
@@ -169,7 +170,7 @@ class CardCuttingUI(private val stage: Stage) {
         pGrid.columnConstraints.add(ColumnConstraints(60.0))
         pGrid.columnConstraints.add(ColumnConstraints(225.0))
 
-        if (getOSType() == OS.WINDOWS) {
+        if (getOSType() == OS.WINDOWS || true) {
             pGrid.add(Label("Verbatim"), 0, 6)
 
             exportToWordSettings.spacing = 5.0
@@ -268,12 +269,34 @@ class CardCuttingUI(private val stage: Stage) {
             if (!wordWindowList.items.isEmpty()) {
                 wordWindowList.selectionModel.select(0)
             }
+        } else if (getOSType() == OS.MAC) {
+            val msWordInteractor = MacMSWordInteractor()
+            wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
+            if (!wordWindowList.items.isEmpty()) {
+                wordWindowList.selectionModel.select(0)
+            }
         }
+//
+//        if (getOSType() == OS.WINDOWS) {
+//            val msWordInteractor = MSWordInteractor()
+//            wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
+//
+//            if (!wordWindowList.items.isEmpty()) {
+//                wordWindowList.selectionModel.select(0)
+//            }
+//        } else if (getOSType() == OS.MAC) {
+//            val msWordInteractor = MacMSWordInteractor()
+//            wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
+//
+//            if (!wordWindowList.items.isEmpty()) {
+//                wordWindowList.selectionModel.select(0)
+//            }
+//        }
 
-        refreshBtn.isDisable = (getOSType() != OS.WINDOWS)
+        refreshBtn.isDisable = false
         refreshBtn.setOnAction { refreshWordWindows() }
 
-        exportBtn.isDisable = refreshBtn.isDisable
+        exportBtn.isDisable = false
         exportBtn.setOnAction { sendCardToVerbatim() }
 
         logger.info("Loading refresh icon")
@@ -671,11 +694,16 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun refreshWordWindows() {
-        if (getOSType() != OS.WINDOWS)
-            return
-        wordWindowList.items = FXCollections.observableList(MSWordInteractor().getValidWordWindows())
-        if (!wordWindowList.items.isEmpty()) {
-            wordWindowList.selectionModel.select(0)
+        if (getOSType() == OS.WINDOWS){
+            wordWindowList.items = FXCollections.observableList(MSWordInteractor().getValidWordWindows())
+            if (!wordWindowList.items.isEmpty()) {
+                wordWindowList.selectionModel.select(0)
+            }
+        } else if (getOSType() == OS.MAC){
+            wordWindowList.items = FXCollections.observableList(MacMSWordInteractor().getValidWordWindows())
+            if (!wordWindowList.items.isEmpty()) {
+                wordWindowList.selectionModel.select(0)
+            }
         }
     }
 
@@ -691,13 +719,18 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun sendCardToVerbatim() {
-        if (getOSType() != OS.WINDOWS)
-            return
-
-        val msWord = MSWordInteractor()
-        if (wordWindowList.items.size > 0) {
-            msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
+        if (getOSType() == OS.WINDOWS){
+            val msWord = MSWordInteractor()
+            if (wordWindowList.items.size > 0) {
+                msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
+            }
+        } else if (getOSType() == OS.MAC){
+            val msWord = MacMSWordInteractor()
+            if (wordWindowList.items.size > 0) {
+                msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
+            }
         }
+
         pasteCardToVerbatim(generateFullHTML())
     }
 
