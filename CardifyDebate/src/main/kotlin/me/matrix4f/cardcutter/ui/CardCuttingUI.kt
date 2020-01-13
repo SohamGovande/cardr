@@ -588,10 +588,8 @@ class CardCuttingUI(private val stage: Stage) {
 
         toolsMenu.items.add(copyMI)
         toolsMenu.items.add(SeparatorMenuItem())
-        if (getOSType() == OS.WINDOWS) {
-            toolsMenu.items.add(refreshWordMI)
-            toolsMenu.items.add(sendMI)
-        }
+        toolsMenu.items.add(refreshWordMI)
+        toolsMenu.items.add(sendMI)
 
         val settingsMenu = Menu("Settings")
 
