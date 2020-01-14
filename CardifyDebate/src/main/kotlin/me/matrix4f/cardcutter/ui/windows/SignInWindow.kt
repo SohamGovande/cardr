@@ -6,6 +6,7 @@ import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.control.*
 import javafx.scene.control.Alert.AlertType
+import javafx.scene.image.Image
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
@@ -24,10 +25,6 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
     private val passwordTF = PasswordField()
     private val continueBtn = Button("Continue")
     private var readyToClose = false
-
-    init {
-        window.initStyle(StageStyle.UTILITY)
-    }
 
     override fun close(event: WindowEvent?) {
         if (!readyToClose && options != SignInLauncherOptions.MANUAL_SIGNIN) {
@@ -129,6 +126,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
 
         val scene = Scene(vbox, 300.0, 200.0)
         scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm())
+        super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
     }
 

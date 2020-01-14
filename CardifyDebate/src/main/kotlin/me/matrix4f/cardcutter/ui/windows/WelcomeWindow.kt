@@ -3,6 +3,7 @@ package me.matrix4f.cardcutter.ui.windows
 import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.control.*
+import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
@@ -15,10 +16,6 @@ import java.net.URL
 
 
 class WelcomeWindow : ModalWindow("Welcome to Cardify!") {
-
-    init {
-        window.initStyle(StageStyle.UTILITY)
-    }
 
     override fun close(event: WindowEvent?) {
         super.close(event)
@@ -59,7 +56,8 @@ class WelcomeWindow : ModalWindow("Welcome to Cardify!") {
         box.children.add(continueBtn)
 
         val scene = Scene(box, WIDTH, HEIGHT)
-        scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm());
+        scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm())
+        super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
     }
 

@@ -3,6 +3,7 @@ package me.matrix4f.cardcutter.ui.windows
 import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.control.Label
+import javafx.scene.image.Image
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.text.Text
@@ -10,10 +11,6 @@ import javafx.scene.text.TextFlow
 import javafx.stage.StageStyle
 
 class CreditsWindow : ModalWindow("Credits") {
-
-    init {
-        window.initStyle(StageStyle.UTILITY)
-    }
 
     private fun boldText(str: String): Text {
         val text = Text(str)
@@ -65,6 +62,7 @@ class CreditsWindow : ModalWindow("Credits") {
 
         val scene = Scene(vbox, 300.0, 200.0)
         scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm())
+        super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
     }
 
