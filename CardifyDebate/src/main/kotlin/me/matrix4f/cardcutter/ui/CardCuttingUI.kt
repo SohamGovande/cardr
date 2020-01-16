@@ -31,6 +31,7 @@ import me.matrix4f.cardcutter.prefs.PrefsObject
 import me.matrix4f.cardcutter.ui.windows.*
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
+import netscape.javascript.JSException
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import java.awt.Desktop
@@ -677,13 +678,24 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun deleteSelectedText() {
-        val selection = cardWV.engine.executeScript("getSelectionTextCustom()") as String
-        for (str in selection.split(Regex("[\\n\\t\\r]"))) {
-            if (str.isNotBlank()) {
-                removeWords.add(str)
+        var success = false
+        try {
+            val selection = cardWV.engine.executeScript("getSelectionTextCustom()") as String
+            for (str in selection.split(Regex("[\\n\\t\\r]"))) {
+                if (str.isNotBlank()) {
+                    removeWords.add(str)
+                    success = true
+                }
             }
+            refreshHTML()
+        } catch (e: JSException) {
+            success = false
         }
-        refreshHTML()
+        if (!success) {
+            val alert = Alert(Alert.AlertType.INFORMATION, "Please highlight text in the preview pane before clicking remove.")
+            alert.headerText = "No text selected"
+            alert.showAndWait()
+        }
     }
 
     private fun refreshWordWindows() {
