@@ -57,7 +57,7 @@ object Prefs {
                 }
             } else {
                 if (getOSType() == OS.MAC) {
-                    prefs.cardFormat = prefs.cardFormat.replace("Calibri", "Helvetica")
+                    prefs.cardFormat = prefs.cardFormat.replace("Calibri", PrefsObject.MAC_CALIBRI_FONT)
                     save()
                 }
                 runFirstLaunch()

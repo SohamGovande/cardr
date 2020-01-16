@@ -27,6 +27,7 @@ import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
 import me.matrix4f.cardcutter.platformspecific.MacMSWordInteractor
 import me.matrix4f.cardcutter.prefs.Prefs
+import me.matrix4f.cardcutter.prefs.PrefsObject
 import me.matrix4f.cardcutter.ui.windows.*
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
@@ -417,7 +418,7 @@ class CardCuttingUI(private val stage: Stage) {
             |</style>""".trimMargin()
     }
 
-    private fun generateFullHTML(): String {
+    private fun generateFullHTML(switchFont: Boolean): String {
         val cite = createCite()
         val spacePlaceholder = "sas8d9f7aj523kj5h123jkhsaf"
         val doc = Jsoup.parse(Prefs.get().cardFormat.replace("&nbsp;",spacePlaceholder))
@@ -501,7 +502,11 @@ class CardCuttingUI(private val stage: Stage) {
             elem.attr("style", "padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;")
         }
 
-        val docHtml = doc.html().replace(spacePlaceholder, "&nbsp;")
+        var docHtml = doc.html().replace(spacePlaceholder, "&nbsp;")
+        if (switchFont && getOSType() == OS.MAC) {
+            docHtml = docHtml.replace("font-family:'${PrefsObject.MAC_CALIBRI_FONT}';", "")
+        }
+
         return docHtml
     }
 
@@ -519,7 +524,7 @@ class CardCuttingUI(private val stage: Stage) {
 
     private fun refreshHTML() {
         Platform.runLater {
-            cardWV.engine?.loadContent(generateFullHTML())
+            cardWV.engine?.loadContent(generateFullHTML(switchFont = false))
         }
     }
 
@@ -687,7 +692,7 @@ class CardCuttingUI(private val stage: Stage) {
             .systemClipboard
             .setContents(
                 HTMLSelection(
-                    Jsoup.parseBodyFragment(generateFullHTML()).getElementsByTag("body")[0].html()
+                    Jsoup.parseBodyFragment(generateFullHTML(switchFont = true)).getElementsByTag("body")[0].html()
                 ),
                 null
             )
@@ -706,7 +711,7 @@ class CardCuttingUI(private val stage: Stage) {
             }
         }
 
-        pasteCardToVerbatim(generateFullHTML())
+        pasteCardToVerbatim(generateFullHTML(switchFont = true))
     }
 
     private fun updateWindowTitle(title: String) {
