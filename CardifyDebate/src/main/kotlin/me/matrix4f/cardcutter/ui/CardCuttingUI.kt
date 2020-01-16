@@ -87,6 +87,7 @@ class CardCuttingUI(private val stage: Stage) {
     private val exportToWordSettings = VBox()
     private val copyBtn = Button("Copy to Clipboard")
     private val deleteSelectedBtn = Button("Remove Selected Text")
+    private val restoreRemovedBtn = Button("Restore Removed Text")
     private val exportBtn = Button("Send to Word")
 
     private val refreshBtn = Button()
@@ -200,6 +201,7 @@ class CardCuttingUI(private val stage: Stage) {
 
         cardDisplayMenu.children.add(copyBtn)
         cardDisplayMenu.children.add(deleteSelectedBtn)
+        cardDisplayMenu.children.add(restoreRemovedBtn)
 
         cardDisplayArea.children.add(cardDisplayMenu)
         cardDisplayArea.children.add(cardWV)
@@ -259,6 +261,10 @@ class CardCuttingUI(private val stage: Stage) {
 
         copyBtn.setOnAction { copyCardToClipboard() }
         deleteSelectedBtn.setOnAction { deleteSelectedText() }
+        restoreRemovedBtn.setOnAction {
+            removeWords.clear()
+            refreshHTML()
+        }
 
         if (getOSType() == OS.WINDOWS) {
             val msWordInteractor = MSWordInteractor()
