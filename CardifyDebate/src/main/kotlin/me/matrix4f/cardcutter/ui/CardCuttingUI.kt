@@ -265,6 +265,9 @@ class CardCuttingUI(private val stage: Stage) {
         restoreRemovedBtn.setOnAction {
             removeWords.clear()
             refreshHTML()
+            val alert = Alert(Alert.AlertType.INFORMATION)
+            alert.headerText = "Article content restored to original."
+            alert.showAndWait()
         }
 
         if (getOSType() == OS.WINDOWS) {
