@@ -511,15 +511,22 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun getCardBodyHTML(): String {
-        var cardBody = cardBody.get()
-        for (remove in removeWords) {
-            cardBody = cardBody.replace(remove, "")
-        }
+        val cardBody = cardBody.get()
+        var out: String
+
         if (Prefs.get().condense) {
-            return "<p class='cardbody'>${cardBody.replace("<p>","").replace("</p>","")}</p>"
+            out = "<p class='cardbody'>${cardBody.replace("<p>","").replace("</p>","")}</p>"
         } else {
-            return cardBody.replace("<p>","<p class='cardbody'>")
+            out = cardBody.replace("<p>","<p class='cardbody'>")
         }
+
+        while (out.contains("  "))
+            out = out.replace("  ", " ")
+
+        for (remove in removeWords) {
+            out = out.replace(remove, "")
+        }
+        return out
     }
 
     private fun refreshHTML() {
@@ -665,7 +672,7 @@ class CardCuttingUI(private val stage: Stage) {
 
     private fun deleteSelectedText() {
         val selection = cardWV.engine.executeScript("getSelectionTextCustom()") as String
-        for (str in selection.split('\n')) {
+        for (str in selection.split(Regex("[\\n\\t\\r]"))) {
             if (str.isNotBlank()) {
                 removeWords.add(str)
             }
