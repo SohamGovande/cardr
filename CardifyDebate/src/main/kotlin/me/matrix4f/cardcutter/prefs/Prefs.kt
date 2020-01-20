@@ -83,6 +83,7 @@ object Prefs {
                 prefs.lastFirstLaunchVersion = CardifyDebate.CURRENT_VERSION_INT
                 save()
                 logger.info("Successfully initialized first launch properties - saving prefs as $prefs")
+                CardifyDebate.WAS_FIRST_LAUNCH_SUCCESSFUL = true
                 WelcomeWindow().show()
             } else {
                 logger.error("Error occurred while executing first launch tasks", error)

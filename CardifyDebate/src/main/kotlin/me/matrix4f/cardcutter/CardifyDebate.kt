@@ -48,6 +48,8 @@ class CardifyDebate: Application() {
         const val CURRENT_VERSION = "V1.0.0"
         const val CURRENT_VERSION_INT = 1
         var IS_FIRST_LAUNCH = false
+        var WAS_FIRST_LAUNCH_SUCCESSFUL = false
+
         val logger = LogManager.getLogger(CardifyDebate::class.java)
     }
 }
