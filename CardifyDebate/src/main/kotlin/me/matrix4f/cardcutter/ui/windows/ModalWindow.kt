@@ -17,7 +17,7 @@ abstract class ModalWindow(val title: String) {
         window.initModality(Modality.APPLICATION_MODAL)
         window.title = title
         window.scene = generateUI()
-        window.isResizable = false
+        window.isResizable = true
         window.sizeToScene()
         window.show()
 
