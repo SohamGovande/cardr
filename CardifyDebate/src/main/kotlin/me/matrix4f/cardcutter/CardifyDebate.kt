@@ -23,7 +23,7 @@ class CardifyDebate: Application() {
             logger.info("Loading window components...")
 
             ui = CardCuttingUI(stage)
-            stage.scene = Scene(ui!!.initialize(), WIDTH, HEIGHT)
+            stage.scene = Scene(ui!!.initialize())
 
             logger.info("Loading styles.css")
             stage.scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm());
@@ -36,6 +36,7 @@ class CardifyDebate: Application() {
                 uiLock.notifyAll()
             }
             logger.info("... Success")
+            stage.sizeToScene()
         } catch (e: Exception) {
             logger.error("Error loading window", e)
         }

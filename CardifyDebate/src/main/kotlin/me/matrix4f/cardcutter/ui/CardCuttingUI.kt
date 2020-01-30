@@ -117,7 +117,7 @@ class CardCuttingUI(private val stage: Stage) {
         pGrid.hgap = 10.0
         pGrid.vgap = 10.0
         pGrid.prefWidth = 300.0
-        pGrid.prefHeight = CardifyDebate.HEIGHT // Take up the rest remaining space
+        pGrid.prefHeight = CardifyDebate.HEIGHT - 100 // Take up the rest remaining space
 
         bindToRefreshWebView(propertyUrlTextField)
         pGrid.add(Label("URL"), 0, 0)
@@ -193,6 +193,9 @@ class CardCuttingUI(private val stage: Stage) {
 
         exportToWordHBox.add(refreshBtn, 2, 0)
         exportToWordSettings.children.add(exportToWordHBox)
+
+        cardWV.prefWidth = CardifyDebate.WIDTH - 300
+        cardWV.prefHeight = CardifyDebate.HEIGHT - 100
 
         exportToWordSettings.children.add(exportBtn)
         pGrid.add(exportToWordSettings, 1, 6)
