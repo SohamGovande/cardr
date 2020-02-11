@@ -13,7 +13,7 @@ class CardifyDebate: Application() {
         try {
             logger.info("Launched Cardify")
             stage.title = "CardifyDebate $CURRENT_VERSION"
-            stage.isResizable = false
+            stage.isResizable = true
             stage.width = WIDTH
             stage.height = HEIGHT
             logger.info("Initialized window properties")
