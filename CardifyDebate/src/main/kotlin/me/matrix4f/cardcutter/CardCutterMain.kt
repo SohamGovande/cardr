@@ -39,6 +39,8 @@ private fun checkForUpdates() {
 }
 
 fun main(args: Array<String>) {
+    System.setProperty("java.net.preferIPv4Stack", "true")
+
     if (args.size >= 1) {
         Thread {
             try {
@@ -54,7 +56,6 @@ fun main(args: Array<String>) {
     }
 
     setLoggerDir()
-    System.setProperty("java.net.preferIPv4Stack", "true")
 
     CardifyDebate.logger.info("Launching Cardify with the following arguments: ${Arrays.toString(args)}")
 
