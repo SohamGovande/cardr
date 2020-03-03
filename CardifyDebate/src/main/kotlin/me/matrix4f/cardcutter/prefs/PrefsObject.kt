@@ -13,6 +13,8 @@ class PrefsObject {
     var onlyCardYear = true
     var condense = false
     var useEtAl = true
+    var endQualsWithComma = false
+
     var emailAddress = ""
     var accessToken = ""
 
@@ -22,6 +24,8 @@ class PrefsObject {
     }
 
     override fun toString(): String {
-        return "PrefsObject(lastUsedVersion='$lastUsedVersion', lastUsedVersionInt=$lastUsedVersionInt, lastFirstLaunchVersion=$lastFirstLaunchVersion, cardFormat='$cardFormat', onlyCardYear=$onlyCardYear, condense=$condense, useEtAl=$useEtAl, emailAddress='$emailAddress', accessToken='$accessToken')"
+        return "PrefsObject(lastUsedVersion='$lastUsedVersion', lastUsedVersionInt=$lastUsedVersionInt, lastFirstLaunchVersion=$lastFirstLaunchVersion, cardFormat='$cardFormat', onlyCardYear=$onlyCardYear, condense=$condense, useEtAl=$useEtAl, endQualsWithComma=$endQualsWithComma, emailAddress='$emailAddress', accessToken='$accessToken')"
     }
+
+
 }

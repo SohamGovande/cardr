@@ -391,11 +391,11 @@ class WebsiteCardCutter(private val url: String) {
 
                 publisher =
                     if (metaJson["publisher"].isJsonArray)
-                        metaJson["publisher"].asJsonArray[0].asJsonObject["name"]?.asString ?: "None found"
+                        metaJson["publisher"].asJsonArray[0].asJsonObject["name"]?.asString ?: "No Publication Found"
                     else if (metaJson["publisher"].isJsonPrimitive)
                         metaJson["publisher"].asString
                     else
-                        metaJson["publisher"].asJsonObject["name"]?.asString ?: "None found"
+                        metaJson["publisher"].asJsonObject["name"]?.asString ?: "No Publication Found"
 
                 return publisher as String
             }

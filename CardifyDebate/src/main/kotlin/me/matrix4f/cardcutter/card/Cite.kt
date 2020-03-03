@@ -33,11 +33,15 @@ data class Cite(val authors: Array<Author>,
     }
 
     fun getAuthorQualifications(): String {
-        val ret = authors.map(Author::qualifications)
+        var ret = authors.map(Author::qualifications)
             .map(StringProperty::get)
             .filter(String::isNotBlank)
             .joinToString { it }
-        return if (ret == ", ") "" else ret
+
+        if (Prefs.get().endQualsWithComma && ret != "") {
+           ret += ", "
+        }
+        return ret
     }
 
     override fun equals(other: Any?): Boolean {

@@ -650,10 +650,20 @@ class CardCuttingUI(private val stage: Stage) {
             Prefs.save()
             refreshHTML()
         }
+
+        val endQualsWithCommaMI = CheckMenuItem("Automatically append \", \" to last author qualification")
+        endQualsWithCommaMI.isSelected = Prefs.get().endQualsWithComma
+        endQualsWithCommaMI.setOnAction {
+            Prefs.get().endQualsWithComma = endQualsWithCommaMI.isSelected
+            Prefs.save()
+            refreshHTML()
+        }
+
         settingsMenu.items.add(formatMI)
         settingsMenu.items.add(condenseMI)
         settingsMenu.items.add(useSmallDatesMI)
         settingsMenu.items.add(useEtAlMI)
+        settingsMenu.items.add(endQualsWithCommaMI)
 
         val aboutMenu = Menu("About")
 
