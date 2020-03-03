@@ -750,7 +750,7 @@ class CardCuttingUI(private val stage: Stage) {
             var trimmed = title.substring(0, Math.min(title.length, 100))
             if (title.length >= 100)
                 trimmed += "..."
-            stage.title = "$trimmed - CardifyDebate ${CardifyDebate.CURRENT_VERSION}"
+            stage.title = "$trimmed - Cardify ${CardifyDebate.CURRENT_VERSION}"
         }
     }
 

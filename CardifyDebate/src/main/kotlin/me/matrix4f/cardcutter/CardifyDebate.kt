@@ -12,7 +12,7 @@ class CardifyDebate: Application() {
     override fun start(stage: Stage) {
         try {
             logger.info("Launched Cardify")
-            stage.title = "CardifyDebate $CURRENT_VERSION"
+            stage.title = "Cardify $CURRENT_VERSION"
             stage.isResizable = true
             stage.width = WIDTH
             stage.height = HEIGHT
