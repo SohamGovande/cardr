@@ -3,6 +3,7 @@ package me.matrix4f.cardcutter.prefs
 import com.google.gson.GsonBuilder
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.prefs.firstlaunch.onFirstLaunch
+import me.matrix4f.cardcutter.prefs.firstlaunch.updateFrom
 import me.matrix4f.cardcutter.ui.windows.WelcomeWindow
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
@@ -43,15 +44,21 @@ object Prefs {
                 } else {
                     prefs = readObject
                     logger.info("Read preferences successfully: $prefs")
-                    /*
-                    var keepSettings = true
-                    if (readObject.lastUsedVersionInt < CardifyDebate.CURRENT_VERSION_INT) { }
 
-                    if (keepSettings) {
-                        prefs = readObject
-                    } else {
-                        save()
-                    }*/
+                    val lastVersion = readObject.lastUsedVersionInt
+                    if (lastVersion < CardifyDebate.CURRENT_VERSION_INT) {
+                        val error = updateFrom(lastVersion, CardifyDebate.CURRENT_VERSION_INT)
+                        if (error == null) {
+                            prefs.lastUsedVersionInt = CardifyDebate.CURRENT_VERSION_INT
+                            save()
+                            logger.info("Successfully updated Cardify from b$lastVersion - saved prefs $prefs")
+                        } else {
+                            logger.error("Error occurred while updating settings", error)
+                            showErrorDialog(error)
+                        }
+                    }
+
+                    save()
 
                     runFirstLaunch()
                 }

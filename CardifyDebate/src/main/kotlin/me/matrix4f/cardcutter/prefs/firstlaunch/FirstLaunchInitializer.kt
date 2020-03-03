@@ -1,5 +1,6 @@
 package me.matrix4f.cardcutter.prefs.firstlaunch
 import me.matrix4f.cardcutter.prefs.Prefs
+import me.matrix4f.cardcutter.prefs.PrefsObject
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
 import net.lingala.zip4j.ZipFile
@@ -151,4 +152,11 @@ fun onFirstLaunch(): Exception? {
     } catch (e: Exception) {
         e
     }
+}
+
+fun updateFrom(from: Int, to: Int): Exception? {
+    if (from == 1 && to == 2) {
+        Prefs.get().cardFormat = PrefsObject.DEFAULT_CARD_FORMAT
+    }
+    return null
 }
