@@ -1,7 +1,7 @@
 package me.matrix4f.cardcutter.card
 
+import javafx.beans.property.StringProperty
 import me.matrix4f.cardcutter.prefs.Prefs
-import me.matrix4f.cardcutter.util.currentDate
 
 data class Cite(val authors: Array<Author>,
                 val date: Timestamp,
@@ -33,11 +33,8 @@ data class Cite(val authors: Array<Author>,
     }
 
     fun getAuthorQualifications(): String {
-        val sb = StringBuilder()
-
-        for (author in authors)
-            if (author.qualifications.get().isNotEmpty())
-                sb.append(author.qualifications.get()).append(", ")
-        return sb.toString()
+        return authors.map(Author::qualifications)
+            .map(StringProperty::get)
+            .joinToString { it }
     }
 }
