@@ -37,4 +37,28 @@ data class Cite(val authors: Array<Author>,
             .map(StringProperty::get)
             .joinToString { it }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Cite
+
+        if (!authors.contentEquals(other.authors)) return false
+        if (date != other.date) return false
+        if (title != other.title) return false
+        if (publication != other.publication) return false
+        if (url != other.url) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = authors.contentHashCode()
+        result = 31 * result + date.hashCode()
+        result = 31 * result + title.hashCode()
+        result = 31 * result + publication.hashCode()
+        result = 31 * result + url.hashCode()
+        return result
+    }
 }
