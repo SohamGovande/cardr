@@ -70,6 +70,7 @@ class CardCuttingUI(private val stage: Stage) {
 
     private var lastUI: GridPane? = null
     private val pGrid = GridPane()
+    private lateinit var pGridScrollPane: ScrollPane
     private var generateAuthorGridBoxCallback: (GridPane) -> Unit = {}
     var loaded = false
 
@@ -209,7 +210,12 @@ class CardCuttingUI(private val stage: Stage) {
         cardDisplayArea.children.add(cardDisplayMenu)
         cardDisplayArea.children.add(cardWV)
 
-        bodyAreaPanel.children.add(pGrid)
+
+        pGridScrollPane = ScrollPane(pGrid)
+        pGridScrollPane.vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
+        pGridScrollPane.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
+        pGridScrollPane.style = "-fx-background-color:transparent;"
+        bodyAreaPanel.children.add(pGridScrollPane)
         bodyAreaPanel.children.add(cardDisplayArea)
 
         panel.children.add(searchBarPanel)
