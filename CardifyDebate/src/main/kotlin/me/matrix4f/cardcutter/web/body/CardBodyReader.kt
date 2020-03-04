@@ -114,6 +114,14 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return Elements(a)
     }
 
+    private fun nbcnews(): Elements {
+        return Elements(doc.select(".article-body__content p").filter {
+            !it.text().contains("Download the NBC News app for full coverage and alerts on the latest news.") &&
+                !it.text().contains("This site is protected by recaptcha") &&
+                !it.html().contains("<em>")
+        })
+    }
+
     private fun newyorker(): Elements {
         return doc.select(".SectionBreak p")
     }
@@ -287,7 +295,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             "wsj",
             "wallstreetjournal",
             "journals.sagepub",
-            "usatoday",
+            "usatoday"
         )
 
         val logger = LogManager.getLogger(CardBodyReader::class.java)
