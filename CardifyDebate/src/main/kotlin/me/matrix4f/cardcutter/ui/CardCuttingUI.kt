@@ -177,7 +177,7 @@ class CardCuttingUI(private val stage: Stage) {
 
         exportToWordSettings.spacing = 5.0
 
-        val header = Label("Send Card to Verbatim")
+        val header = Label("Send Card to Word")
         header.style = "-fx-font-weight: bold;"
         header.prefWidth = 225.0
         header.textAlignment = TextAlignment.CENTER
