@@ -203,6 +203,19 @@ class WebsiteCardCutter(private val url: String) {
         if (authors.isNotEmpty())
             return authors
 
+        if (getPublication() == "SAGE Journals") {
+            return doc.select("[property='article:author']")
+                .map { it.attr("content") }
+                .map { it.split(", ") }
+                .map { list ->
+                    list.map { arrayOf(getAuthorFromName(it)) }
+                        .flatMap { it.asIterable() }
+                        .toList()
+                }.flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
+        }
+
         authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName, .story-meta__authors .vcard")
             .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
             .flatMap { it.asIterable() }
@@ -419,6 +432,8 @@ class WebsiteCardCutter(private val url: String) {
         if (titleString == null) {
             if (getPublication() == "Associated Press") {
                 return doc.select(".headline h1").text()
+            } else if (getPublication() == "SAGE Journals") {
+                return doc.select("h1").text()
             }
 
             if (metaJson.has("headline")) {
