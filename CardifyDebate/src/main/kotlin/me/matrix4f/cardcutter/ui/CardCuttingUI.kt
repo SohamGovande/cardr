@@ -316,6 +316,14 @@ class CardCuttingUI(private val stage: Stage) {
         }
         generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
 
+        propertyTitleTextField.textProperty().bindBidirectional(this.title)
+        propertyPubTextField.textProperty().bindBidirectional(this.publisher)
+        propertyUrlTextField.textProperty().bindBidirectional(this.url)
+
+        propertyDayTF.textProperty().bindBidirectional(this.timestamp.day)
+        propertyMonthTF.textProperty().bindBidirectional(this.timestamp.month)
+        propertyYearTF.textProperty().bindBidirectional(this.timestamp.year)
+
         logger.info("Checking login status")
         checkLoginStatus()
         loaded = true
