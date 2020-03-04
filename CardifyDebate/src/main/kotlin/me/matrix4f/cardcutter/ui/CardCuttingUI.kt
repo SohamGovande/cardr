@@ -733,7 +733,7 @@ class CardCuttingUI(private val stage: Stage) {
             .systemClipboard
             .setContents(
                 HTMLSelection(
-                    Jsoup.parseBodyFragment(generateFullHTML(switchFont = true)).getElementsByTag("body")[0].html()
+                    generateFullHTML(switchFont = true)
                 ),
                 null
             )
