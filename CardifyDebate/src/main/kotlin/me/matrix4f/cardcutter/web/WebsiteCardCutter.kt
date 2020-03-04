@@ -387,8 +387,11 @@ class WebsiteCardCutter(private val url: String) {
 
     fun getPublication(): String {
         if (this.publisher == null) {
-            if (metaJson.has("publisher")) {
+            val hostname = getHostName(url)
+            if (hostname.equals("nytimes"))
+                return "The New York Times"
 
+            if (metaJson.has("publisher")) {
                 publisher =
                     if (metaJson["publisher"].isJsonArray)
                         metaJson["publisher"].asJsonArray[0].asJsonObject["name"]?.asString ?: "No Publication Found"
