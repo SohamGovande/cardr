@@ -78,15 +78,15 @@ class CardCuttingUI(private val stage: Stage) {
     private val gotoUrlButton = Button("GO")
     private val bodyAreaPanel = HBox()
 
-    private val slashLabel = Label("    /    ")
-    private val slashLabel2 = Label("    /    ")
+    private val slashLabel = Label("      /      ")
+    private val slashLabel2 = Label("      /      ")
     private val dateGrid = GridPane()
 
     private val cardDisplayArea = VBox()
     private val cardDisplayMenu = HBox()
 
     private val exportToWordSettings = VBox()
-    private val copyBtn = Button("Copy to Clipboard")
+    private val copyBtn = Button("Copy card")
     private val deleteSelectedBtn = Button("Remove Selected Text")
     private val restoreRemovedBtn = Button("Restore Removed Text")
     private val exportBtn = Button("Send to Word")
@@ -145,7 +145,7 @@ class CardCuttingUI(private val stage: Stage) {
 
         pGrid.add(Label("Date"), 0, 2)
 
-        dateGrid.padding = Insets(10.0)
+        dateGrid.padding = Insets(0.0)
         dateGrid.add(propertyMonthTF, 0, 0)
         dateGrid.add(slashLabel, 1, 0)
         dateGrid.add(propertyDayTF, 2, 0)
