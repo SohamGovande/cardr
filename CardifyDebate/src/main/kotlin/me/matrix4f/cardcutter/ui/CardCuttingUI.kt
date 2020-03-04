@@ -78,8 +78,8 @@ class CardCuttingUI(private val stage: Stage) {
     private val gotoUrlButton = Button("GO")
     private val bodyAreaPanel = HBox()
 
-    private val slashTextField = TextField("/")
-    private val slashTextField2 = TextField("/")
+    private val slashLabel = Label("    /    ")
+    private val slashLabel2 = Label("    /    ")
     private val dateGrid = GridPane()
 
     private val cardDisplayArea = VBox()
@@ -139,21 +139,17 @@ class CardCuttingUI(private val stage: Stage) {
         propertyYearTF.prefColumnCount = 4
         propertyYearTF.promptText = currentDate().year.toString()
 
-        slashTextField.isEditable = false
-        slashTextField.prefColumnCount = 1
-        slashTextField.style = "-fx-background-color: #f4f4f4"
+        slashLabel.style = "-fx-background-color: #f4f4f4"
 
-        slashTextField2.isEditable = false
-        slashTextField2.prefColumnCount = 1
-        slashTextField2.style = "-fx-background-color: #f4f4f4"
+        slashLabel2.style = "-fx-background-color: #f4f4f4"
 
         pGrid.add(Label("Date"), 0, 2)
 
         dateGrid.padding = Insets(10.0)
         dateGrid.add(propertyMonthTF, 0, 0)
-        dateGrid.add(slashTextField, 1, 0)
+        dateGrid.add(slashLabel, 1, 0)
         dateGrid.add(propertyDayTF, 2, 0)
-        dateGrid.add(slashTextField2, 3, 0)
+        dateGrid.add(slashLabel2, 3, 0)
         dateGrid.add(propertyYearTF, 4, 0)
 
         pGrid.add(dateGrid, 1, 2)
