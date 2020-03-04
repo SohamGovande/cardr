@@ -214,6 +214,13 @@ class WebsiteCardCutter(private val url: String) {
                 }.flatMap { it.asIterable() }
                 .distinct()
                 .toTypedArray()
+        } else if (getPublication() == "Taylor & Francis") {
+            return doc.select("a.entryAuthor")
+                .map { it.ownText().trim() }
+                .map { authorMatcher.evaluateString(it)?.value ?: arrayOf(getAuthorFromName(it)) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
         }
 
         authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName, .story-meta__authors .vcard")

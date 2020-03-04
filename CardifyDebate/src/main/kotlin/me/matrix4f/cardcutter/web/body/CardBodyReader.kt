@@ -176,6 +176,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".article__body p")
     }
 
+    private fun tandfonline(): Elements {
+        return doc.select("article p, article h1, article h2, article h3, article h4")
+    }
+
     private fun theatlantic(): Elements {
         val a = doc.select(".l-article__container p").filter {
             !it.text().startsWith("Updated on") &&
