@@ -7,6 +7,7 @@ import javafx.scene.Scene
 import javafx.scene.control.*
 import javafx.scene.control.Alert.AlertType
 import javafx.scene.image.Image
+import javafx.scene.input.KeyCode
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
@@ -44,13 +45,6 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
                 if (result.wasSuccessful()) {
                     readyToClose = true
                     super.window.close()
-
-//                    val alert = Alert(AlertType.INFORMATION)
-//                    alert.title = "Success"
-//                    alert.headerText = "Sucessfully logged in"
-//                    alert.contentText = "You may continue to use Cardify."
-//
-//                    alert.showAndWait()
                 } else {
                     val alert = Alert(AlertType.ERROR)
                     alert.title = "Error"
@@ -91,6 +85,12 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         emailTF.prefColumnCount = 60
         passwordTF.promptText = "Password"
         passwordTF.prefColumnCount = 60
+
+        passwordTF.setOnKeyPressed {
+            if (it.code == KeyCode.ENTER) {
+                continueBtn.fire()
+            }
+        }
 
         gp.add(emailTF, 1, 0)
         gp.add(passwordTF, 1, 1)
