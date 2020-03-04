@@ -286,7 +286,8 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             "cnn",
             "wsj",
             "wallstreetjournal",
-            "journals.sagepub"
+            "journals.sagepub",
+            "usatoday",
         )
 
         val logger = LogManager.getLogger(CardBodyReader::class.java)
