@@ -387,9 +387,11 @@ class WebsiteCardCutter(private val url: String) {
 
     fun getPublication(): String {
         if (this.publisher == null) {
-            val hostname = getHostName(url)
+            val hostname = getHostName(url).toLowerCase()
             if (hostname.equals("nytimes"))
                 return "The New York Times"
+            if (hostname.equals("apnews"))
+                return "Associated Press"
 
             if (metaJson.has("publisher")) {
                 publisher =
@@ -415,7 +417,7 @@ class WebsiteCardCutter(private val url: String) {
 
     fun getTitle(): String? {
         if (titleString == null) {
-            if (getPublication() == "Apnews") {
+            if (getPublication() == "Associated Press") {
                 return doc.select(".headline h1").text()
             }
 
