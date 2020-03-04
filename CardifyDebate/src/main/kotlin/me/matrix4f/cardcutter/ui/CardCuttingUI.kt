@@ -305,7 +305,7 @@ class CardCuttingUI(private val stage: Stage) {
         refreshBtn.setOnAction { refreshWordWindows() }
 
         urlTF.setOnKeyPressed {
-            if (((it.isControlDown || it.isMetaDown) && it.text == "v") || it.keyCode == KeyCode.ENTER) {
+            if (((it.isControlDown || it.isMetaDown) && it.text == "v") || it.code == KeyCode.ENTER) {
                 Platform.runLater { gotoUrlButton.fire() }
             }
         }
