@@ -195,6 +195,12 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         })
     }
 
+    private fun thediplomat(): Elements {
+        return Elements(doc.select("#td-story-body p").filter {
+            !it.attr("ng-show").contains("ad")
+        })
+    }
+
     private fun theguardian(): Elements {
         return Elements(doc.select(".content__article-body p"))
     }

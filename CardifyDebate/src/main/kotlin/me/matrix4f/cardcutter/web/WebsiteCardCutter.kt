@@ -221,6 +221,12 @@ class WebsiteCardCutter(private val url: String) {
                 .flatMap { it.asIterable() }
                 .distinct()
                 .toTypedArray()
+        } else if (getPublication() == "The Diplomat") {
+            return doc.select(".td-author strong")
+                .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
         }
 
         authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName, .story-meta__authors .vcard")
@@ -410,8 +416,10 @@ class WebsiteCardCutter(private val url: String) {
             val hostname = getHostName(url).toLowerCase()
             if (hostname == "nytimes")
                 return "The New York Times"
-            if (hostname == "apnews")
+            else if (hostname == "apnews")
                 return "Associated Press"
+            else if (hostname == "thediplomat")
+                return "The Diplomat"
 
             if (metaJson.has("publisher")) {
                 publisher =
