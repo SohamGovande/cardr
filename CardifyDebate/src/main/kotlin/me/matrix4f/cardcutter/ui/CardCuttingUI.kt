@@ -169,7 +169,7 @@ class CardCuttingUI(private val stage: Stage) {
         pGrid.columnConstraints.add(ColumnConstraints(60.0))
         pGrid.columnConstraints.add(ColumnConstraints(225.0))
 
-        pGrid.add(Label("Verbatim"), 0, 6)
+        pGrid.add(Label("Word"), 0, 6)
 
         exportToWordSettings.spacing = 5.0
 
@@ -178,16 +178,14 @@ class CardCuttingUI(private val stage: Stage) {
         header.prefWidth = 225.0
         header.textAlignment = TextAlignment.CENTER
         exportToWordSettings.children.add(header)
+        exportToWordSettings.children.add(Label("Select Word window:"))
 
         val exportToWordHBox = GridPane()
         exportToWordHBox.hgap = 5.0
 
-        exportToWordHBox.add(Label("Window:"), 0, 0)
-
         wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0)
+        exportToWordHBox.add(refreshBtn, 0, 0)
         exportToWordHBox.add(wordWindowList, 1, 0)
-
-        exportToWordHBox.add(refreshBtn, 2, 0)
         exportToWordSettings.children.add(exportToWordHBox)
 
         cardWV.prefWidth = CardifyDebate.WIDTH - 300
