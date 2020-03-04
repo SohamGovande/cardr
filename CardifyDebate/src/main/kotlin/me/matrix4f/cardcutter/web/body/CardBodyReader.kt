@@ -7,26 +7,6 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import java.util.*
 
-/**
- * Tailored to:
- * - POLITICO
- * - Reuters
- * - NY Post
- * - Al Jazeera
- * - Vox
- * - Washington Post
- * - Fox News
- * - Phys
- * - NY Times
- * - The Atlantic
- * - BBC
- * - Foreign Policy
- * - The Economist
- * - Associated Press
- * - National Interest
- * - Council on Foreign Relations
- * - Cato Institute
- */
 class CardBodyReader(private val hostName: String, private val doc: Document) {
 
     private val logger = LogManager.getLogger(javaClass)
@@ -195,6 +175,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
                 !it.hasClass("c-letters-cta__text")
         }
         return Elements(a)
+    }
+
+    private fun theconversation(): Elements {
+        return doc.select("div[itemprop=articleBody] p")
     }
 
     private fun theeconomist(): Elements {
