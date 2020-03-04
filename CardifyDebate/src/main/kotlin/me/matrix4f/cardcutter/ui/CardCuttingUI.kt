@@ -197,6 +197,11 @@ class CardCuttingUI(private val stage: Stage) {
         cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
         cardDisplayMenu.spacing = 5.0
 
+        restoreRemovedBtn.graphic = loadMiniIcon("/restore.png")
+        deleteSelectedBtn.graphic = loadMiniIcon("/remove.png")
+        copyBtn.graphic = loadMiniIcon("/copy.png")
+        refreshBtn.graphic = loadMiniIcon("/refresh.png")
+
         cardDisplayMenu.children.add(copyBtn)
         cardDisplayMenu.children.add(deleteSelectedBtn)
         cardDisplayMenu.children.add(restoreRemovedBtn)
@@ -213,6 +218,15 @@ class CardCuttingUI(private val stage: Stage) {
         logger.info("Initializing Word windows")
         refreshWordWindows()
         return panel
+    }
+
+    private fun loadMiniIcon(path: String): ImageView? {
+        val copyResource: InputStream? = javaClass.getResourceAsStream(path)
+        if (copyResource != null) {
+            val copyBtnImage = Image(copyResource, 15.0, 15.0, true, true)
+            return ImageView(copyBtnImage)
+        }
+        return null
     }
 
     private fun visitURL(url: String) {
@@ -283,18 +297,6 @@ class CardCuttingUI(private val stage: Stage) {
         }
 
         refreshBtn.setOnAction { refreshWordWindows() }
-
-        exportBtn.setOnAction { sendCardToVerbatim() }
-
-        logger.info("Loading refresh icon")
-        // Load the refresh icon
-        val refreshResource: InputStream? = javaClass.getResourceAsStream("/refresh.png")
-        if (refreshResource != null) {
-            val refreshBtnImage = Image(refreshResource, 20.0, 20.0, true, true)
-            refreshBtn.graphic = ImageView(refreshBtnImage)
-        } else {
-            refreshBtn.text = "Refresh"
-        }
 
         urlTF.setOnKeyPressed {
             if ((it.isControlDown || it.isMetaDown) && it.text == "v") {
