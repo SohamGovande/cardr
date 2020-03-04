@@ -661,6 +661,14 @@ class CardCuttingUI(private val stage: Stage) {
             refreshHTML()
         }
 
+        val capitalizeAuthorsMI = CheckMenuItem("Capitalize authors' names")
+        capitalizeAuthorsMI.isSelected = Prefs.get().capitalizeAuthors
+        capitalizeAuthorsMI.setOnAction {
+            Prefs.get().capitalizeAuthors = capitalizeAuthorsMI.isSelected
+            Prefs.save()
+            refreshHTML()
+        }
+
         val endQualsWithCommaMI = CheckMenuItem("Automatically append \", \" to last author qualification")
         endQualsWithCommaMI.isSelected = Prefs.get().endQualsWithComma
         endQualsWithCommaMI.setOnAction {
@@ -674,6 +682,7 @@ class CardCuttingUI(private val stage: Stage) {
         settingsMenu.items.add(useSmallDatesMI)
         settingsMenu.items.add(useEtAlMI)
         settingsMenu.items.add(endQualsWithCommaMI)
+        settingsMenu.items.add(capitalizeAuthorsMI)
 
         val aboutMenu = Menu("About")
 

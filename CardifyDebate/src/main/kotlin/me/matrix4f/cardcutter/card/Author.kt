@@ -2,6 +2,7 @@ package me.matrix4f.cardcutter.card
 
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
+import me.matrix4f.cardcutter.prefs.Prefs
 
 data class Author(val firstName: StringProperty, val lastName: StringProperty, val qualifications: StringProperty = SimpleStringProperty("")) {
 
@@ -9,9 +10,15 @@ data class Author(val firstName: StringProperty, val lastName: StringProperty, v
 
     fun toString(short: Boolean): String {
         return if (short || firstName.get().isEmpty()) {
-            lastName.get()
+            if (Prefs.get().capitalizeAuthors)
+                lastName.get().toUpperCase()
+            else
+                lastName.get()
         } else {
-            ("${firstName.get()} ${lastName.get()}")
+            if (Prefs.get().capitalizeAuthors)
+                "${firstName.get().toUpperCase()} ${lastName.get().toUpperCase()}"
+            else
+                "${firstName.get()} ${lastName.get()}"
         }
     }
 

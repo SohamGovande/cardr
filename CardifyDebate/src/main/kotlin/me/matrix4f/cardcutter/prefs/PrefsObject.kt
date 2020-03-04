@@ -13,6 +13,7 @@ class PrefsObject {
     var onlyCardYear = true
     var condense = false
     var useEtAl = true
+    var capitalizeAuthors = false
     var endQualsWithComma = false
 
     var emailAddress = ""
