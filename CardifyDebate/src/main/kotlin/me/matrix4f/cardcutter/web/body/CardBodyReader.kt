@@ -18,7 +18,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return Elements(a)
     }
 
-    private fun associatedpress(): Elements {
+    private fun apnews(): Elements {
         return Elements(doc.select(".Article p").filter {
             !it.text().equals("___") &&
                 !it.text().matches(Regex("Associated Press.+contributed to this report."))

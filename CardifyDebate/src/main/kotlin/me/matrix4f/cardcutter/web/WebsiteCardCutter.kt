@@ -446,7 +446,7 @@ class WebsiteCardCutter(private val url: String) {
     fun getTitle(): String? {
         if (titleString == null) {
             if (getPublication() == "Associated Press") {
-                return doc.select(".headline h1").text()
+                return doc.select("h1").text()
             } else if (getPublication() == "SAGE Journals") {
                 return doc.select("h1").text()
             }
