@@ -56,11 +56,10 @@ object Prefs {
                             logger.error("Error occurred while updating settings", error)
                             showErrorDialog(error)
                         }
+                    } else {
+                        save()
+                        runFirstLaunch()
                     }
-
-                    save()
-
-                    runFirstLaunch()
                 }
             } else {
                 if (getOSType() == OS.MAC) {
