@@ -94,6 +94,13 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return Elements(a)
     }
 
+    private fun nationalinterest(): Elements {
+        return Elements(doc.select(".detail__content p").filter {
+            (it.classNames().size == 0 || it.hasClass("flfc"))
+                && !it.html().contains("<em>")
+        })
+    }
+
     private fun nbcnews(): Elements {
         return Elements(doc.select(".article-body__content p").filter {
             !it.text().contains("Download the NBC News app for full coverage and alerts on the latest news.") &&
@@ -199,13 +206,6 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
 
     private fun thehill(): Elements {
         return doc.select("p")
-    }
-
-    private fun thenationalinterest(): Elements {
-        return Elements(doc.select(".detail__content p").filter {
-            (it.classNames().size == 0 || it.hasClass("flfc"))
-                && !it.html().contains("<em>")
-        })
     }
 
     private fun thewashingtonpost() : Elements {
