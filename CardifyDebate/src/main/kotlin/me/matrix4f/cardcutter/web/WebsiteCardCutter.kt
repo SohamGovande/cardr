@@ -227,7 +227,7 @@ class WebsiteCardCutter(private val url: String) {
                 .flatMap { it.asIterable() }
                 .distinct()
                 .toTypedArray()
-        } else if (getPublication() == "The Intercept") {
+        } else if (getPublication() == "The Intercept" || getPublication() == "National Public Radio") {
             return doc.select("a[rel=author]")
                 .filter { it.text().isNotBlank() }
                 .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
@@ -429,6 +429,8 @@ class WebsiteCardCutter(private val url: String) {
                 return "The Diplomat"
             else if (hostname == "worldpoliticsreview")
                 return "World Politics Review"
+            else if (hostname == "npr")
+                return "National Public Radio"
 
             if (metaJson.has("publisher")) {
                 publisher =

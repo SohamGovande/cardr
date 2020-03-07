@@ -130,6 +130,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return Elements(a)
     }
 
+    private fun npr(): Elements {
+        return doc.select(".storytext p")
+    }
+
     private fun nytimes(): Elements {
         return doc.select(".StoryBodyCompanionColumn p, .StoryBodyCompanionColumn h2, .StoryBodyCompanionColumn h3, .articleBody p")
     }
