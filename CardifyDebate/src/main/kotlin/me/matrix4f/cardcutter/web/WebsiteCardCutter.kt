@@ -11,7 +11,6 @@ import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
-import java.lang.Exception
 import java.net.URI
 
 class WebsiteCardCutter(private val url: String) {
@@ -234,6 +233,14 @@ class WebsiteCardCutter(private val url: String) {
                 .flatMap { it.asIterable() }
                 .distinct()
                 .toTypedArray()
+        } else if (getHostName(url) == "sciencedirect") {
+            val a = doc.select(".author span.content")
+            var list = arrayListOf<Author>()
+            for (elem in a) {
+                list.add(getAuthorFromName(elem.select(".text").joinToString(separator = " ") { it.text() }))
+            }
+
+            return list.toTypedArray()
         }
 
         authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName, .story-meta__authors .vcard")
@@ -431,6 +438,8 @@ class WebsiteCardCutter(private val url: String) {
                 return "World Politics Review"
             else if (hostname == "npr")
                 return "National Public Radio"
+            else if (hostname == "sciencedirect")
+                return doc.select(".publication-title-link").text()
 
             if (metaJson.has("publisher")) {
                 publisher =
@@ -462,6 +471,8 @@ class WebsiteCardCutter(private val url: String) {
                 return doc.select("h1").text()
             } else if (getPublication() == "World Politics Review") {
                 return doc.select("h1").text()
+            } else if (getHostName(url) == "sciencedirect") {
+                return doc.select(".title-text").text()
             }
 
             if (metaJson.has("headline")) {

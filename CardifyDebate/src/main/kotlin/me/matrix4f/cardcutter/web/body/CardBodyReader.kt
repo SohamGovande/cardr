@@ -3,9 +3,7 @@ package me.matrix4f.cardcutter.web.body
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
-import java.util.*
 
 class CardBodyReader(private val hostName: String, private val doc: Document) {
 
@@ -175,6 +173,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return Elements(a)
     }
 
+    private fun sciencedirect(): Elements {
+        return doc.select(".Body p, .Body h2, .Body h3, .Body h4, .Body h5")
+    }
+
     private fun sciencemag(): Elements {
         return doc.select(".article__body p")
     }
@@ -277,7 +279,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         } catch (e: Exception) {
 
             // NoSuchMethodException is normal, it means the host was unrecognized
-            if (!(e is NoSuchMethodException)) {
+            if (!(e is NoSuchMethodException) || !(e is TypeCastException)) {
                 logger.error("Error reading card body", e)
             }
 
