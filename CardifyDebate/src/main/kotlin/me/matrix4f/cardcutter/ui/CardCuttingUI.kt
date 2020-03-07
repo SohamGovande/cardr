@@ -87,9 +87,9 @@ class CardCuttingUI(private val stage: Stage) {
     private val cardDisplayMenu = HBox()
 
     private val exportToWordSettings = VBox()
-    private val copyBtn = Button("Copy card")
+    private val copyBtn = Button("Copy")
     private val deleteSelectedBtn = Button("Remove Selected Text")
-    private val restoreRemovedBtn = Button("Restore")
+    private val restoreRemovedBtn = Button("Restore to Original")
     private val editCardFormat = Button("Edit Card Format")
     private val exportBtn = Button("Send to Word")
 

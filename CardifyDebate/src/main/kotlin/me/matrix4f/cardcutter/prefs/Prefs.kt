@@ -81,7 +81,7 @@ object Prefs {
     }
 
     private fun runFirstLaunch() {
-        if (prefs.lastFirstLaunchVersion < CardifyDebate.CURRENT_VERSION_INT) {
+        if (prefs.lastFirstLaunchVersion < CardifyDebate.CURRENT_VERSION_INT && prefs.lastFirstLaunchVersion == -1) {
             CardifyDebate.IS_FIRST_LAUNCH = true
             logger.info("Running first launch - found version ${prefs.lastFirstLaunchVersion} but expected ${CardifyDebate.CURRENT_VERSION_INT}/${CardifyDebate.CURRENT_VERSION}")
             val error = onFirstLaunch()
