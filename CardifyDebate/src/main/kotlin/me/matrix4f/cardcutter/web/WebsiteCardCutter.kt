@@ -227,6 +227,13 @@ class WebsiteCardCutter(private val url: String) {
                 .flatMap { it.asIterable() }
                 .distinct()
                 .toTypedArray()
+        } else if (getPublication() == "The Intercept") {
+            return doc.select("a[rel=author]")
+                .filter { it.text().isNotBlank() }
+                .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
         }
 
         authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName, .story-meta__authors .vcard")

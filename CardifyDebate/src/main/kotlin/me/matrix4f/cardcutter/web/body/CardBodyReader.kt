@@ -212,6 +212,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select("p")
     }
 
+    private fun theintercept(): Elements {
+        return doc.select(".PostContent p")
+    }
+
     private fun thewashingtonpost() : Elements {
         val a = doc.select("article p").filter {
             !it.hasClass("interstitial-link ") &&
