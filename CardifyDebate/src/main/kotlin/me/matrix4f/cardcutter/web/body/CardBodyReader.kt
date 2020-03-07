@@ -94,6 +94,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return Elements(a)
     }
 
+    private fun hoover(): Elements {
+        return doc.select(".field-name-body")
+    }
+
     private fun nationalinterest(): Elements {
         return Elements(doc.select(".detail__content p").filter {
             (it.classNames().size == 0 || it.hasClass("flfc"))
