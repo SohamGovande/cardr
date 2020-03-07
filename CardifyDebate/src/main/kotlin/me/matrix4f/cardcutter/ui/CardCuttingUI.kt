@@ -89,7 +89,8 @@ class CardCuttingUI(private val stage: Stage) {
     private val exportToWordSettings = VBox()
     private val copyBtn = Button("Copy card")
     private val deleteSelectedBtn = Button("Remove Selected Text")
-    private val restoreRemovedBtn = Button("Restore Removed Text")
+    private val restoreRemovedBtn = Button("Restore")
+    private val editCardFormat = Button("Edit Card Format")
     private val exportBtn = Button("Send to Word")
 
     private val refreshBtn = Button()
@@ -202,14 +203,15 @@ class CardCuttingUI(private val stage: Stage) {
         deleteSelectedBtn.graphic = loadMiniIcon("/remove.png")
         copyBtn.graphic = loadMiniIcon("/copy.png")
         refreshBtn.graphic = loadMiniIcon("/refresh.png")
+        editCardFormat.graphic = loadMiniIcon("/edit.png")
 
         cardDisplayMenu.children.add(copyBtn)
+        cardDisplayMenu.children.add(editCardFormat)
         cardDisplayMenu.children.add(deleteSelectedBtn)
         cardDisplayMenu.children.add(restoreRemovedBtn)
 
         cardDisplayArea.children.add(cardDisplayMenu)
         cardDisplayArea.children.add(cardWV)
-
 
         pGridScrollPane = ScrollPane(pGrid)
         pGridScrollPane.vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
@@ -301,6 +303,8 @@ class CardCuttingUI(private val stage: Stage) {
                 wordWindowList.selectionModel.select(0)
             }
         }
+
+        editCardFormat.setOnAction { FormatPrefsWindow().show() }
 
         refreshBtn.setOnAction { refreshWordWindows() }
 
