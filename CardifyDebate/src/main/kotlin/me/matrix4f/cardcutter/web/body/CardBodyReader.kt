@@ -232,6 +232,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".RichTextArticleBody-body p")
     }
 
+    private fun worldpoliticsreview(): Elements {
+        return doc.select("article p")
+    }
+
     private fun wthr(): Elements {
         return doc.select(".field-items p")
     }

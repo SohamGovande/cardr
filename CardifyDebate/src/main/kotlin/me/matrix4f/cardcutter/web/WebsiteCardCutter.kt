@@ -420,6 +420,8 @@ class WebsiteCardCutter(private val url: String) {
                 return "Associated Press"
             else if (hostname == "thediplomat")
                 return "The Diplomat"
+            else if (hostname == "worldpoliticsreview")
+                return "World Politics Review"
 
             if (metaJson.has("publisher")) {
                 publisher =
@@ -448,6 +450,8 @@ class WebsiteCardCutter(private val url: String) {
             if (getPublication() == "Associated Press") {
                 return doc.select("h1").text()
             } else if (getPublication() == "SAGE Journals") {
+                return doc.select("h1").text()
+            } else if (getPublication() == "World Politics Review") {
                 return doc.select("h1").text()
             }
 
