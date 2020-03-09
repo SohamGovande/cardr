@@ -96,6 +96,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".field-name-body")
     }
 
+    private fun mic(): Elements {
+        return doc.select(".ykW p")
+    }
+
     private fun nationalinterest(): Elements {
         return Elements(doc.select(".detail__content p").filter {
             (it.classNames().size == 0 || it.hasClass("flfc"))

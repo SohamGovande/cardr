@@ -241,6 +241,13 @@ class WebsiteCardCutter(private val url: String) {
             }
 
             return list.toTypedArray()
+        } else if (getHostName(url) == "mic") {
+            return doc.select(".Neu")
+                .filter { it.text().isNotBlank() }
+                .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
         }
 
         authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName, .story-meta__authors .vcard")
@@ -422,7 +429,7 @@ class WebsiteCardCutter(private val url: String) {
             // remove the .com / .org / .net
             hostname = hostname.substring(0, hostname.lastIndexOf('.'))
         } else hostname = "No Publication"
-        return hostname
+        return hostname.toLowerCase()
     }
 
     fun getPublication(): String {
