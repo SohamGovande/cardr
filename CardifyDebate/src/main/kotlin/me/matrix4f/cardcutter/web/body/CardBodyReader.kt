@@ -170,6 +170,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return Elements(a)
     }
 
+    private fun reason(): Elements {
+        return doc.select(".entry-content p")
+    }
+
     private fun reuters(): Elements {
         val a = doc.select(".StandardArticleBody_body p").filter {
             !it.hasClass("Attribution_content")
