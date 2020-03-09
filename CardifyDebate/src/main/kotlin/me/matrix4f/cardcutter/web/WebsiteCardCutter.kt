@@ -356,6 +356,15 @@ class WebsiteCardCutter(private val url: String) {
                 dateISO = metaJson["dateModified"].asString
         }
 
+        if (getHostName(url) == "huffpost") {
+            val info = findMeta("article:published_time")!!.split(" ")[0].split("-")
+            val ts = Timestamp()
+            ts.year.set(info[0].toInt().toString())
+            ts.month.set(info[1].toInt().toString())
+            ts.day.set(info[2].toInt().toString())
+            return ts
+        }
+
         // If it was found, parse it
         if (dateISO != null) {
             val endDate = Regex("[^0-9\\- ]").find(dateISO)?.range?.first ?: "0000-00-00".length

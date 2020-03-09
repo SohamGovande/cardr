@@ -96,6 +96,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".field-name-body")
     }
 
+    private fun huffpost(): Elements {
+        return doc.select(".entry__text .text p")
+    }
+
     private fun mic(): Elements {
         return doc.select(".ykW p")
     }
