@@ -16,8 +16,14 @@ class PrefsObject {
     var capitalizeAuthors = false
     var endQualsWithComma = false
 
+    var darkMode = false
+
     var emailAddress = ""
     var accessToken = ""
+
+    fun getStylesheet(): String {
+        return if (darkMode) "/styles-dark.css" else "/styles.css"
+    }
 
     companion object {
         const val MAC_CALIBRI_FONT = "Helvetica"

@@ -4,6 +4,7 @@ import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Stage
+import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.ui.CardCuttingUI
 import org.apache.logging.log4j.LogManager
 
@@ -25,9 +26,7 @@ class CardifyDebate: Application() {
             ui = CardCuttingUI(stage)
             stage.scene = Scene(ui!!.initialize())
 
-            logger.info("Loading styles.css")
-            stage.scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm());
-            logger.info("Loading window icon")
+            stage.scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm());
             stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
 
             logger.info("Loading deferred components")

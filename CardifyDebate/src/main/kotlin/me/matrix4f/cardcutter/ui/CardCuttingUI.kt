@@ -16,6 +16,7 @@ import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
 import javafx.scene.text.TextAlignment
 import javafx.scene.web.WebView
 import javafx.stage.Stage
@@ -140,10 +141,6 @@ class CardCuttingUI(private val stage: Stage) {
         bindToRefreshWebView(propertyYearTF)
         propertyYearTF.prefColumnCount = 4
         propertyYearTF.promptText = currentDate().year.toString()
-
-        slashLabel.style = "-fx-background-color: #f4f4f4"
-
-        slashLabel2.style = "-fx-background-color: #f4f4f4"
 
         pGrid.add(Label("Date"), 0, 2)
 
@@ -443,7 +440,7 @@ class CardCuttingUI(private val stage: Stage) {
     private fun generateDefaultHTML(): String {
         return """
             |<style>
-                |body { background-color: #f4f4f4; }
+                |body { background-color: #${if (Prefs.get().darkMode) "373e43" else "f4f4f4"}; }
             |</style>""".trimMargin()
     }
 
@@ -508,7 +505,10 @@ class CardCuttingUI(private val stage: Stage) {
 
         doc.select("head")[0].html("""
             <style>
-                body { background-color: #f4f4f4; font-family: 'System'; font-size: 11pt; }
+                body { font-family: 'System'; font-size: 11pt;
+                ${if (Prefs.get().darkMode) {
+                    "background-color: #373e43; color: #ffffff;"
+                } else "background-color: #f4f4f4;"}
             </style> 
             <script>
                 function getSelectionTextCustom() {
@@ -525,7 +525,7 @@ class CardCuttingUI(private val stage: Stage) {
 
         for (elem in doc.select("p")) {
             val oldStyle = elem.parent().attr("style")
-            elem.attr("style", "$oldStyle${if (oldStyle.contains("font-size:11pt;")) { "line-height:19px;" } else { "" }}margin: 1px 0px 14px 0px; padding: 0px 0px 0px 0px;")
+            elem.attr("style", "$oldStyle${if (oldStyle.contains("font-size:11pt;")) { "line-height:20px;" } else { "" }}margin: 1px 0px 12px 0px; padding: 0px 0px 0px 0px;")
         }
         for (elem in doc.select("h4")) {
             elem.attr("style", "padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;")
@@ -683,12 +683,34 @@ class CardCuttingUI(private val stage: Stage) {
             refreshHTML()
         }
 
+        val darkModeMI = CheckMenuItem("Dark mode")
+        darkModeMI.isSelected = Prefs.get().darkMode
+        darkModeMI.setOnAction {
+            Prefs.get().darkMode = darkModeMI.isSelected
+            Prefs.save()
+
+            stage.scene.stylesheets.remove("/styles.css")
+            stage.scene.stylesheets.remove("/styles-dark.css")
+            stage.scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
+            refreshHTML()
+
+            if (!Prefs.get().darkMode) {
+                val alert = Alert(Alert.AlertType.INFORMATION)
+                alert.title = "Please restart Cardify"
+                alert.headerText = "Please restart Cardify for the changes to take effect."
+                alert.contentText = "Upon restart, your theme changes will be applied."
+                alert.showAndWait()
+            }
+        }
+
         settingsMenu.items.add(formatMI)
         settingsMenu.items.add(condenseMI)
         settingsMenu.items.add(useSmallDatesMI)
         settingsMenu.items.add(useEtAlMI)
         settingsMenu.items.add(endQualsWithCommaMI)
         settingsMenu.items.add(capitalizeAuthorsMI)
+        settingsMenu.items.add(SeparatorMenuItem())
+        settingsMenu.items.add(darkModeMI)
 
         val aboutMenu = Menu("About")
 

@@ -27,7 +27,6 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
 
     override fun generateUI(): Scene {
         val vbox = VBox()
-        vbox.style = "-fx-background-color:#f4f4f4;"
         vbox.padding = Insets(10.0)
         vbox.spacing = 10.0
 
@@ -46,7 +45,7 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
         editText.prefHeight = 400.0
         editText.padding = Insets(1.0)
         editText.border = Border(BorderStroke(Color.web("#ddd"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT))
-        editText.style = "-fx-font-size: 14.0;-fx-font-family: 'Calibri';-fx-background-color: '#f4f4f4';"
+        editText.style = "-fx-font-size: 14.0;-fx-font-family: 'Calibri';"
 
         val editHBox = HBox()
         editHBox.children.add(editText)
@@ -105,7 +104,7 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
         vbox.children.add(applyBtn)
 
         val scene = Scene(vbox, 600.0, 400.0)
-        scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm())
+        scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
     }

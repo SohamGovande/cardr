@@ -9,6 +9,7 @@ import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
 import javafx.stage.StageStyle
+import me.matrix4f.cardcutter.prefs.Prefs
 
 class CreditsWindow : ModalWindow("Credits") {
 
@@ -27,7 +28,6 @@ class CreditsWindow : ModalWindow("Credits") {
 
     override fun generateUI(): Scene {
         val vbox = VBox()
-        vbox.style = "-fx-background-color:#f4f4f4;"
         vbox.spacing = 5.0
         vbox.padding = Insets(10.0)
 
@@ -61,7 +61,7 @@ class CreditsWindow : ModalWindow("Credits") {
         vbox.children.add(libraries)
 
         val scene = Scene(vbox, 300.0, 200.0)
-        scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm())
+        scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
     }

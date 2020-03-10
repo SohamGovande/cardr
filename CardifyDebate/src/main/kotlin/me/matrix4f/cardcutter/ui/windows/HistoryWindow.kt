@@ -18,7 +18,6 @@ class HistoryWindow: ModalWindow("Card History") {
 
     override fun generateUI(): Scene {
         val vbox = VBox()
-        vbox.style = "-fx-background-color:#f4f4f4;"
         vbox.padding = Insets(10.0)
         vbox.spacing = 10.0
 
@@ -38,7 +37,7 @@ class HistoryWindow: ModalWindow("Card History") {
         vbox.children.add(webView)
 
         val scene = Scene(vbox, 600.0, 400.0)
-        scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm())
+        scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         return scene
     }
 }

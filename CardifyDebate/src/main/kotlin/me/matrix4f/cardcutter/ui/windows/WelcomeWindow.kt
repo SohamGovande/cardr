@@ -10,6 +10,7 @@ import javafx.scene.text.Font
 import javafx.scene.text.TextAlignment
 import javafx.stage.StageStyle
 import javafx.stage.WindowEvent
+import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.ui
 import java.awt.Desktop
 import java.net.URL
@@ -24,7 +25,6 @@ class WelcomeWindow : ModalWindow("Welcome to Cardify!") {
 
     override fun generateUI(): Scene {
         val box = VBox()
-        box.style = "-fx-background-color:#f4f4f4;"
         box.spacing = 5.0
         box.padding = Insets(10.0)
 
@@ -56,7 +56,7 @@ class WelcomeWindow : ModalWindow("Welcome to Cardify!") {
         box.children.add(continueBtn)
 
         val scene = Scene(box, WIDTH, HEIGHT)
-        scene.stylesheets.add(javaClass.getResource("/styles.css").toExternalForm())
+        scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
     }
