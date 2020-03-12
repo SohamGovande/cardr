@@ -45,8 +45,8 @@ class CardifyDebate: Application() {
         const val WIDTH = 800.0
         const val HEIGHT = 600.0
 
-        const val CURRENT_VERSION = "v1.1.0"
-        const val CURRENT_VERSION_INT = 2
+        const val CURRENT_VERSION = "v1.2.0"
+        const val CURRENT_VERSION_INT = 3
         var IS_FIRST_LAUNCH = false
         var WAS_FIRST_LAUNCH_SUCCESSFUL = false
 

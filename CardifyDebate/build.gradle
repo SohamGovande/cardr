@@ -19,7 +19,7 @@ plugins {
 apply plugin: 'kotlin'
 
 group 'me.matrix4f'
-version '1.0.0'
+version '1.2.0'
 
 repositories {
     mavenCentral()
