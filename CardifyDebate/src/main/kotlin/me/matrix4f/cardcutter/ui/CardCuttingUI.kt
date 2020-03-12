@@ -936,6 +936,9 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun sendCardToVerbatim() {
+        if (wordWindowList.items.size == 0)
+            refreshWordWindows()
+
         if (getOSType() == OS.WINDOWS){
             val msWord = MSWordInteractor()
             if (wordWindowList.items.size > 0) {
