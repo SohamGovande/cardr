@@ -12,11 +12,7 @@ import javafx.scene.image.ImageView
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
-import javafx.scene.layout.ColumnConstraints
-import javafx.scene.layout.GridPane
-import javafx.scene.layout.HBox
-import javafx.scene.layout.VBox
-import javafx.scene.paint.Color
+import javafx.scene.layout.*
 import javafx.scene.text.TextAlignment
 import javafx.scene.web.WebView
 import javafx.stage.Stage
@@ -38,6 +34,7 @@ import org.jsoup.Jsoup
 import java.awt.Desktop
 import java.awt.Toolkit
 import java.io.InputStream
+import java.lang.NullPointerException
 import java.net.URL
 import java.util.function.Consumer
 
@@ -85,12 +82,13 @@ class CardCuttingUI(private val stage: Stage) {
     private val dateGrid = GridPane()
 
     private val cardDisplayArea = VBox()
-    private val cardDisplayMenu = HBox()
+    private val cardDisplayMenu = VBox()
 
     private val exportToWordSettings = VBox()
     private val copyBtn = Button("Copy")
-    private val deleteSelectedBtn = Button("Remove Selected Text")
+    private val removeSelectedBtn = Button("Remove Selected Text")
     private val restoreRemovedBtn = Button("Restore to Original")
+    private val keepOnlySelectedBtn = Button("Remove All Except for Selected Text")
     private val editCardFormat = Button("Edit Card Format")
     private val exportBtn = Button("Send to Word")
 
@@ -98,8 +96,11 @@ class CardCuttingUI(private val stage: Stage) {
 
     private val wordWindowList = ComboBox<String>()
     private val removeWords = arrayListOf<String>()
+    private val removeParagraphs = arrayListOf<String>()
 
     var currentUser = CardifyUser()
+
+    private var reader: WebsiteCardCutter? = null
 
     fun initialize(): VBox {
         logger.info("Generating menu bar")
@@ -197,15 +198,24 @@ class CardCuttingUI(private val stage: Stage) {
         cardDisplayMenu.spacing = 5.0
 
         restoreRemovedBtn.graphic = loadMiniIcon("/restore.png")
-        deleteSelectedBtn.graphic = loadMiniIcon("/remove.png")
+        removeSelectedBtn.graphic = loadMiniIcon("/remove.png")
         copyBtn.graphic = loadMiniIcon("/copy.png")
         refreshBtn.graphic = loadMiniIcon("/refresh.png")
         editCardFormat.graphic = loadMiniIcon("/edit.png")
+        keepOnlySelectedBtn.graphic = loadMiniIcon("/keep-text.png")
 
-        cardDisplayMenu.children.add(copyBtn)
-        cardDisplayMenu.children.add(editCardFormat)
-        cardDisplayMenu.children.add(deleteSelectedBtn)
-        cardDisplayMenu.children.add(restoreRemovedBtn)
+        val cdm1 = HBox()
+        cdm1.spacing = 5.0
+        cdm1.children.add(removeSelectedBtn)
+        cdm1.children.add(keepOnlySelectedBtn)
+        cdm1.children.add(restoreRemovedBtn)
+        cardDisplayMenu.children.add(cdm1)
+
+        val cdm2 = HBox()
+        cdm2.spacing = 5.0
+        cdm2.children.add(copyBtn)
+        cdm2.children.add(editCardFormat)
+        cardDisplayMenu.children.add(cdm2)
 
         cardDisplayArea.children.add(cardDisplayMenu)
         cardDisplayArea.children.add(cardWV)
@@ -246,7 +256,9 @@ class CardCuttingUI(private val stage: Stage) {
             Thread {
                 try {
                     val reader = WebsiteCardCutter(urlTF.text)
+                    this.reader = reader
                     removeWords.clear()
+                    removeParagraphs.clear()
 
                     this.authors = reader.getAuthors() ?: this.authors
                     this.timestamp = reader.getDate()
@@ -277,9 +289,10 @@ class CardCuttingUI(private val stage: Stage) {
         }
 
         copyBtn.setOnAction { copyCardToClipboard() }
-        deleteSelectedBtn.setOnAction { deleteSelectedText() }
+        removeSelectedBtn.setOnAction { removeSelectedText() }
         restoreRemovedBtn.setOnAction {
             removeWords.clear()
+            removeParagraphs.clear()
             refreshHTML()
             val alert = Alert(Alert.AlertType.INFORMATION)
             alert.headerText = "Article content restored to original."
@@ -300,6 +313,8 @@ class CardCuttingUI(private val stage: Stage) {
                 wordWindowList.selectionModel.select(0)
             }
         }
+
+        keepOnlySelectedBtn.setOnAction { keepOnlySelectedText() }
 
         editCardFormat.setOnAction { FormatPrefsWindow().show() }
 
@@ -561,6 +576,22 @@ class CardCuttingUI(private val stage: Stage) {
             out = out.replace(remove, "")
         }
 
+        for (remove in removeParagraphs) {
+            out = out.replace(remove, "")
+        }
+
+        if (Prefs.get().showParagraphBreaks) {
+            val paragraphBegin = if (Prefs.get().condense) "" else "<p class='cardbody'>"
+            val paragraphEnd = if (Prefs.get().condense) "" else "</p>"
+            while (out.contains("$paragraphBegin ¶ $paragraphEnd$paragraphBegin ¶ $paragraphEnd"))
+                out = out.replace("$paragraphBegin ¶ $paragraphEnd$paragraphBegin ¶ $paragraphEnd", "$paragraphBegin ¶ $paragraphEnd")
+            if (out.startsWith("<p class='cardbody'> ¶ "))
+                out = "<p class='cardbody'>" + out.substring("<p class='cardbody'> ¶ ".length)
+            if (out.endsWith("$paragraphBegin ¶ $paragraphEnd"))
+                out = out.substring(0, out.length - "$paragraphBegin ¶ $paragraphEnd".length)
+            if (out.endsWith("¶ </p>"))
+                out = out.substring(0, out.length - "¶ </p>".length)
+        }
         return out
     }
 
@@ -572,6 +603,7 @@ class CardCuttingUI(private val stage: Stage) {
 
     fun loadFromReader(reader: WebsiteCardCutter) {
         Platform.runLater {
+            this.reader = reader
             this.urlTF.text = reader.getURL()
             this.authors = reader.getAuthors() ?: this.authors
             this.timestamp = reader.getDate()
@@ -755,7 +787,7 @@ class CardCuttingUI(private val stage: Stage) {
         return menuBar
     }
 
-    private fun deleteSelectedText() {
+    private fun removeSelectedText() {
         var success = false
         try {
             val selection = cardWV.engine.executeScript("getSelectionTextCustom()") as String
@@ -787,6 +819,96 @@ class CardCuttingUI(private val stage: Stage) {
             if (!wordWindowList.items.isEmpty()) {
                 wordWindowList.selectionModel.select(0)
             }
+        }
+    }
+
+    private fun keepOnlySelectedText() {
+        var success: Boolean
+        try {
+            if (reader == null) {
+                throw NullPointerException("No reader found")
+            }
+            removeParagraphs.clear()
+
+            var selection = (cardWV.engine.executeScript("getSelectionTextCustom()") as String)
+                .replace("\n\n", " ")
+                .replace("¶ ", "").trim()
+
+            while (selection.contains("  "))
+                selection = selection.replace("  ", " ")
+
+            val paragraphs = reader!!.getBodyParagraphs().map { it.text() }.toMutableList()
+            var firstIndex = -1
+            var lastIndex = -1
+
+            for (i in paragraphs.indices) {
+                val paragraph = paragraphs[i]
+
+                if (!selection.contains(paragraph)) {
+                    if (firstIndex != -1 && lastIndex == -1)
+                        lastIndex = i-1
+                } else if (paragraph.isNotBlank()) {
+                    if (firstIndex == -1) {
+                        firstIndex = i
+                    }
+                }
+            }
+
+            if (firstIndex != -1 && lastIndex == -1)
+                lastIndex = paragraphs.size-1
+
+            if (firstIndex == -1 && lastIndex == -1)
+                throw ArrayIndexOutOfBoundsException()
+
+            val placeholder = "asfda8sdfaweh25k3h21klsamnfi5"
+            var selectionOutsides = selection
+            for (i in firstIndex..lastIndex) {
+                selectionOutsides = selectionOutsides.replace(paragraphs[i], placeholder)
+            }
+
+            while (selectionOutsides.contains("$placeholder$placeholder"))
+                selectionOutsides = selectionOutsides.replace("$placeholder$placeholder", placeholder)
+
+            val beforeAfterSelection = selectionOutsides.split(placeholder)
+            if (firstIndex != 0) {
+                paragraphs[firstIndex - 1] = paragraphs[firstIndex - 1].replace(beforeAfterSelection[0].trim(), "")
+                removeParagraphs.add(paragraphs[firstIndex-1])
+            }
+
+            if (lastIndex != paragraphs.size - 1) {
+                paragraphs[lastIndex + 1] = paragraphs[lastIndex + 1].replace(beforeAfterSelection[beforeAfterSelection.size - 1].trim(), "")
+                removeParagraphs.add(paragraphs[lastIndex + 1])
+            }
+
+            for (i in 0 until firstIndex) {
+                removeParagraphs.add(paragraphs[i])
+            }
+
+            for (i in lastIndex+1 until paragraphs.size) {
+                println(paragraphs[i])
+                removeParagraphs.add(paragraphs[i])
+            }
+
+            refreshHTML()
+            success = true
+        } catch (e: JSException) {
+            logger.error(e)
+            e.printStackTrace()
+            success = false
+        } catch (e: NullPointerException) {
+            logger.error(e)
+            e.printStackTrace()
+            success = false
+        } catch (e: ArrayIndexOutOfBoundsException) {
+            logger.error(e)
+            e.printStackTrace()
+            success = false
+        }
+
+        if (!success) {
+            val alert = Alert(Alert.AlertType.INFORMATION, "Please highlight at least one full paragraph in the preview pane in order to use this tool.")
+            alert.headerText = "Not enough text selected"
+            alert.showAndWait()
         }
     }
 

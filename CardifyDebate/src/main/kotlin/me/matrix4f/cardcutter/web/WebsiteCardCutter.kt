@@ -507,7 +507,7 @@ class WebsiteCardCutter(private val url: String) {
     }
     fun getURL() = url
 
-    private fun getBodyParagraphs(): Elements {
+    public fun getBodyParagraphs(): Elements {
         if (bodyParagraphElements == null) {
             val reader = CardBodyReader(getHostName(url).toLowerCase(), doc)
             bodyParagraphElements = reader.getBodyParagraphs()
