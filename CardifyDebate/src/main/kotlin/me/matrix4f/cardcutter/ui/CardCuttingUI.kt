@@ -683,7 +683,7 @@ class CardCuttingUI(private val stage: Stage) {
             refreshHTML()
         }
 
-        val darkModeMI = CheckMenuItem("Dark mode")
+        val darkModeMI = CheckMenuItem("Night mode")
         darkModeMI.isSelected = Prefs.get().darkMode
         darkModeMI.setOnAction {
             Prefs.get().darkMode = darkModeMI.isSelected
