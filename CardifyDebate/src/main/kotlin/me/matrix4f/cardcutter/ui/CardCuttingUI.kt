@@ -99,6 +99,9 @@ class CardCuttingUI(private val stage: Stage) {
     private val removeWords = arrayListOf<String>()
     private val removeParagraphs = arrayListOf<String>()
 
+    private val deleteAuthorButtons = arrayListOf<Button>()
+    private val searchButtons = arrayListOf<Button>()
+
     var currentUser = CardifyUser()
 
     private var reader: WebsiteCardCutter? = null
@@ -362,6 +365,15 @@ class CardCuttingUI(private val stage: Stage) {
         refreshBtn.graphic = loadMiniIcon("/refresh.png")
         editCardFormat.graphic = loadMiniIcon("/edit.png")
         keepOnlySelectedBtn.graphic = loadMiniIcon("/keep-text.png")
+
+        for (btn in deleteAuthorButtons) {
+            btn.graphic = loadMiniIcon("/remove.png")
+        }
+
+        for (btn in searchButtons) {
+            btn.graphic = loadMiniIcon("/search.png")
+        }
+
     }
 
     private fun checkLoginStatus() {
@@ -383,6 +395,8 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun generateAuthorsGrid(regenerateUI: (GridPane) -> Unit): GridPane {
+        deleteAuthorButtons.clear()
+
         val authorGrid = GridPane()
         authorGrid.vgap = 2.0
         authorGrid.hgap = 2.0
@@ -407,7 +421,9 @@ class CardCuttingUI(private val stage: Stage) {
             authorGridLName.textProperty().bindBidirectional(author.lastName)
             bindToRefreshWebView(authorGridLName)
 
-            val deleteAuthor = Button("X")
+            val deleteAuthor = Button()
+            deleteAuthor.graphic = loadMiniIcon("/remove.png")
+            deleteAuthorButtons.add(deleteAuthor)
             deleteAuthor.prefWidth = 25.0
 
             val authorGridQuals = TextField()
@@ -415,7 +431,9 @@ class CardCuttingUI(private val stage: Stage) {
             authorGridQuals.textProperty().bindBidirectional(author.qualifications)
             bindToRefreshWebView(authorGridQuals)
 
-            val searchQuals = Button("...")
+            val searchQuals = Button()
+            searchQuals.graphic = loadMiniIcon("/search.png")
+            searchButtons.add(deleteAuthor)
             searchQuals.prefWidth = 25.0
 
             authorGrid.add(authorGridFName, 0, uiRowIndex)
