@@ -89,7 +89,7 @@ class CardCuttingUI(private val stage: Stage) {
     private val copyBtn = Button("Copy")
     private val removeSelectedBtn = Button("Remove Selected Text")
     private val restoreRemovedBtn = Button("Restore to Original")
-    private val keepOnlySelectedBtn = Button("Remove All Except for Selected Text")
+    private val keepOnlySelectedBtn = Button("Remove Except for Selected Text")
     private val editCardFormat = Button("Edit Card Format")
     private val exportBtn = Button("Send to Word")
 
