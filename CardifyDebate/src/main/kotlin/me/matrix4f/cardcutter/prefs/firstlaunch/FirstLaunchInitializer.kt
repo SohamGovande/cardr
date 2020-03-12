@@ -156,7 +156,11 @@ fun onFirstLaunch(): Exception? {
 
 fun updateFrom(from: Int, to: Int): Exception? {
     if (from == 1 && to == 2) {
-        Prefs.get().cardFormat = PrefsObject.DEFAULT_CARD_FORMAT
+        val prefs = Prefs.get()
+        prefs.cardFormat = PrefsObject.DEFAULT_CARD_FORMAT
+        if (getOSType() == OS.MAC) {
+            prefs.cardFormat = prefs.cardFormat.replace("Calibri", PrefsObject.MAC_CALIBRI_FONT)
+        }
     }
     return null
 }

@@ -41,16 +41,16 @@ shadowJar {
     doLast {
         copy {
             from 'build/libs/CardifyDebate.jar'
-            into "C:\\Users\\vgsoh\\CardifyDebate_dev\\native"
+            into "X:\\dev\\intellij\\CardifyDebate\\export"
         }
         copy {
             from 'build/libs/CardifyDebate.jar'
             into "C:\\Users\\vgsoh\\Google Drive\\Debate\\CardifyDebate"
         }
-        copy {
-            from 'build/libs/CardifyDebate.jar'
-            into "C:\\Users\\vgsoh\\AppData\\Local\\CardifyDebate\\app"
-        }
+//        copy {
+//            from 'build/libs/CardifyDebate.jar'
+//            into "C:\\Users\\vgsoh\\AppData\\Local\\CardifyDebate\\app"
+//        }
     }
 }
 
