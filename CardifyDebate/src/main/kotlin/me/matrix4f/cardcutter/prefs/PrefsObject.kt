@@ -16,6 +16,7 @@ class PrefsObject {
     var capitalizeAuthors = false
     var endQualsWithComma = true
 
+    var showParagraphBreaks = false
     var darkMode = false
 
     var emailAddress = ""

@@ -444,7 +444,7 @@ class CardCuttingUI(private val stage: Stage) {
             |</style>""".trimMargin()
     }
 
-    private fun generateFullHTML(switchFont: Boolean): String {
+    private fun generateFullHTML(switchFont: Boolean, forCopy: Boolean): String {
         val cite = createCite()
         val spacePlaceholder = "sas8d9f7aj523kj5h123jkhsaf"
         val doc = Jsoup.parse(Prefs.get().cardFormat.replace("&nbsp;",spacePlaceholder))
@@ -536,6 +536,9 @@ class CardCuttingUI(private val stage: Stage) {
             docHtml = docHtml.replace("font-family:'${PrefsObject.MAC_CALIBRI_FONT}';", "")
         }
 
+        if (Prefs.get().showParagraphBreaks && forCopy)
+            docHtml = docHtml.replace("¶ ", "")
+
         return docHtml
     }
 
@@ -543,10 +546,12 @@ class CardCuttingUI(private val stage: Stage) {
         val cardBody = cardBody.get()
         var out: String
 
+        val paragraphSuffix = if (Prefs.get().showParagraphBreaks) "¶ " else ""
+
         if (Prefs.get().condense) {
-            out = "<p class='cardbody'>${cardBody.replace("<p>","").replace("</p>","")}</p>"
+            out = "<p class='cardbody'>${cardBody.replace("<p>","").replace("</p>",paragraphSuffix)}</p>"
         } else {
-            out = cardBody.replace("<p>","<p class='cardbody'>")
+            out = cardBody.replace("<p>","<p class='cardbody'>").replace("</p>","$paragraphSuffix</p>")
         }
 
         while (out.contains("  "))
@@ -555,12 +560,13 @@ class CardCuttingUI(private val stage: Stage) {
         for (remove in removeWords) {
             out = out.replace(remove, "")
         }
+
         return out
     }
 
     private fun refreshHTML() {
         Platform.runLater {
-            cardWV.engine?.loadContent(generateFullHTML(switchFont = false))
+            cardWV.engine?.loadContent(generateFullHTML(switchFont = false, forCopy = false))
         }
     }
 
@@ -703,6 +709,14 @@ class CardCuttingUI(private val stage: Stage) {
             }
         }
 
+        val showParagraphBreaksMI = CheckMenuItem("Show paragraphs breaks")
+        showParagraphBreaksMI.isSelected = Prefs.get().showParagraphBreaks
+        showParagraphBreaksMI.setOnAction {
+            Prefs.get().showParagraphBreaks = showParagraphBreaksMI.isSelected
+            Prefs.save()
+            refreshHTML()
+        }
+
         settingsMenu.items.add(formatMI)
         settingsMenu.items.add(condenseMI)
         settingsMenu.items.add(useSmallDatesMI)
@@ -711,6 +725,7 @@ class CardCuttingUI(private val stage: Stage) {
         settingsMenu.items.add(capitalizeAuthorsMI)
         settingsMenu.items.add(SeparatorMenuItem())
         settingsMenu.items.add(darkModeMI)
+        settingsMenu.items.add(showParagraphBreaksMI)
 
         val aboutMenu = Menu("About")
 
@@ -780,7 +795,7 @@ class CardCuttingUI(private val stage: Stage) {
             .systemClipboard
             .setContents(
                 HTMLSelection(
-                    generateFullHTML(switchFont = true)
+                    generateFullHTML(switchFont = true, forCopy = true)
                 ),
                 null
             )
@@ -799,7 +814,7 @@ class CardCuttingUI(private val stage: Stage) {
             }
         }
 
-        pasteCardToVerbatim(generateFullHTML(switchFont = true))
+        pasteCardToVerbatim(generateFullHTML(switchFont = true, forCopy = true))
     }
 
     private fun updateWindowTitle(title: String) {
