@@ -7,6 +7,7 @@ import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.geometry.Insets
 import javafx.scene.control.*
+import javafx.scene.effect.ColorAdjust
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.KeyCode
@@ -197,12 +198,7 @@ class CardCuttingUI(private val stage: Stage) {
         cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
         cardDisplayMenu.spacing = 5.0
 
-        restoreRemovedBtn.graphic = loadMiniIcon("/restore.png")
-        removeSelectedBtn.graphic = loadMiniIcon("/remove.png")
-        copyBtn.graphic = loadMiniIcon("/copy.png")
-        refreshBtn.graphic = loadMiniIcon("/refresh.png")
-        editCardFormat.graphic = loadMiniIcon("/edit.png")
-        keepOnlySelectedBtn.graphic = loadMiniIcon("/keep-text.png")
+        loadMenuIcons()
 
         val cdm1 = HBox()
         cdm1.spacing = 5.0
@@ -238,8 +234,14 @@ class CardCuttingUI(private val stage: Stage) {
     private fun loadMiniIcon(path: String): ImageView? {
         val copyResource: InputStream? = javaClass.getResourceAsStream(path)
         if (copyResource != null) {
-            val copyBtnImage = Image(copyResource, 15.0, 15.0, true, true)
-            return ImageView(copyBtnImage)
+            val image = Image(copyResource, 15.0, 15.0, true, true)
+            val imageView = ImageView(image)
+            if (Prefs.get().darkMode) {
+                val effect = ColorAdjust()
+                effect.brightness = 1.0
+                imageView.effect = effect
+            }
+            return imageView
         }
         return null
     }
@@ -351,6 +353,15 @@ class CardCuttingUI(private val stage: Stage) {
         logger.info("Checking login status")
         checkLoginStatus()
         loaded = true
+    }
+
+    private fun loadMenuIcons() {
+        restoreRemovedBtn.graphic = loadMiniIcon("/restore.png")
+        removeSelectedBtn.graphic = loadMiniIcon("/remove.png")
+        copyBtn.graphic = loadMiniIcon("/copy.png")
+        refreshBtn.graphic = loadMiniIcon("/refresh.png")
+        editCardFormat.graphic = loadMiniIcon("/edit.png")
+        keepOnlySelectedBtn.graphic = loadMiniIcon("/keep-text.png")
     }
 
     private fun checkLoginStatus() {
@@ -731,6 +742,7 @@ class CardCuttingUI(private val stage: Stage) {
             stage.scene.stylesheets.remove("/styles-dark.css")
             stage.scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
             refreshHTML()
+            loadMenuIcons()
 
             if (!Prefs.get().darkMode) {
                 val alert = Alert(Alert.AlertType.INFORMATION)
