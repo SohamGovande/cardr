@@ -109,6 +109,14 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
             Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/sign-up.html").toURI())
         }
 
+
+        val forgotPassword = Label("Forgot password?")
+        forgotPassword.style = "-fx-cursor: hand;"
+        forgotPassword.setTextFill(Color.BLUE)
+        forgotPassword.setOnMouseClicked {
+            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/forgot-password-instructions.html").toURI())
+        }
+
         val headerCardBody = Label("Card Body")
         headerCardBody.style = "-fx-font-weight: bold;"
         val headerTagAndCite = Label("Tag and Cite")
@@ -120,10 +128,11 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         vbox.children.add(header)
         vbox.children.add(subheader)
         vbox.children.add(dontHaveAccount)
+        vbox.children.add(forgotPassword)
         vbox.children.add(gp)
         vbox.children.add(continueBtn)
 
-        val scene = Scene(vbox, 300.0, 200.0)
+        val scene = Scene(vbox, 300.0, 225.0)
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
