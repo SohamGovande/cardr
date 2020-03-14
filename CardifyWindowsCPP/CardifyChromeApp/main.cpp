@@ -1,11 +1,16 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <time.h>
 #include <string>
 #include <fstream>
 #include <iostream>
+#include <cstdlib>
 #include <io.h>
 #include <Windows.h>
+#include "json.hpp"
+
+using json = nlohmann::json;
 
 // Define union to read the message size easily
 typedef union {
@@ -60,29 +65,37 @@ int main(int argc, char** argv)
 		// now read the message
 		if (iLen > 0)
 		{
+			srand(time(0));
+
 			jsonMsg = (char*)malloc(8 * iLen);
 			iSize = fread(jsonMsg, 1, iLen, stdin);
-
-			std::ofstream out("CardifyChromeAppLog.txt");
-			// process message
-			char* newstr = new char[iSize + 1 - 10];
-			memcpy(newstr, jsonMsg + 8, iSize - 10);
-			newstr[iSize - 10] = '\0';
-			std::string url(newstr);
-			delete[] newstr;
-
-			out << "Extracted URL: " << url << std::endl;
-
-			std::string command = "..\\CardifyDebate.exe \"" + url + "\"";
-
-			out << "Running system command: " <<  command << std::endl;
-			out.close();
-
 			fwrite(lenBuf.u8, 1, 4, stdout);
 			fwrite(jsonMsg, 1, iLen, stdout);
 			fflush(stdout);
 
+			std::ofstream out("CardifyChromeAppLog.txt");
+
+			std::string jsonString(jsonMsg, iSize);
+			out << "Received data '" << jsonString << "'" << std::endl;
+			json parsed = json::parse(jsonString.begin(), jsonString.end());
+			std::string url = parsed["url"].get<std::string>();
+			std::string selection = parsed["selection"].get<std::string>();
+			std::string id = std::to_string(rand() % 1000);
+			std::string filepath = "CardifyTemp-" + id + ".txt";
+
+			out << "Writing selection data to file " << filepath << std::endl;
+
+			std::ofstream selectionFile;
+			selectionFile.open(filepath);
+			selectionFile << selection;
+			selectionFile.close();
+
+			std::string command = "..\\CardifyDebate.exe \"" + url + "\" " + id;
+			out << "Running system command (v1.2.0): " << command << std::endl;
+
 			system(command.c_str());
+
+			out.close();
 		}
 
 		// free resource

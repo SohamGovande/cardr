@@ -26,7 +26,7 @@ class CardifyDebate: Application() {
             ui = CardCuttingUI(stage)
             stage.scene = Scene(ui!!.initialize())
 
-            stage.scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm());
+            stage.scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
             stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
 
             logger.info("Loading deferred components")
@@ -49,6 +49,8 @@ class CardifyDebate: Application() {
         const val CURRENT_VERSION_INT = 3
         var IS_FIRST_LAUNCH = false
         var WAS_FIRST_LAUNCH_SUCCESSFUL = false
+        var OVERRIDE_LOGIN_CHECK = false
+        var RELEASE_MODE = true
 
         val logger = LogManager.getLogger(CardifyDebate::class.java)
     }

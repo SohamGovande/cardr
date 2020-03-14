@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
-  "name": "CardifyDebate",
-  "version": "1.0.1",
+  "name": "Cardify",
+  "version": "1.2.0",
 
-  "description": "Debate extension that integrates with CardifyDebate's desktop software to convert a webpage into a Verbatim card in one click.",
+  "description": "An advanced, next-gen evidence collector for debate research.",
   "icons": {
     "16": "icons/icon-16.png",
     "32": "icons/icon-32.png",
@@ -11,7 +11,7 @@
     "128": "icons/icon-128.png"
   },
 
-  "browser_action": { "default_title": "Open in Cardify" },
+  "browser_action": { "default_title": "Cardify this webpage" },
 
   "author": "Soham Govande",
 

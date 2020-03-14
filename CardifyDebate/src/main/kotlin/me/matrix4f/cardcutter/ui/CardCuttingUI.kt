@@ -109,8 +109,8 @@ class CardCuttingUI(private val stage: Stage) {
     private var reader: WebsiteCardCutter? = null
 
     fun initialize(): VBox {
-        stage.widthProperty().addListener { observable, oldValue, newValue -> onWindowResized() }
-        stage.heightProperty().addListener { observable, oldValue, newValue -> onWindowResized() }
+        stage.widthProperty().addListener { _, _, _ -> onWindowResized() }
+        stage.heightProperty().addListener { _, _, _ -> onWindowResized() }
 
         logger.info("Generating menu bar")
         panel.children.add(VBox(generateMenuBar()))
@@ -380,7 +380,7 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun checkLoginStatus() {
-        if ((CardifyDebate.IS_FIRST_LAUNCH && CardifyDebate.WAS_FIRST_LAUNCH_SUCCESSFUL))
+        if ((CardifyDebate.IS_FIRST_LAUNCH && CardifyDebate.WAS_FIRST_LAUNCH_SUCCESSFUL) || CardifyDebate.OVERRIDE_LOGIN_CHECK)
             return
         if (Prefs.get().emailAddress.isEmpty()
             || Prefs.get().accessToken.isEmpty()) {
@@ -642,8 +642,9 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     fun loadFromReader(reader: WebsiteCardCutter) {
+        this.reader = reader
+
         Platform.runLater {
-            this.reader = reader
             this.urlTF.text = reader.getURL()
             this.authors = reader.getAuthors() ?: this.authors
             this.timestamp = reader.getDate()
@@ -879,68 +880,7 @@ class CardCuttingUI(private val stage: Stage) {
             if (reader == null) {
                 throw NullPointerException("No reader found")
             }
-            removeParagraphs.clear()
-
-            var selection = (cardWV.engine.executeScript("getSelectionTextCustom()") as String)
-                .replace("\n\n", " ")
-                .replace("¶ ", "").trim()
-
-            while (selection.contains("  "))
-                selection = selection.replace("  ", " ")
-
-            val paragraphs = reader!!.getBodyParagraphs().map { it.text() }.toMutableList()
-            var firstIndex = -1
-            var lastIndex = -1
-
-            for (i in paragraphs.indices) {
-                val paragraph = paragraphs[i]
-
-                if (!selection.contains(paragraph)) {
-                    if (firstIndex != -1 && lastIndex == -1)
-                        lastIndex = i-1
-                } else if (paragraph.isNotBlank()) {
-                    if (firstIndex == -1) {
-                        firstIndex = i
-                    }
-                }
-            }
-
-            if (firstIndex != -1 && lastIndex == -1)
-                lastIndex = paragraphs.size-1
-
-            if (firstIndex == -1 && lastIndex == -1)
-                throw ArrayIndexOutOfBoundsException()
-
-            val placeholder = "asfda8sdfaweh25k3h21klsamnfi5"
-            var selectionOutsides = selection
-            for (i in firstIndex..lastIndex) {
-                selectionOutsides = selectionOutsides.replace(paragraphs[i], placeholder)
-            }
-
-            while (selectionOutsides.contains("$placeholder$placeholder"))
-                selectionOutsides = selectionOutsides.replace("$placeholder$placeholder", placeholder)
-
-            val beforeAfterSelection = selectionOutsides.split(placeholder)
-            if (firstIndex != 0) {
-                paragraphs[firstIndex - 1] = paragraphs[firstIndex - 1].replace(beforeAfterSelection[0].trim(), "")
-                removeParagraphs.add(paragraphs[firstIndex-1])
-            }
-
-            if (lastIndex != paragraphs.size - 1) {
-                paragraphs[lastIndex + 1] = paragraphs[lastIndex + 1].replace(beforeAfterSelection[beforeAfterSelection.size - 1].trim(), "")
-                removeParagraphs.add(paragraphs[lastIndex + 1])
-            }
-
-            for (i in 0 until firstIndex) {
-                removeParagraphs.add(paragraphs[i])
-            }
-
-            for (i in lastIndex+1 until paragraphs.size) {
-                println(paragraphs[i])
-                removeParagraphs.add(paragraphs[i])
-            }
-
-            refreshHTML()
+            keepOnlyText(cardWV.engine.executeScript("getSelectionTextCustom()") as String)
             success = true
         } catch (e: JSException) {
             logger.error(e)
@@ -960,6 +900,73 @@ class CardCuttingUI(private val stage: Stage) {
             val alert = Alert(Alert.AlertType.INFORMATION, "Please highlight at least one full paragraph in the preview pane in order to use this tool.")
             alert.headerText = "Not enough text selected"
             alert.showAndWait()
+        }
+    }
+
+    @Throws(Exception::class)
+    fun keepOnlyText(text: String) {
+        Platform.runLater {
+            removeParagraphs.clear()
+
+            var selection = text
+                .replace("\n\n", " ")
+                .replace("¶ ", "").trim()
+
+            while (selection.contains("  "))
+                selection = selection.replace("  ", " ")
+
+            val paragraphs = reader!!.getBodyParagraphs().map { it.text() }.toMutableList()
+            var firstIndex = -1
+            var lastIndex = -1
+
+            for (i in paragraphs.indices) {
+                val paragraph = paragraphs[i]
+
+                if (!selection.contains(paragraph)) {
+                    if (firstIndex != -1 && lastIndex == -1)
+                        lastIndex = i - 1
+                } else if (paragraph.isNotBlank()) {
+                    if (firstIndex == -1) {
+                        firstIndex = i
+                    }
+                }
+            }
+
+            if (firstIndex != -1 && lastIndex == -1)
+                lastIndex = paragraphs.size - 1
+
+            if (firstIndex == -1 && lastIndex == -1)
+                throw ArrayIndexOutOfBoundsException("You must highlight at least one full paragraph in the webpage.")
+
+            val placeholder = "asfda8sdfaweh25k3h21klsamnfi5"
+            var selectionOutsides = selection
+            for (i in firstIndex..lastIndex) {
+                selectionOutsides = selectionOutsides.replace(paragraphs[i], placeholder)
+            }
+
+            while (selectionOutsides.contains("$placeholder$placeholder"))
+                selectionOutsides = selectionOutsides.replace("$placeholder$placeholder", placeholder)
+
+            val beforeAfterSelection = selectionOutsides.split(placeholder)
+            if (firstIndex != 0) {
+                paragraphs[firstIndex - 1] = paragraphs[firstIndex - 1].replace(beforeAfterSelection[0].trim(), "")
+                removeParagraphs.add(paragraphs[firstIndex - 1])
+            }
+
+            if (lastIndex != paragraphs.size - 1) {
+                paragraphs[lastIndex + 1] = paragraphs[lastIndex + 1].replace(beforeAfterSelection[beforeAfterSelection.size - 1].trim(), "")
+                removeParagraphs.add(paragraphs[lastIndex + 1])
+            }
+
+            for (i in 0 until firstIndex) {
+                removeParagraphs.add(paragraphs[i])
+            }
+
+            for (i in lastIndex + 1 until paragraphs.size) {
+                println(paragraphs[i])
+                removeParagraphs.add(paragraphs[i])
+            }
+            refreshHTML()
         }
     }
 

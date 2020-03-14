@@ -5,9 +5,11 @@ import me.matrix4f.cardcutter.ui.CardCuttingUI
 import me.matrix4f.cardcutter.updater.UpdateChecker
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
+import me.matrix4f.cardcutter.util.showErrorDialog
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
+import java.io.BufferedReader
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -48,6 +50,24 @@ fun main(args: Array<String>) {
                     val reader = WebsiteCardCutter(args[0])
                     uiLock.wait()
                     ui!!.loadFromReader(reader)
+
+                    try {
+                        if (args.size == 2) {
+                            val launchID = args[1]
+                            CardifyDebate.logger.info("Card selection assistant: Card ID $launchID")
+
+                            val selectionDataFile = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifyTemp-$launchID.txt").toFile()
+                            val selectionData: String = selectionDataFile.inputStream().bufferedReader().use(BufferedReader::readText)
+                            if (selectionData.isNotBlank()) {
+                                ui!!.keepOnlyText(selectionData)
+                            }
+                            if (CardifyDebate.RELEASE_MODE)
+                                selectionDataFile.deleteOnExit()
+                        }
+                    } catch (e: Exception) {
+                        showErrorDialog("Error loading selected text: ${e.message}", "Please see the log file for additional details.")
+                        CardifyDebate.logger.error("Error loading selected text", e)
+                    }
                 }
             } catch (e: Exception) {
                 CardifyDebate.logger.error("Error preloading page", e)
