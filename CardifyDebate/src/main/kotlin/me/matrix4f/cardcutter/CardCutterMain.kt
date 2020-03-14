@@ -47,16 +47,20 @@ fun main(args: Array<String>) {
         Thread {
             try {
                 synchronized(uiLock) {
-                    val reader = WebsiteCardCutter(args[0])
-                    uiLock.wait()
-                    ui!!.loadFromReader(reader)
-
                     try {
-                        if (args.size == 2) {
-                            val launchID = args[1]
-                            CardifyDebate.logger.info("Card selection assistant: Card ID $launchID")
+                        if (args.size == 1) {
+                            val reader = WebsiteCardCutter(args[0], null)
+                            uiLock.wait()
+                            ui!!.loadFromReader(reader)
+                        } else if (args.size == 2) {
+                            val cardID = args[1]
+                            CardifyDebate.logger.info("Loaded card ID $cardID")
 
-                            val selectionDataFile = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifyTemp-$launchID.txt").toFile()
+                            val reader = WebsiteCardCutter(args[0], cardID)
+                            uiLock.wait()
+                            ui!!.loadFromReader(reader)
+
+                            val selectionDataFile = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifySelection-$cardID.txt").toFile()
                             val selectionData: String = selectionDataFile.inputStream().bufferedReader().use(BufferedReader::readText)
                             if (selectionData.isNotBlank()) {
                                 ui!!.keepOnlyText(selectionData)

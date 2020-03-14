@@ -80,15 +80,24 @@ int main(int argc, char** argv)
 			json parsed = json::parse(jsonString.begin(), jsonString.end());
 			std::string url = parsed["url"].get<std::string>();
 			std::string selection = parsed["selection"].get<std::string>();
-			std::string id = std::to_string(rand() % 1000);
-			std::string filepath = "CardifyTemp-" + id + ".txt";
+			std::string html = parsed["html"].get<std::string>();
 
-			out << "Writing selection data to file " << filepath << std::endl;
+			std::string id = std::to_string(rand() % 1000);
+			std::string selectionFilepath = "CardifySelection-" + id + ".txt";
+			std::string htmlFilepath = "CardifyPage-" + id + ".html";
+
+			out << "Writing selection data to file " << selectionFilepath << std::endl;
+			out << "Writing html data to file " << htmlFilepath << std::endl;
 
 			std::ofstream selectionFile;
-			selectionFile.open(filepath);
+			selectionFile.open(selectionFilepath);
 			selectionFile << selection;
 			selectionFile.close();
+
+			std::ofstream htmlFile;
+			htmlFile.open(htmlFilepath);
+			htmlFile << html;
+			htmlFile.close();
 
 			std::string command = "..\\CardifyDebate.exe \"" + url + "\" " + id;
 			out << "Running system command (v1.2.0): " << command << std::endl;

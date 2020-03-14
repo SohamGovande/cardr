@@ -25,6 +25,15 @@ repositories {
     mavenCentral()
 }
 
+tasks.register("export") {
+    doLast {
+        copy {
+            from 'build/libs/CardifyDebate.jar'
+            into "C:\\Users\\vgsoh\\AppData\\Local\\CardifyDebate\\app"
+        }
+    }
+}
+
 
 jar {
     manifest {

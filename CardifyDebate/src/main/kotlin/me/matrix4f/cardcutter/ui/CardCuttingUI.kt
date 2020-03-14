@@ -263,7 +263,7 @@ class CardCuttingUI(private val stage: Stage) {
         gotoUrlButton.setOnAction {
             Thread {
                 try {
-                    val reader = WebsiteCardCutter(urlTF.text)
+                    val reader = WebsiteCardCutter(urlTF.text, null)
                     this.reader = reader
                     removeWords.clear()
                     removeParagraphs.clear()
@@ -356,8 +356,10 @@ class CardCuttingUI(private val stage: Stage) {
         propertyMonthTF.textProperty().bindBidirectional(this.timestamp.month)
         propertyYearTF.textProperty().bindBidirectional(this.timestamp.year)
 
-        logger.info("Checking login status")
-        checkLoginStatus()
+        Thread {
+            logger.info("Checking login status")
+            checkLoginStatus()
+        }.start()
         loaded = true
     }
 
@@ -386,13 +388,13 @@ class CardCuttingUI(private val stage: Stage) {
             || Prefs.get().accessToken.isEmpty()) {
             // Needs to sign in
             logger.info("User needs to sign in - first time")
-            SignInWindow(SignInLauncherOptions.WELCOME, currentUser).show()
+            Platform.runLater { SignInWindow(SignInLauncherOptions.WELCOME, currentUser).show() }
         } else {
             val renewResult = currentUser.renew()
             if (!renewResult.wasSuccessful()) {
                 logger.info("User needs to sign in - token expired")
                 // Access token has expired
-                SignInWindow(SignInLauncherOptions.TOKEN_EXPIRED, currentUser).show()
+                Platform.runLater { SignInWindow(SignInLauncherOptions.TOKEN_EXPIRED, currentUser).show() }
             }
         }
     }

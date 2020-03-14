@@ -3,6 +3,7 @@ package me.matrix4f.cardcutter.web
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import javafx.beans.property.SimpleStringProperty
+import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.util.*
@@ -11,9 +12,11 @@ import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import java.io.BufferedReader
 import java.net.URI
+import java.nio.file.Paths
 
-class WebsiteCardCutter(private val url: String) {
+class WebsiteCardCutter(private val url: String, cardID: String?) {
 
     private val logger = LogManager.getLogger(javaClass)
     private var doc: Document
@@ -31,7 +34,20 @@ class WebsiteCardCutter(private val url: String) {
 
     init {
         try {
-            doc = Jsoup.connect(url).get()
+            if (cardID == null) {
+                doc = Jsoup.connect(url).get()
+            } else {
+                try {
+                    val htmlDataFile = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifyPage-$cardID.html").toFile()
+                    val htmlData: String = htmlDataFile.inputStream().bufferedReader().use(BufferedReader::readText)
+                    doc = Jsoup.parse(htmlData)
+                    if (CardifyDebate.RELEASE_MODE)
+                        htmlDataFile.deleteOnExit()
+                } catch (e: Exception) {
+                    logger.error("Unable to load card ID $cardID", e)
+                    doc = Jsoup.connect(url).get()
+                }
+            }
         } catch (e: Exception) {
             doc = Jsoup.parse("<html></html>")
             logger.error("Unable to load URL: $url", e)
@@ -507,7 +523,7 @@ class WebsiteCardCutter(private val url: String) {
     }
     fun getURL() = url
 
-    public fun getBodyParagraphs(): Elements {
+    fun getBodyParagraphs(): Elements {
         if (bodyParagraphElements == null) {
             val reader = CardBodyReader(getHostName(url).toLowerCase(), doc)
             bodyParagraphElements = reader.getBodyParagraphs()
