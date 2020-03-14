@@ -42,7 +42,7 @@ class CardifyDebate: Application() {
     }
 
     companion object {
-        const val WIDTH = 800.0
+        const val WIDTH = 815.0
         const val HEIGHT = 600.0
 
         const val CURRENT_VERSION = "v1.2.0"

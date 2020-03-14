@@ -16,6 +16,11 @@ class HistoryWindow: ModalWindow("Card History") {
 
     private val webView = WebView()
 
+    init {
+        window.widthProperty().addListener {_, _, _ -> onWindowResized()}
+        window.heightProperty().addListener {_, _, _ -> onWindowResized()}
+    }
+
     override fun generateUI(): Scene {
         val vbox = VBox()
         vbox.padding = Insets(10.0)
@@ -39,5 +44,9 @@ class HistoryWindow: ModalWindow("Card History") {
         val scene = Scene(vbox, 600.0, 400.0)
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         return scene
+    }
+
+    private fun onWindowResized() {
+        webView.prefWidth = window.width
     }
 }

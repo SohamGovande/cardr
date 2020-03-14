@@ -38,6 +38,7 @@ import java.awt.Toolkit
 import java.io.InputStream
 import java.lang.NullPointerException
 import java.net.URL
+import java.util.*
 import java.util.function.Consumer
 
 class CardCuttingUI(private val stage: Stage) {
@@ -108,6 +109,9 @@ class CardCuttingUI(private val stage: Stage) {
     private var reader: WebsiteCardCutter? = null
 
     fun initialize(): VBox {
+        stage.widthProperty().addListener { observable, oldValue, newValue -> onWindowResized() }
+        stage.heightProperty().addListener { observable, oldValue, newValue -> onWindowResized() }
+
         logger.info("Generating menu bar")
         panel.children.add(VBox(generateMenuBar()))
 
@@ -117,6 +121,7 @@ class CardCuttingUI(private val stage: Stage) {
 
         urlTF.promptText = "Paste a URL to get started"
         urlTF.prefWidth = CardifyDebate.WIDTH - 50
+
         gotoUrlButton.prefWidth = 50.0
         searchBarPanel.children.add(urlTF)
         searchBarPanel.children.add(gotoUrlButton)
@@ -125,7 +130,7 @@ class CardCuttingUI(private val stage: Stage) {
 
         pGrid.hgap = 10.0
         pGrid.vgap = 10.0
-        pGrid.prefWidth = 300.0
+        pGrid.minWidth = 300.0
         pGrid.prefHeight = CardifyDebate.HEIGHT - 100 // Take up the rest remaining space
 
         bindToRefreshWebView(propertyUrlTextField)
@@ -204,18 +209,15 @@ class CardCuttingUI(private val stage: Stage) {
 
         loadMenuIcons()
 
-        val cdm1 = HBox()
-        cdm1.spacing = 5.0
+        val cdm1 = FlowPane()
+        cdm1.hgap = 5.0
+        cdm1.vgap = 5.0
         cdm1.children.add(removeSelectedBtn)
         cdm1.children.add(keepOnlySelectedBtn)
         cdm1.children.add(restoreRemovedBtn)
+        cdm1.children.add(copyBtn)
+        cdm1.children.add(editCardFormat)
         cardDisplayMenu.children.add(cdm1)
-
-        val cdm2 = HBox()
-        cdm2.spacing = 5.0
-        cdm2.children.add(copyBtn)
-        cdm2.children.add(editCardFormat)
-        cardDisplayMenu.children.add(cdm2)
 
         cardDisplayArea.children.add(cardDisplayMenu)
         cardDisplayArea.children.add(cardWV)
@@ -378,7 +380,7 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun checkLoginStatus() {
-        if (CardifyDebate.IS_FIRST_LAUNCH && CardifyDebate.WAS_FIRST_LAUNCH_SUCCESSFUL)
+        if ((CardifyDebate.IS_FIRST_LAUNCH && CardifyDebate.WAS_FIRST_LAUNCH_SUCCESSFUL) || true)
             return
         if (Prefs.get().emailAddress.isEmpty()
             || Prefs.get().accessToken.isEmpty()) {
@@ -624,6 +626,13 @@ class CardCuttingUI(private val stage: Stage) {
                 out = out.substring(0, out.length - "¶ </p>".length)
         }
         return out
+    }
+
+    private fun onWindowResized() {
+        urlTF.prefWidth = stage.width - 50
+        cardWV.prefWidth = stage.width - 325
+        cardWV.prefHeight = stage.height - 150
+        pGrid.prefHeight = stage.height - 150
     }
 
     private fun refreshHTML() {

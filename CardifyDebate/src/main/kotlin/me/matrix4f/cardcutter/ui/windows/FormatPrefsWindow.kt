@@ -19,10 +19,19 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
 
     private val editText = HTMLEditor()
 
+    init {
+        window.widthProperty().addListener {_, _, _ -> onWindowResized()}
+        window.heightProperty().addListener {_, _, _ -> onWindowResized()}
+    }
+
     override fun close(event: WindowEvent?) {
         Prefs.get().cardFormat = editText.htmlText.replace("contenteditable=\"true\"","")
         Prefs.save()
         super.close(event)
+    }
+
+    private fun onWindowResized() {
+        editText.prefWidth = window.width
     }
 
     override fun generateUI(): Scene {
@@ -45,7 +54,7 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
         editText.prefHeight = 400.0
         editText.padding = Insets(1.0)
         editText.border = Border(BorderStroke(Color.web("#ddd"), BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderWidths.DEFAULT))
-        editText.style = "-fx-font-size: 14.0;-fx-font-family: 'Calibri';"
+        editText.style = "-fx-font-size: 14.0; -fx-font-family: 'Calibri';"
 
         val editHBox = HBox()
         editHBox.children.add(editText)
