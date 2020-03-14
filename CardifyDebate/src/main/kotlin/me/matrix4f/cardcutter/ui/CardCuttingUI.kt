@@ -380,7 +380,7 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun checkLoginStatus() {
-        if ((CardifyDebate.IS_FIRST_LAUNCH && CardifyDebate.WAS_FIRST_LAUNCH_SUCCESSFUL) || true)
+        if ((CardifyDebate.IS_FIRST_LAUNCH && CardifyDebate.WAS_FIRST_LAUNCH_SUCCESSFUL))
             return
         if (Prefs.get().emailAddress.isEmpty()
             || Prefs.get().accessToken.isEmpty()) {
