@@ -5,6 +5,7 @@ import javafx.scene.Scene
 import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.layout.VBox
+import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
@@ -17,12 +18,16 @@ class CreditsWindow : ModalWindow("Credits") {
         val text = Text(str)
         text.style = "-fx-font-weight: bold;"
         text.font = Font.font(13.0)
+        if (Prefs.get().darkMode)
+            text.fill = Color.WHITE
         return text
     }
 
     private fun text(str: String): Text {
         val text = Text(str);
         text.font = Font.font(13.0)
+        if (Prefs.get().darkMode)
+            text.fill = Color.WHITE
         return text
     }
 
