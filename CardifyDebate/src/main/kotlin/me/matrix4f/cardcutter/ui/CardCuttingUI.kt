@@ -705,10 +705,20 @@ class CardCuttingUI(private val stage: Stage) {
         sendMI.accelerator = KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
         sendMI.setOnAction { sendCardToVerbatim() }
 
+        val removeSelectedMI = MenuItem("Remove Selected Text")
+        removeSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
+        removeSelectedMI.setOnAction { removeSelectedText() }
+
+        val keepSelectedMI = MenuItem("Remove Except for Selected Text")
+        keepSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN)
+        keepSelectedMI.setOnAction { keepOnlySelectedText() }
+
         toolsMenu.items.add(copyMI)
-        toolsMenu.items.add(SeparatorMenuItem())
         toolsMenu.items.add(refreshWordMI)
         toolsMenu.items.add(sendMI)
+        toolsMenu.items.add(SeparatorMenuItem())
+        toolsMenu.items.add(removeSelectedMI)
+        toolsMenu.items.add(keepSelectedMI)
 
         val settingsMenu = Menu("Settings")
 
