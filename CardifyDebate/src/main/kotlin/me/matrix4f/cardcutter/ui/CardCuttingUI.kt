@@ -550,7 +550,7 @@ class CardCuttingUI(private val stage: Stage) {
         doc.select("head")[0].html("""
             <style>
                 body { font-family: 'System'; font-size: 11pt;
-                ${if (Prefs.get().darkMode) {
+                ${if (Prefs.get().darkMode && !forCopy) {
                     "background-color: #373e43; color: #ffffff;"
                 } else "background-color: #f4f4f4;"}
             </style> 

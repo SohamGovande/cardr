@@ -132,7 +132,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         vbox.children.add(gp)
         vbox.children.add(continueBtn)
 
-        val scene = Scene(vbox, 300.0, 225.0)
+        val scene = Scene(vbox, 300.0, 220.0)
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
