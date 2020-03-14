@@ -59,7 +59,8 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
             alert.headerText = "Available Macros"
             alert.buttonTypes.add(ButtonType.CLOSE)
 
-            val list = ListView<String>(FXCollections.observableArrayList(
+            val list = ListView(FXCollections.observableArrayList(
+                "{AuthorFirstName}",
                 "{AuthorLastName}",
                 "{AuthorFullName}",
                 "{DateFull}",

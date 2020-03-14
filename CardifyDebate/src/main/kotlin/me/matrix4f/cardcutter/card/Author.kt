@@ -8,18 +8,18 @@ data class Author(val firstName: StringProperty, val lastName: StringProperty, v
 
     constructor(first: String, last: String): this(SimpleStringProperty(first), SimpleStringProperty(last), SimpleStringProperty(""))
 
-    fun toString(short: Boolean): String {
-        return if (short || firstName.get().isEmpty()) {
-            if (Prefs.get().capitalizeAuthors)
-                lastName.get().toUpperCase()
-            else
-                lastName.get()
-        } else {
-            if (Prefs.get().capitalizeAuthors)
-                "${firstName.get().toUpperCase()} ${lastName.get().toUpperCase()}"
-            else
-                "${firstName.get()} ${lastName.get()}"
+    fun toString(nameFormat: AuthorNameFormat): String {
+        val ret: String
+        if (nameFormat == AuthorNameFormat.LAST_NAME || firstName.get().isEmpty()) {
+            ret = lastName.get()
+        } else if (nameFormat == AuthorNameFormat.FIRST_NAME || lastName.get().isEmpty()) {
+            ret = firstName.get()
+        } else /*if (nameFormat == AuthorNameFormat.FULL_NAME)*/ {
+            ret = "${firstName.get()} ${lastName.get()}"
         }
+        if (Prefs.get().capitalizeAuthors)
+            return ret.toUpperCase()
+        return ret
     }
 
     override fun toString(): String {

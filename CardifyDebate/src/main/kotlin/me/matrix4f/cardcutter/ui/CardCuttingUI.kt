@@ -20,6 +20,7 @@ import javafx.stage.Stage
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.auth.CardifyUser
 import me.matrix4f.cardcutter.card.Author
+import me.matrix4f.cardcutter.card.AuthorNameFormat
 import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
@@ -533,9 +534,10 @@ class CardCuttingUI(private val stage: Stage) {
                 continue
             elem.html(
                 elem.html()
-                    .replace("{AuthorLastName}", cite.getAuthorName(true))
+                    .replace("{AuthorLastName}", cite.getAuthorName(AuthorNameFormat.LAST_NAME))
                     .replace("{DateShortened}", cite.date.toString(false))
-                    .replace("{AuthorFullName}", cite.getAuthorName(false))
+                    .replace("{AuthorFullName}", cite.getAuthorName(AuthorNameFormat.FULL_NAME))
+                    .replace("{AuthorFirstName}", cite.getAuthorName(AuthorNameFormat.FIRST_NAME))
                     .replace("{Qualifications}", cite.getAuthorQualifications())
                     .replace("{DateFull}", cite.date.toString(true))
                     .replace("{CurrentDate}", "${now.monthValue}-${now.dayOfMonth}-${now.year}")
