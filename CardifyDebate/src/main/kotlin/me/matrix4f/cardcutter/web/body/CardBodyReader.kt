@@ -313,6 +313,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             "wsj",
             "wallstreetjournal",
             "journals.sagepub",
+            "outline",
             "usatoday"
         )
 
