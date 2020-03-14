@@ -25,7 +25,7 @@ repositories {
     mavenCentral()
 }
 
-tasks.register("export") {
+task exportToApp {
     doLast {
         copy {
             from 'build/libs/CardifyDebate.jar'
