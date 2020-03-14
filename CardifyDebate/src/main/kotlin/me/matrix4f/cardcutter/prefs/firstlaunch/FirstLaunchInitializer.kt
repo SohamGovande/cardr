@@ -155,7 +155,7 @@ fun onFirstLaunch(): Exception? {
 }
 
 fun updateFrom(from: Int, to: Int): Exception? {
-    if (from == 1 && to == 2) {
+    if (from == 1 && to >= 2) {
         val prefs = Prefs.get()
         prefs.cardFormat = PrefsObject.DEFAULT_CARD_FORMAT
         if (getOSType() == OS.MAC) {
