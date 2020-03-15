@@ -74,17 +74,36 @@ int main(int argc, char** argv)
 			fflush(stdout);
 
 			std::ofstream out("CardifyChromeAppLog.txt");
+			out << "Cardify Chrome App - Last Updated v1.2.0" << std::endl;
 
 			std::string jsonString(jsonMsg, iSize);
 			out << "Received data '" << jsonString << "'" << std::endl;
 			json parsed = json::parse(jsonString.begin(), jsonString.end());
-			std::string url = parsed["url"].get<std::string>();
-			std::string selection = parsed["selection"].get<std::string>();
-			std::string html = parsed["html"].get<std::string>();
 
+			std::string dumped = parsed.dump();
+			U32_U8 dumpedSize;
+			dumpedSize.u32 = dumped.size();
+
+			fwrite(dumpedSize.u8, 1, 4, stdout);
+			fwrite(dumped.c_str(), 1, dumpedSize.u32, stdout);
+			fflush(stdout);
+
+
+			out << "Parsed json." << std::endl;
+			std::string url = parsed["url"].get<std::string>();
+			out << "Extracted url." << std::endl; 
+			std::string selection = parsed["selection"].get<std::string>();
+			out << "Extracted selection." << std::endl; 
+			std::string html = parsed["html"].get<std::string>();
+			out << "Extracted HTML." << std::endl;
+
+			out << "Creating ID..." << std::endl;
 			std::string id = std::to_string(rand() % 1000);
+			out << "Created ID " << id << std::endl;
 			std::string selectionFilepath = "CardifySelection-" + id + ".txt";
+			out << "Created selection path " << selectionFilepath << std::endl;
 			std::string htmlFilepath = "CardifyPage-" + id + ".html";
+			out << "Created html path " << htmlFilepath << std::endl;
 
 			out << "Writing selection data to file " << selectionFilepath << std::endl;
 			out << "Writing html data to file " << htmlFilepath << std::endl;
@@ -100,7 +119,7 @@ int main(int argc, char** argv)
 			htmlFile.close();
 
 			std::string command = "..\\CardifyDebate.exe \"" + url + "\" " + id;
-			out << "Running system command (v1.2.0): " << command << std::endl;
+			out << "Running system command: " << command << std::endl;
 
 			system(command.c_str());
 

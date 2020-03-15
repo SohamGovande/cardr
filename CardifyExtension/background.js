@@ -12,16 +12,17 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   }, function(selection) {
     var selectedText = selection[0];
 
-    chrome.tabs.sendMessage(tab.id, {text: 'getDOM'}, function(dom) {
+    chrome.tabs.executeScript({code: "document.all[0].outerHTML;"}, function(dom) {
+      var html = dom[0];
       console.log("Detected selected text: \"" + selectedText + "\"")
-      console.log("Detected DOM: " + dom)
+      console.log("Detected DOM: "  + html)
 
       chrome.runtime.sendNativeMessage(
         "me.matrix4f.cardify",
         { 
           'url': tab.url, 
           'selection': selectedText,
-          'html': dom
+          'html': html
         },
         function(response) {
           if (response == undefined) {
