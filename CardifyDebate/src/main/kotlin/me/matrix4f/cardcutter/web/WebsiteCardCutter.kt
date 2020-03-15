@@ -16,7 +16,7 @@ import java.io.BufferedReader
 import java.net.URI
 import java.nio.file.Paths
 
-class WebsiteCardCutter(private val url: String, cardID: String?) {
+class WebsiteCardCutter(private val url: String, private val cardID: String?) {
 
     private val logger = LogManager.getLogger(javaClass)
     private var doc: Document
@@ -526,7 +526,7 @@ class WebsiteCardCutter(private val url: String, cardID: String?) {
     fun getBodyParagraphs(): Elements {
         if (bodyParagraphElements == null) {
             val reader = CardBodyReader(getHostName(url).toLowerCase(), doc)
-            bodyParagraphElements = reader.getBodyParagraphs()
+            bodyParagraphElements = reader.getBodyParagraphs(cardID != null)
         }
         return bodyParagraphElements as Elements
     }

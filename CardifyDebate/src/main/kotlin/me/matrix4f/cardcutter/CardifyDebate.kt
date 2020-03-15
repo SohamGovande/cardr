@@ -49,8 +49,8 @@ class CardifyDebate: Application() {
         const val CURRENT_VERSION_INT = 3
         var IS_FIRST_LAUNCH = false
         var WAS_FIRST_LAUNCH_SUCCESSFUL = false
-        var OVERRIDE_LOGIN_CHECK = false
-        var RELEASE_MODE = true
+        val OVERRIDE_LOGIN_CHECK = false
+        val RELEASE_MODE = true
 
         val logger = LogManager.getLogger(CardifyDebate::class.java)
     }

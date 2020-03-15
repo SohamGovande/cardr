@@ -43,6 +43,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".entry-content p")
     }
 
+    private fun bloomberg(): Elements {
+        return doc.select(".fence-body > p")
+    }
+
     private fun businessinsider(): Elements {
         return doc.select("div[data-piano-inline-content-wrapper] p")
     }
@@ -56,7 +60,11 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
     }
 
     private fun catoinstitute(): Elements {
-        return Elements(doc.select("article p"))
+        return doc.select("article p")
+    }
+
+    private fun cnn(): Elements {
+        return doc.select(".body-text p")
     }
 
     private fun dailywire(): Elements {
@@ -144,6 +152,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".StoryBodyCompanionColumn p, .StoryBodyCompanionColumn h2, .StoryBodyCompanionColumn h3, .articleBody p")
     }
 
+    private fun outline(): Elements {
+        return doc.select("raw p")
+    }
+
     private fun phys(): Elements {
         val a = doc.select(".article-main p").filter {
             !it.text().equals("Explore further")
@@ -191,6 +203,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
 
     private fun sciencemag(): Elements {
         return doc.select(".article__body p")
+    }
+
+    private fun scmp(): Elements {
+        return doc.select(".body .content--p")
     }
 
     private fun tandfonline(): Elements {
@@ -250,20 +266,8 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".post__content p")
     }
 
-    private fun washingtonexaminer(): Elements {
-        return doc.select(".RichTextArticleBody-body p")
-    }
-
-    private fun washingtontimes(): Elements {
-        return doc.select(".article-text p")
-    }
-
-    private fun worldpoliticsreview(): Elements {
-        return doc.select("article p")
-    }
-
-    private fun wthr(): Elements {
-        return doc.select(".field-items p")
+    private fun usatoday(): Elements {
+        return doc.select(".gnt_ar_b p")
     }
 
     private fun vox(): Elements {
@@ -277,10 +281,33 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return Elements(a)
     }
 
-    fun getBodyParagraphs(): Elements {
+    private fun washingtonexaminer(): Elements {
+        return doc.select(".RichTextArticleBody-body p")
+    }
+
+    private fun washingtontimes(): Elements {
+        return doc.select(".article-text p")
+    }
+
+    private fun worldpoliticsreview(): Elements {
+        return doc.select("article p")
+    }
+
+    private fun wsj(): Elements {
+        return Elements(doc.select(".wsj-snippet-body p, .article-content p").filter {
+            !(it.text().contains("Copyright") && it.text().contains("Dow Jones & Company, Inc"))
+        })
+    }
+
+    private fun wthr(): Elements {
+        return doc.select(".field-items p")
+    }
+
+    fun getBodyParagraphs(fromCardID: Boolean): Elements {
         try {
             val hostName = hostName
                 .replace(" ","")
+                .replace(".","")
                 .replace(".org", "")
             logger.info("Loading article from publisher '$hostName'")
 
@@ -307,11 +334,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
 
     companion object {
         val INCOMPATIBLE_SOURCES = arrayOf(
-            "southchinamorningpost",
+            "scmp",
             "bloomberg",
             "cnn",
             "wsj",
-            "wallstreetjournal",
             "journals.sagepub",
             "outline",
             "usatoday"
