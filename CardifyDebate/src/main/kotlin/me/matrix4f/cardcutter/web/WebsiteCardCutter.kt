@@ -286,6 +286,9 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
             return authors
 
         authors = doc.select("div[data-share-authors]")
+            .filter {
+                it.attr("data-share-authors").isNotBlank()
+            }
             .map {
                 val authorsJson = JsonParser().parse(it.attr("data-share-authors").replace("&quot;","\"")).asJsonArray
                 authorsJson.map {

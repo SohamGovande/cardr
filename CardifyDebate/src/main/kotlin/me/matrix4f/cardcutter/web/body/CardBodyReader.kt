@@ -51,7 +51,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select("div[data-piano-inline-content-wrapper] p")
     }
 
-    private fun councilonforeignrelations(): Elements {
+    private fun cfr(): Elements {
         return Elements(doc.select(".body-content p").filter {
             !it.text().contains("This article first appeared ") &&
                 !it.hasClass("more-on__title") &&
