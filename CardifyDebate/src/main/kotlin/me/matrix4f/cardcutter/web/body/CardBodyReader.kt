@@ -112,6 +112,12 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".entry__text .text p")
     }
 
+    private fun justicepolicy(): Elements {
+        return Elements(doc.select("#content-primary p, #content-primary ul, #content-primary ol").filter {
+            !it.hasClass("byline") && !it.hasClass("assigned-tags") && !it.text().startsWith("Keywords: ") && !it.text().startsWith("Posted in ")
+        })
+    }
+
     private fun mic(): Elements {
         return doc.select(".ykW p")
     }

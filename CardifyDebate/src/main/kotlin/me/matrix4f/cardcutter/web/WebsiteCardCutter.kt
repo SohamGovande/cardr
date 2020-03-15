@@ -234,6 +234,8 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                 .flatMap { it.asIterable() }
                 .distinct()
                 .toTypedArray()
+        } else if (getHostName(url) == "justicepolicy") {
+            return arrayOf(Author("", "Justice Policy Institute"))
         }
         return null
     }
@@ -286,9 +288,7 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
             return authors
 
         authors = doc.select("div[data-share-authors]")
-            .filter {
-                it.attr("data-share-authors").isNotBlank()
-            }
+            .filter { it.attr("data-share-authors").isNotBlank() }
             .map {
                 val authorsJson = JsonParser().parse(it.attr("data-share-authors").replace("&quot;","\"")).asJsonArray
                 authorsJson.map {
