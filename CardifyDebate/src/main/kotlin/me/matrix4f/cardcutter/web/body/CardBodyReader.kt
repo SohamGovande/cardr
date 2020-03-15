@@ -116,6 +116,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".ykW p")
     }
 
+    private fun motherjones(): Elements {
+        return doc.select(".entry-content > p")
+    }
+
     private fun nationalinterest(): Elements {
         return Elements(doc.select(".detail__content p").filter {
             (it.classNames().size == 0 || it.hasClass("flfc"))
@@ -193,6 +197,12 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
     private fun prisonpolicy(): Elements {
         return Elements(doc.select("#page p").filter {
             !it.hasClass("attrib")
+        })
+    }
+
+    private fun rand(): Elements {
+        return Elements(doc.select(".product-main p, .product-main h2, .product-main h3, .product-main h4, .product-main ol, .product-main ul").filter {
+            !it.parent().hasClass("conducted") && it.parent().id() != "indicia" && !it.hasClass("authors") && !it.hasClass("date") && !it.hasClass("type") && !it.parent().hasClass("text") && !it.parent().hasClass("section-inner")
         })
     }
 
@@ -331,7 +341,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
                 .replace(" ","")
                 .replace(".","")
                 .replace(".org", "")
-            logger.info("Loading article from publisher '$hostName'")
+            logger.info("Loading article from host '$hostName'")
 
             if (doc.text().toLowerCase().contains("cardify error")) {
                 return doc.select("p")
