@@ -190,6 +190,12 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return Elements(a)
     }
 
+    private fun prisonpolicy(): Elements {
+        return Elements(doc.select("#page p").filter {
+            !it.hasClass("attrib")
+        })
+    }
+
     private fun reason(): Elements {
         return doc.select(".entry-content p")
     }

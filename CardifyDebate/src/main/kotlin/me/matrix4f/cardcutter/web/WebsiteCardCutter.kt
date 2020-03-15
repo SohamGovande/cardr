@@ -114,6 +114,12 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
             { it[1]!!.value.toInt().toString() },
             { it[2]!!.value.toInt().toString() },
             { ensureYYYYFormat(it[3]?.value ?: currentDate().year.toString()) }))
+
+        dateMatcher.register(RegexDatePattern(
+            "(?i)(jan(uary)?|feb(ruary)?|mar(ch)?|apr(il)?|may|jun(e)?|jul(y)?|aug(ust)?|sep(t(ember)?)?|oct(ober)?|nov(ember)?|dec(ember)?)\\s+(\\d\\d\\d\\d)",
+            { convertMonthNameToNumber(it[1]!!.value) },
+            { "" },
+            { ensureYYYYFormat(it[14]?.value ?: currentDate().year.toString()) }))
     }
 
     private fun findMeta(vararg attributes: String): String? {
@@ -157,10 +163,77 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
         return arrayOf(getAuthorFromName(authorStr))
     }
 
+    private fun getPublicationSpecificAuthors(): Array<Author>? {
+        if (getHostName(url) == "phys") {
+            return arrayOf(getAuthorFromName("Phys"))
+        } else if (getPublication() == "SAGE Journals") {
+            return doc.select("[property='article:author']")
+                .map { it.attr("content") }
+                .map { it.split(", ") }
+                .map { list ->
+                    list.map { arrayOf(getAuthorFromName(it)) }
+                        .flatMap { it.asIterable() }
+                        .toList()
+                }.flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
+        } else if (getPublication() == "Taylor & Francis") {
+            return doc.select("a.entryAuthor")
+                .map { it.ownText().trim() }
+                .map { authorMatcher.evaluateString(it)?.value ?: arrayOf(getAuthorFromName(it)) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
+        } else if (getPublication() == "The Diplomat") {
+            return doc.select(".td-author strong")
+                .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
+        } else if (getPublication() == "The Intercept" || getPublication() == "National Public Radio") {
+            return doc.select("a[rel=author]")
+                .filter { it.text().isNotBlank() }
+                .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
+        } else if (getHostName(url) == "sciencedirect") {
+            val a = doc.select(".author span.content")
+            var list = arrayListOf<Author>()
+            for (elem in a) {
+                list.add(getAuthorFromName(elem.select(".text").joinToString(separator = " ") { it.text() }))
+            }
+
+            return list.toTypedArray()
+        } else if (getHostName(url) == "mic") {
+            return doc.select(".Neu")
+                .filter { it.text().isNotBlank() }
+                .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
+        } else if (getHostName(url) == "csgjusticecenter") {
+            return doc.select(".article-byline__author")
+                .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
+        } else if (getHostName(url) == "prisonpolicy") {
+            return doc.select(".attrib")
+                .map {
+                    authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text()))
+                }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
+        }
+        return null
+    }
 
     fun getAuthors(): Array<Author>? {
-        if (getPublication() == "Phys.org")
-            return arrayOf(getAuthorFromName("Phys"))
+        val publicationSpecificAuthor = getPublicationSpecificAuthors()
+        if (publicationSpecificAuthor != null)
+            return publicationSpecificAuthor
 
         var author: String? = null
         var authors: Array<Author>? = arrayOf()
@@ -217,60 +290,6 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
 
         if (authors.isNotEmpty())
             return authors
-
-        if (getPublication() == "SAGE Journals") {
-            return doc.select("[property='article:author']")
-                .map { it.attr("content") }
-                .map { it.split(", ") }
-                .map { list ->
-                    list.map { arrayOf(getAuthorFromName(it)) }
-                        .flatMap { it.asIterable() }
-                        .toList()
-                }.flatMap { it.asIterable() }
-                .distinct()
-                .toTypedArray()
-        } else if (getPublication() == "Taylor & Francis") {
-            return doc.select("a.entryAuthor")
-                .map { it.ownText().trim() }
-                .map { authorMatcher.evaluateString(it)?.value ?: arrayOf(getAuthorFromName(it)) }
-                .flatMap { it.asIterable() }
-                .distinct()
-                .toTypedArray()
-        } else if (getPublication() == "The Diplomat") {
-            return doc.select(".td-author strong")
-                .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
-                .flatMap { it.asIterable() }
-                .distinct()
-                .toTypedArray()
-        } else if (getPublication() == "The Intercept" || getPublication() == "National Public Radio") {
-            return doc.select("a[rel=author]")
-                .filter { it.text().isNotBlank() }
-                .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
-                .flatMap { it.asIterable() }
-                .distinct()
-                .toTypedArray()
-        } else if (getHostName(url) == "sciencedirect") {
-            val a = doc.select(".author span.content")
-            var list = arrayListOf<Author>()
-            for (elem in a) {
-                list.add(getAuthorFromName(elem.select(".text").joinToString(separator = " ") { it.text() }))
-            }
-
-            return list.toTypedArray()
-        } else if (getHostName(url) == "mic") {
-            return doc.select(".Neu")
-                .filter { it.text().isNotBlank() }
-                .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
-                .flatMap { it.asIterable() }
-                .distinct()
-                .toTypedArray()
-        } else if (getHostName(url) == "csgjusticecenter") {
-            return doc.select(".article-byline__author")
-                .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
-                .flatMap { it.asIterable() }
-                .distinct()
-                .toTypedArray()
-        }
 
         authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName, .story-meta__authors .vcard")
             .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
@@ -478,6 +497,8 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                 return "National Public Radio"
             else if (hostname == "sciencedirect")
                 return doc.select(".publication-title-link").text()
+            else if (hostname == "prisonpolicy")
+                return "Prison Policy Institute"
 
             if (metaJson.has("publisher")) {
                 publisher =
