@@ -311,8 +311,12 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
                 .replace(".org", "")
             logger.info("Loading article from publisher '$hostName'")
 
-            if (INCOMPATIBLE_SOURCES.contains(hostName)) {
-                return Jsoup.parse("<p>Unfortunately, publisher \"${hostName.toUpperCase()}\" did not allow Cardify to view the article body. Please refer to the online version for article access.</p>").body().children()
+            if (doc.text().toLowerCase().contains("cardify error")) {
+                return doc.select("p")
+            }
+
+            if (INCOMPATIBLE_SOURCES.contains(hostName) && !fromCardID) {
+                return Jsoup.parse("<p>Unfortunately, publisher \"${hostName.toUpperCase()}\" did not allow Cardify to view the article body. Please open Google Chrome and click the Cardify icon for article access.</p>").body().children()
             } else {
                 if (hostName.contains("bbc"))
                     return bbc()
