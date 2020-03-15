@@ -199,7 +199,7 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                 .toTypedArray()
         } else if (getHostName(url) == "sciencedirect") {
             val a = doc.select(".author span.content")
-            var list = arrayListOf<Author>()
+            val list = arrayListOf<Author>()
             for (elem in a) {
                 list.add(getAuthorFromName(elem.select(".text").joinToString(separator = " ") { it.text() }))
             }
@@ -220,12 +220,14 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                 .toTypedArray()
         } else if (getHostName(url) == "prisonpolicy") {
             return doc.select(".attrib")
-                .map {
-                    authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text()))
-                }
+                .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
                 .flatMap { it.asIterable() }
                 .distinct()
                 .toTypedArray()
+        } else if (getHostName(url) == "thecrimereport") {
+            return doc.select(".by-author")
+                .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+                .first()
         }
         return null
     }
@@ -532,6 +534,8 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                 return doc.select("h1").text()
             } else if (getHostName(url) == "sciencedirect") {
                 return doc.select(".title-text").text()
+            } else if (getHostName(url) == "thecrimereport") {
+                return doc.select("h1").text()
             }
 
             if (metaJson.has("headline")) {

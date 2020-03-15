@@ -236,6 +236,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select("div[itemprop=articleBody] p")
     }
 
+    private fun thecrimereport(): Elements {
+        return doc.select("div[itemprop=articleBody] > p")
+    }
+
     private fun theeconomist(): Elements {
         return Elements(doc.select(".blog-post__text p").filter {
             !it.parent().hasClass("newsletter-form__message")
