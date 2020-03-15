@@ -24,7 +24,7 @@ class CreditsWindow : ModalWindow("Credits") {
     }
 
     private fun text(str: String): Text {
-        val text = Text(str);
+        val text = Text(str)
         text.font = Font.font(13.0)
         if (Prefs.get().darkMode)
             text.fill = Color.WHITE
@@ -56,6 +56,7 @@ class CreditsWindow : ModalWindow("Credits") {
             "Apache HttpClient 4.5.10, " +
             "Apache Log4j 2.13.0, " +
             "Gson 2.8.5, " +
+            "Nlohmann Json 3.7.3, " +
             "Jsoup 1.12.1, " +
             "Zip4j 2.3.0")
         )
