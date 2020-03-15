@@ -338,7 +338,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             }
 
             if (INCOMPATIBLE_SOURCES.contains(hostName) && !fromCardID) {
-                return Jsoup.parse("<p>Unfortunately, publisher \"${hostName.toUpperCase()}\" did not allow Cardify to view the article body. Please open Google Chrome and click the Cardify icon for article access.</p>").body().children()
+                return Jsoup.parse("<p>Unfortunately, publisher \"${hostName.toUpperCase()}\" did not allow Cardify to view the article body. Please use Google Chrome and click the Cardify icon for article access. If that doesn't work, please simply copy and paste the part of the article you wish into Word/Google Docs.</p>").body().children()
             } else {
                 if (hostName.contains("bbc"))
                     return bbc()
