@@ -67,6 +67,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".body-text p")
     }
 
+    private fun csgjusticecenter(): Elements {
+        return doc.select(".wysiwyg p")
+    }
+
     private fun dailywire(): Elements {
         return doc.select(".field-body p")
     }

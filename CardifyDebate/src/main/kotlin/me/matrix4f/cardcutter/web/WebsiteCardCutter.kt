@@ -264,7 +264,14 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                 .flatMap { it.asIterable() }
                 .distinct()
                 .toTypedArray()
+        } else if (getHostName(url) == "csgjusticecenter") {
+            return doc.select(".article-byline__author")
+                .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
         }
+
         authors = doc.select("[itemProp='author creator'], .author, .ArticlePage-authorName, .story-meta__authors .vcard")
             .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
             .flatMap { it.asIterable() }
