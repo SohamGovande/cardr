@@ -630,7 +630,7 @@ class CardCuttingUI(private val stage: Stage) {
         return out
     }
 
-    private fun onWindowResized() {
+    fun onWindowResized() {
         urlTF.prefWidth = stage.width - 50
         cardWV.prefWidth = stage.width - 325
         cardWV.prefHeight = stage.height - 150

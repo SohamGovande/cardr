@@ -4,20 +4,40 @@ import javafx.application.Application
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Stage
+import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.ui.CardCuttingUI
+import me.matrix4f.cardcutter.ui.WindowDimensions
 import org.apache.logging.log4j.LogManager
 
 class CardifyDebate: Application() {
 
+    private lateinit var stage: Stage
+
+    private fun onWindowClose(event: WindowEvent) {
+        Prefs.get().windowDimensions = WindowDimensions(stage)
+        Prefs.save()
+    }
+
     override fun start(stage: Stage) {
+        this.stage = stage
         try {
             logger.info("Launched Cardify")
             stage.title = "Cardify $CURRENT_VERSION"
             stage.isResizable = true
             stage.width = WIDTH
             stage.height = HEIGHT
+            stage.setOnCloseRequest(this::onWindowClose)
             logger.info("Initialized window properties")
+
+            var changedWindowDimensions = false
+            val windowDimensions = Prefs.get().windowDimensions
+            logger.info("Applying window dimensions: $windowDimensions")
+            if (windowDimensions.x != -1024.1024) {
+                changedWindowDimensions = true
+                windowDimensions.apply(stage)
+            }
+
             stage.show()
             logger.info("Window shown")
 
@@ -35,7 +55,14 @@ class CardifyDebate: Application() {
                 uiLock.notifyAll()
             }
             logger.info("... Success")
-            stage.sizeToScene()
+
+            if (!changedWindowDimensions) {
+                Prefs.get().windowDimensions = WindowDimensions(stage)
+                Prefs.save()
+                stage.sizeToScene()
+            } else {
+                ui!!.onWindowResized()
+            }
         } catch (e: Exception) {
             logger.error("Error loading window", e)
         }

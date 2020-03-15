@@ -1,6 +1,7 @@
 package me.matrix4f.cardcutter.prefs
 
 import me.matrix4f.cardcutter.CardifyDebate
+import me.matrix4f.cardcutter.ui.WindowDimensions
 
 class PrefsObject {
 
@@ -21,6 +22,8 @@ class PrefsObject {
 
     var emailAddress = ""
     var accessToken = ""
+
+    var windowDimensions = WindowDimensions(-1024.1024, 0.0, 0.0, 0.0, false)
 
     fun getStylesheet(): String {
         return if (darkMode) "/styles-dark.css" else "/styles.css"
