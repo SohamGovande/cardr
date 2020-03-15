@@ -288,6 +288,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select(".gnt_ar_b p")
     }
 
+    private fun vera(): Elements {
+        return doc.select(".module-text p")
+    }
+
     private fun vox(): Elements {
         val a = doc.select("" +
             "div.c-entry-content p, " +

@@ -228,6 +228,12 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
             return doc.select(".by-author")
                 .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
                 .first()
+        } else if (getHostName(url) == "vera") {
+            return doc.select(".post-content__author .person-name")
+                .map { arrayOf(getAuthorFromName(it.text())) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
         }
         return null
     }
