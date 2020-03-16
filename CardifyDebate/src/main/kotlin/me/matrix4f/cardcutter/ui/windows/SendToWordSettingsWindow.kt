@@ -39,13 +39,13 @@ class SendToWordSettingsWindow : ModalWindow("Settings - Send to Word") {
         val subheader = Label("These settings only affect the 'Send to Word' functionality and no other functions (e.g., Copy Card to Clipboard).")
         subheader.isWrapText = true
 
-        val details = Label("If you select PLAIN text, Cardify will try to use Verbatim's Paste Without Formatting option for the card body and uses HTML for the card header, whereas HTML text directly transfers the entire card in HTML. The PLAIN text option is preferable because, once the card is pasted, PLAIN-pasted text is directly editable through other Verbatim features, like F9 and F10. The PLAIN text feature is currently in beta; if you are experiencing any problems, feel free to revert to HTML text, which was the only option in Cardify V1.1.0 and below.")
+        val details = Label("If you select PLAIN text paste, Cardify will try to use (1) Verbatim's Paste Without Formatting option for the card body and (2) HTML for the card header. On the other hand, HTML text paste directly transfers the entire card in HTML. The PLAIN text paste option is preferable because, once the card is pasted, PLAIN pasted text is directly editable through Verbatim underline/emphasize. The PLAIN text feature is currently in beta; if you are experiencing any problems, feel free to revert to HTML text, which was the only option in Cardify V1.1.0 and below.")
         details.isWrapText = true
 
         tg = ToggleGroup()
         plainTextRB = RadioButton("Send card body to Word as PLAIN text (new in v1.2.0)")
         plainTextRB.toggleGroup = tg
-        htmlTextRB = RadioButton("Send card body to Word as HTML text")
+        htmlTextRB = RadioButton("Send card body to Word as HTML text (default option in v1.1.0 and below)")
         htmlTextRB.toggleGroup = tg
 
         if (Prefs.get().pastePlainText) {
