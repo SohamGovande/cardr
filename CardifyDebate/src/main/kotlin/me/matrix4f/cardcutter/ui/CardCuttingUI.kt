@@ -170,6 +170,9 @@ class CardCuttingUI(private val stage: Stage) {
 
         cardTagTextField.promptText = ""
         cardTagTextField.textProperty().bindBidirectional(cardTag)
+        cardTagTextField.textProperty().addListener { _, _, text ->
+            cardTagTextField.text = text.replace("--", "–").replace("–-","—").replace("---", "—")
+        }
 
         bindToRefreshWebView(cardTagTextField)
         pGrid.add(Label("Card Tag"), 0, 4)
