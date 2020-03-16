@@ -31,6 +31,7 @@ import me.matrix4f.cardcutter.ui.windows.*
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
 import netscape.javascript.JSException
+import org.apache.commons.exec.util.StringUtils
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import java.awt.Desktop
@@ -38,7 +39,6 @@ import java.awt.Toolkit
 import java.io.InputStream
 import java.lang.NullPointerException
 import java.net.URL
-import java.util.*
 import java.util.function.Consumer
 
 class CardCuttingUI(private val stage: Stage) {
@@ -278,7 +278,7 @@ class CardCuttingUI(private val stage: Stage) {
                     this.title = SimpleStringProperty(reader.getTitle() ?: "")
                     updateWindowTitle(reader.getTitle() ?: "")
                     this.cardTag.set(title.get())
-                    this.cardBody.set(reader.getBodyParagraphText())
+                    this.cardBody.set(reader.getBodyParagraphText(true))
 
                     Platform.runLater {
                         visitURL(urlTF.text)
@@ -496,7 +496,7 @@ class CardCuttingUI(private val stage: Stage) {
             |</style>""".trimMargin()
     }
 
-    private fun generateFullHTML(switchFont: Boolean, forCopy: Boolean): String {
+    private fun generateFullHTML(switchFont: Boolean, forCopy: Boolean, cardBodyReplacement: String?): String {
         val cite = createCite()
         val spacePlaceholder = "sas8d9f7aj523kj5h123jkhsaf"
         val doc = Jsoup.parse(Prefs.get().cardFormat.replace("&nbsp;",spacePlaceholder))
@@ -539,6 +539,7 @@ class CardCuttingUI(private val stage: Stage) {
         for (elem in doc.allElements) {
             if (elem.children().size > 0 && elem.ownText().length == 0)
                 continue
+            val cardBody = cardBodyReplacement ?: getCardBodyHTML(cardBody.get(), true)
             elem.html(
                 elem.html()
                     .replace("{AuthorLastName}", cite.getAuthorName(AuthorNameFormat.LAST_NAME))
@@ -552,7 +553,7 @@ class CardCuttingUI(private val stage: Stage) {
                     .replace("{Title}", cite.title)
                     .replace("{Url}", cite.url)
                     .replace("{Tag}", cardTag.value)
-                    .replace("{CardBody}", getCardBodyHTML())
+                    .replace("{CardBody}", cardBody)
             )
         }
 
@@ -595,20 +596,18 @@ class CardCuttingUI(private val stage: Stage) {
         return docHtml
     }
 
-    private fun getCardBodyHTML(): String {
-        val cardBody = cardBody.get()
-        var out: String
+    private fun getCardBodyHTML(cardBody: String, cardBodyIsHTML: Boolean): String {
+        var out = cardBody
 
         val paragraphSuffix = if (Prefs.get().showParagraphBreaks) "¶ " else ""
 
-        if (Prefs.get().condense) {
-            out = "<p class='cardbody'>${cardBody.replace("<p>","").replace("</p>",paragraphSuffix)}</p>"
-        } else {
-            out = cardBody.replace("<p>","<p class='cardbody'>").replace("</p>","$paragraphSuffix</p>")
+        if (cardBodyIsHTML) {
+            if (Prefs.get().condense) {
+                out = "<p class='cardbody'>${cardBody.replace("<p>", "").replace("</p>", paragraphSuffix)}</p>"
+            } else {
+                out = cardBody.replace("<p>", "<p class='cardbody'>").replace("</p>", "$paragraphSuffix</p>")
+            }
         }
-
-        while (out.contains("  "))
-            out = out.replace("  ", " ")
 
         for (remove in removeWords) {
             out = out.replace(remove, "")
@@ -618,7 +617,7 @@ class CardCuttingUI(private val stage: Stage) {
             out = out.replace(remove, "")
         }
 
-        if (Prefs.get().showParagraphBreaks) {
+        if (Prefs.get().showParagraphBreaks && cardBodyIsHTML) {
             val paragraphBegin = if (Prefs.get().condense) "" else "<p class='cardbody'>"
             val paragraphEnd = if (Prefs.get().condense) "" else "</p>"
             while (out.contains("$paragraphBegin ¶ $paragraphEnd$paragraphBegin ¶ $paragraphEnd"))
@@ -630,6 +629,19 @@ class CardCuttingUI(private val stage: Stage) {
             if (out.endsWith("¶ </p>"))
                 out = out.substring(0, out.length - "¶ </p>".length)
         }
+
+        while (out.contains("  "))
+            out = out.replace("  ", " ")
+        while (out.contains("\n \n"))
+            out = out.replace("\n \n", "\n")
+        while (out.startsWith(" ") || out.startsWith("\n"))
+            out = out.substring(1)
+        while (out.startsWith(" \n") || out.startsWith("\n "))
+            out = out.substring(2)
+        while (out.endsWith(" "))
+            out = out.substring(0, out.length - 1)
+        while (out.endsWith(" \n") || out.endsWith("\n "))
+            out = out.substring(0, out.length - 2)
         return out
     }
 
@@ -642,7 +654,7 @@ class CardCuttingUI(private val stage: Stage) {
 
     private fun refreshHTML() {
         Platform.runLater {
-            cardWV.engine?.loadContent(generateFullHTML(switchFont = false, forCopy = false))
+            cardWV.engine?.loadContent(generateFullHTML(switchFont = false, forCopy = false, cardBodyReplacement = null))
         }
     }
 
@@ -659,7 +671,7 @@ class CardCuttingUI(private val stage: Stage) {
             updateWindowTitle(reader.getTitle() ?: "")
 
             this.cardTag.set(title.get())
-            this.cardBody.set(reader.getBodyParagraphText())
+            this.cardBody.set(reader.getBodyParagraphText(true))
 
             propertyTitleTextField.textProperty().bindBidirectional(this.title)
             propertyPubTextField.textProperty().bindBidirectional(this.publisher)
@@ -806,6 +818,14 @@ class CardCuttingUI(private val stage: Stage) {
             refreshHTML()
         }
 
+        val pastePlainTextMI = CheckMenuItem("Paste Plain Text to Word")
+        pastePlainTextMI.isSelected = Prefs.get().pastePlainText
+        pastePlainTextMI.setOnAction {
+            Prefs.get().pastePlainText = pastePlainTextMI.isSelected
+            Prefs.save()
+            refreshHTML()
+        }
+
         settingsMenu.items.add(formatMI)
         settingsMenu.items.add(condenseMI)
         settingsMenu.items.add(useSmallDatesMI)
@@ -815,6 +835,7 @@ class CardCuttingUI(private val stage: Stage) {
         settingsMenu.items.add(SeparatorMenuItem())
         settingsMenu.items.add(darkModeMI)
         settingsMenu.items.add(showParagraphBreaksMI)
+        settingsMenu.items.add(pastePlainTextMI)
 
         val aboutMenu = Menu("About")
 
@@ -977,13 +998,16 @@ class CardCuttingUI(private val stage: Stage) {
             .systemClipboard
             .setContents(
                 HTMLSelection(
-                    generateFullHTML(switchFont = true, forCopy = true)
+                    generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = null)
                 ),
                 null
             )
     }
 
     private fun sendCardToVerbatim() {
+        if (reader == null)
+            return
+
         if (wordWindowList.items.size == 0)
             refreshWordWindows()
 
@@ -999,7 +1023,18 @@ class CardCuttingUI(private val stage: Stage) {
             }
         }
 
-        pasteCardToVerbatim(generateFullHTML(switchFont = true, forCopy = true))
+        val cardBodyReplacement = "safd7asdyfkjahnw3k5nsd"
+        val cardHtml = generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = cardBodyReplacement)
+        val cardBodyIndex = cardHtml.indexOf(cardBodyReplacement)
+        val beforeBody = cardHtml.substring(0, cardBodyIndex)
+        var body = getCardBodyHTML(reader!!.getBodyParagraphText(false), false)
+        val afterBody = cardHtml.substring(cardBodyIndex + cardBodyReplacement.length)
+
+        pasteObject(beforeBody, KeyboardPasteMode.NORMAL)
+        pasteObject(body, KeyboardPasteMode.PLAIN_TEXT)
+        println(body)
+        if (afterBody != "</span></p>\n </body>\n</html>")
+            pasteObject(afterBody, KeyboardPasteMode.NORMAL)
     }
 
     private fun updateWindowTitle(title: String) {

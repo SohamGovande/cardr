@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Timestamp
+import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.body.CardBodyReader
 import org.apache.logging.log4j.LogManager
@@ -572,17 +573,27 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
         return bodyParagraphElements as Elements
     }
 
-    fun getBodyParagraphText(): String {
-        val sb = StringBuilder()
-        getBodyParagraphs().forEach {
-            sb.append("<p>")
+    fun getBodyParagraphText(html: Boolean): String {
+        if (html) {
+            val sb = StringBuilder()
+            getBodyParagraphs().forEach {
+                sb.append("<p>")
 
-            sb.append(it.text())
-            sb.append(' ')
+                sb.append(it.text())
+                sb.append(' ')
 
-            sb.append("</p>")
+                sb.append("</p>")
+            }
+            return sb.toString()
+        } else {
+            val sb = StringBuilder()
+            getBodyParagraphs().forEach {
+                sb.append(it.text())
+                sb.append(' ')
+                if (!Prefs.get().condense)
+                    sb.append('\n')
+            }
+            return sb.toString()
         }
-        sb.append("")
-        return sb.toString()
     }
 }

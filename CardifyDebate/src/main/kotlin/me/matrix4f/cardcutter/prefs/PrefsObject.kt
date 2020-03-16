@@ -18,6 +18,7 @@ class PrefsObject {
     var endQualsWithComma = true
 
     var showParagraphBreaks = false
+    var pastePlainText = false
     var darkMode = false
 
     var emailAddress = ""
