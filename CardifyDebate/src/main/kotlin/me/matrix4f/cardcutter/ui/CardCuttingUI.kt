@@ -95,6 +95,10 @@ class CardCuttingUI(private val stage: Stage) {
     private val editCardFormat = Button("Edit Card Format")
     private val exportBtn = Button("Send to Word")
 
+    private val underlineBtn = Button()
+    private val emphasizeBtn = Button()
+    private val highlightBtn = Button()
+
     private val refreshBtn = Button()
 
     private val wordWindowList = ComboBox<String>()
@@ -212,6 +216,10 @@ class CardCuttingUI(private val stage: Stage) {
 
         loadMenuIcons()
 
+        highlightBtn.setOnAction { highlightSelectedText() }
+        underlineBtn.setOnAction { underlineSelectedText() }
+        emphasizeBtn.setOnAction { underlineSelectedText(); boldSelectedText() }
+
         val cdm1 = FlowPane()
         cdm1.hgap = 5.0
         cdm1.vgap = 5.0
@@ -220,7 +228,16 @@ class CardCuttingUI(private val stage: Stage) {
         cdm1.children.add(restoreRemovedBtn)
         cdm1.children.add(copyBtn)
         cdm1.children.add(editCardFormat)
+
+//        val cdm2 = FlowPane()
+//        cdm2.hgap = 5.0
+//        cdm2.vgap = 5.0
+//        cdm1.children.add(highlightBtn)
+//        cdm1.children.add(underlineBtn)
+//        cdm1.children.add(emphasizeBtn)
+
         cardDisplayMenu.children.add(cdm1)
+//        cardDisplayMenu.children.add(cdm2)
 
         cardDisplayArea.children.add(cardDisplayMenu)
         cardDisplayArea.children.add(cardWV)
@@ -373,6 +390,10 @@ class CardCuttingUI(private val stage: Stage) {
         refreshBtn.graphic = loadMiniIcon("/refresh.png")
         editCardFormat.graphic = loadMiniIcon("/edit.png")
         keepOnlySelectedBtn.graphic = loadMiniIcon("/keep-text.png")
+
+        highlightBtn.graphic = loadMiniIcon("/highlight.png")
+        emphasizeBtn.graphic = loadMiniIcon("/emphasize.png")
+        underlineBtn.graphic = loadMiniIcon("/underline.png")
 
         for (btn in deleteAuthorButtons) {
             btn.graphic = loadMiniIcon("/remove.png")
@@ -573,6 +594,50 @@ class CardCuttingUI(private val stage: Stage) {
                         text = document.selection.createRange().text;
                     }
                     return text;
+                }
+                
+                function highlightSelectedText(color) {
+                    var range, sel = window.getSelection();
+                    if (sel.rangeCount && sel.getRangeAt) {
+                        range = sel.getRangeAt(0);
+                    };
+                    document.designMode = "on";
+                    if (range) {
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    };
+                    if (!document.execCommand("HiliteColor", false, color)) {
+                        document.execCommand("BackColor", false, color);
+                    };
+                    document.designMode = "off";
+                }
+                
+                function boldSelectedText() {
+                    var range, sel = window.getSelection();
+                    if (sel.rangeCount && sel.getRangeAt) {
+                        range = sel.getRangeAt(0);
+                    };
+                    document.designMode = "on";
+                    if (range) {
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    };
+                    document.execCommand("bold", false);
+                    document.designMode = "off";
+                }
+                
+                function underlineSelectedText() {
+                    var range, sel = window.getSelection();
+                    if (sel.rangeCount && sel.getRangeAt) {
+                        range = sel.getRangeAt(0);
+                    };
+                    document.designMode = "on";
+                    if (range) {
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    };
+                    document.execCommand("underline", false);
+                    document.designMode = "off";
                 }
             </script>
         """.trimIndent())
@@ -864,6 +929,19 @@ class CardCuttingUI(private val stage: Stage) {
         menuBar.menus.add(aboutMenu)
         return menuBar
     }
+
+    private fun highlightSelectedText() {
+        cardWV.engine.executeScript("highlightSelectedText('#ffff00')")
+    }
+
+    private fun boldSelectedText() {
+        cardWV.engine.executeScript("boldSelectedText()")
+    }
+
+    private fun underlineSelectedText() {
+        cardWV.engine.executeScript("underlineSelectedText()")
+    }
+
 
     private fun removeSelectedText() {
         var success = false
