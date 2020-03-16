@@ -21,6 +21,17 @@ fun showErrorDialog(brief: String, full: String) {
     }
 }
 
+fun showInfoDialog(brief: String, full: String) {
+    Platform.runLater {
+        val alert = Alert(Alert.AlertType.INFORMATION)
+        alert.title = "Error"
+        alert.headerText = brief
+        alert.contentText = full
+        alert.showAndWait()
+    }
+}
+
+
 private fun urlEncode(str: String): String {
     return try {
         URLEncoder.encode(str, "UTF-8").replace("+", "%20")

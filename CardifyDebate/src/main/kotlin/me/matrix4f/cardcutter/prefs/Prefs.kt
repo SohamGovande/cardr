@@ -8,6 +8,7 @@ import me.matrix4f.cardcutter.ui.windows.WelcomeWindow
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
 import me.matrix4f.cardcutter.util.showErrorDialog
+import me.matrix4f.cardcutter.util.showInfoDialog
 import org.apache.logging.log4j.LogManager
 import java.nio.file.Files
 import java.nio.file.Path
@@ -51,6 +52,7 @@ object Prefs {
                         if (error == null) {
                             prefs.lastUsedVersionInt = CardifyDebate.CURRENT_VERSION_INT
                             save()
+                            showInfoDialog("Succesfully updated Cardify!", "Updated Cardify from version $lastVersion to ${CardifyDebate.CURRENT_VERSION}.")
                             logger.info("Successfully updated Cardify from b$lastVersion - saved prefs $prefs")
                         } else {
                             logger.error("Error occurred while updating settings", error)
