@@ -260,16 +260,20 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.select("div[itemprop=articleBody] > p")
     }
 
+    private fun thediplomat(): Elements {
+        return Elements(doc.select("#td-story-body p").filter {
+            !it.attr("ng-show").contains("ad")
+        })
+    }
+
     private fun theeconomist(): Elements {
         return Elements(doc.select(".blog-post__text p").filter {
             !it.parent().hasClass("newsletter-form__message")
         })
     }
 
-    private fun thediplomat(): Elements {
-        return Elements(doc.select("#td-story-body p").filter {
-            !it.attr("ng-show").contains("ad")
-        })
+    private fun thefederalist(): Elements {
+        return doc.select(".entry-content p, .entry-content h2, .entry-content h3")
     }
 
     private fun theguardian(): Elements {

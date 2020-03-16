@@ -391,9 +391,9 @@ class CardCuttingUI(private val stage: Stage) {
         editCardFormat.graphic = loadMiniIcon("/edit.png")
         keepOnlySelectedBtn.graphic = loadMiniIcon("/keep-text.png")
 
-        highlightBtn.graphic = loadMiniIcon("/highlight.png")
-        emphasizeBtn.graphic = loadMiniIcon("/emphasize.png")
-        underlineBtn.graphic = loadMiniIcon("/underline.png")
+//        highlightBtn.graphic = loadMiniIcon("/highlight.png")
+//        emphasizeBtn.graphic = loadMiniIcon("/emphasize.png")
+//        underlineBtn.graphic = loadMiniIcon("/underline.png")
 
         for (btn in deleteAuthorButtons) {
             btn.graphic = loadMiniIcon("/remove.png")

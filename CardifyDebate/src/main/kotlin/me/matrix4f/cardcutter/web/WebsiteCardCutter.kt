@@ -237,6 +237,12 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                 .toTypedArray()
         } else if (getHostName(url) == "justicepolicy") {
             return arrayOf(Author("", "Justice Policy Institute"))
+        } else if (getHostName(url) == "thefederalist") {
+            return doc.select(".rwd-byline")
+                .map { authorMatcher.evaluateString(it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
         }
         return null
     }
