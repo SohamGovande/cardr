@@ -23,7 +23,7 @@ class CardifyDebate: Application() {
         this.stage = stage
         try {
             logger.info("Launched Cardify")
-            stage.title = "Cardify $CURRENT_VERSION"
+            stage.title = "Cardify Debate $CURRENT_VERSION"
             stage.isResizable = true
             stage.width = WIDTH
             stage.height = HEIGHT
