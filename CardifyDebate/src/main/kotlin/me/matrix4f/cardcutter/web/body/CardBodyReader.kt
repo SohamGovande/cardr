@@ -364,7 +364,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         } catch (e: Exception) {
 
             // NoSuchMethodException is normal, it means the host was unrecognized
-            if (!(e is NoSuchMethodException) || !(e is TypeCastException)) {
+            if (!(e is NoSuchMethodException)) {
                 logger.error("Error reading card body", e)
             }
 

@@ -20,7 +20,6 @@ class SciHubLoader(doi: String) {
             e.printStackTrace()
             doc = Jsoup.parse("<html></html>")
         }
-        println(doc.html())
 
         val elements = doc.select("a[onclick]")
         for (element in elements) {

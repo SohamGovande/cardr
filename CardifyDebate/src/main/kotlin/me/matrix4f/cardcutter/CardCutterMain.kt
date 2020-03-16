@@ -1,6 +1,7 @@
 package me.matrix4f.cardcutter
 
 import javafx.application.Application
+import javafx.application.Platform
 import me.matrix4f.cardcutter.ui.CardCuttingUI
 import me.matrix4f.cardcutter.updater.UpdateChecker
 import me.matrix4f.cardcutter.util.OS
@@ -63,7 +64,9 @@ fun main(args: Array<String>) {
                             val selectionDataFile = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifySelection-$cardID.txt").toFile()
                             val selectionData: String = selectionDataFile.inputStream().bufferedReader().use(BufferedReader::readText)
                             if (selectionData.isNotBlank()) {
-                                ui!!.keepOnlyText(selectionData)
+                                Platform.runLater {
+                                    ui!!.keepOnlyText(selectionData)
+                                }
                             }
                             if (CardifyDebate.RELEASE_MODE)
                                 selectionDataFile.deleteOnExit()

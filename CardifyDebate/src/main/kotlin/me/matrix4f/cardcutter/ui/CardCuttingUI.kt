@@ -895,7 +895,7 @@ class CardCuttingUI(private val stage: Stage) {
             logger.error(e)
             e.printStackTrace()
             success = false
-        } catch (e: ArrayIndexOutOfBoundsException) {
+        } catch (e: Exception) {
             logger.error(e)
             e.printStackTrace()
             success = false
@@ -910,69 +910,66 @@ class CardCuttingUI(private val stage: Stage) {
 
     @Throws(Exception::class)
     fun keepOnlyText(text: String) {
-        Platform.runLater {
-            removeParagraphs.clear()
+        removeParagraphs.clear()
 
-            var selection = text
-                .replace("\n\n", " ")
-                .replace("¶ ", "").trim()
+        var selection = text
+            .replace("\n\n", " ")
+            .replace("¶ ", "").trim()
 
-            while (selection.contains("  "))
-                selection = selection.replace("  ", " ")
+        while (selection.contains("  "))
+            selection = selection.replace("  ", " ")
 
-            val paragraphs = reader!!.getBodyParagraphs().map { it.text() }.toMutableList()
-            var firstIndex = -1
-            var lastIndex = -1
+        val paragraphs = reader!!.getBodyParagraphs().map { it.text() }.toMutableList()
+        var firstIndex = -1
+        var lastIndex = -1
 
-            for (i in paragraphs.indices) {
-                val paragraph = paragraphs[i]
+        for (i in paragraphs.indices) {
+            val paragraph = paragraphs[i]
 
-                if (!selection.contains(paragraph)) {
-                    if (firstIndex != -1 && lastIndex == -1)
-                        lastIndex = i - 1
-                } else if (paragraph.isNotBlank()) {
-                    if (firstIndex == -1) {
-                        firstIndex = i
-                    }
+            if (!selection.contains(paragraph)) {
+                if (firstIndex != -1 && lastIndex == -1)
+                    lastIndex = i - 1
+            } else if (paragraph.isNotBlank()) {
+                if (firstIndex == -1) {
+                    firstIndex = i
                 }
             }
-
-            if (firstIndex != -1 && lastIndex == -1)
-                lastIndex = paragraphs.size - 1
-
-            if (firstIndex == -1 && lastIndex == -1)
-                throw ArrayIndexOutOfBoundsException("You must highlight at least one full paragraph in the webpage.")
-
-            val placeholder = "asfda8sdfaweh25k3h21klsamnfi5"
-            var selectionOutsides = selection
-            for (i in firstIndex..lastIndex) {
-                selectionOutsides = selectionOutsides.replace(paragraphs[i], placeholder)
-            }
-
-            while (selectionOutsides.contains("$placeholder$placeholder"))
-                selectionOutsides = selectionOutsides.replace("$placeholder$placeholder", placeholder)
-
-            val beforeAfterSelection = selectionOutsides.split(placeholder)
-            if (firstIndex != 0) {
-                paragraphs[firstIndex - 1] = paragraphs[firstIndex - 1].replace(beforeAfterSelection[0].trim(), "")
-                removeParagraphs.add(paragraphs[firstIndex - 1])
-            }
-
-            if (lastIndex != paragraphs.size - 1) {
-                paragraphs[lastIndex + 1] = paragraphs[lastIndex + 1].replace(beforeAfterSelection[beforeAfterSelection.size - 1].trim(), "")
-                removeParagraphs.add(paragraphs[lastIndex + 1])
-            }
-
-            for (i in 0 until firstIndex) {
-                removeParagraphs.add(paragraphs[i])
-            }
-
-            for (i in lastIndex + 1 until paragraphs.size) {
-                println(paragraphs[i])
-                removeParagraphs.add(paragraphs[i])
-            }
-            refreshHTML()
         }
+
+        if (firstIndex != -1 && lastIndex == -1)
+            lastIndex = paragraphs.size - 1
+
+        if (firstIndex == -1 && lastIndex == -1)
+            throw ArrayIndexOutOfBoundsException("You must highlight at least one full paragraph in the webpage.")
+
+        val placeholder = "asfda8sdfaweh25k3h21klsamnfi5"
+        var selectionOutsides = selection
+        for (i in firstIndex..lastIndex) {
+            selectionOutsides = selectionOutsides.replace(paragraphs[i], placeholder)
+        }
+
+        while (selectionOutsides.contains("$placeholder$placeholder"))
+            selectionOutsides = selectionOutsides.replace("$placeholder$placeholder", placeholder)
+
+        val beforeAfterSelection = selectionOutsides.split(placeholder)
+        if (firstIndex != 0) {
+            paragraphs[firstIndex - 1] = paragraphs[firstIndex - 1].replace(beforeAfterSelection[0].trim(), "")
+            removeParagraphs.add(paragraphs[firstIndex - 1])
+        }
+
+        if (lastIndex != paragraphs.size - 1) {
+            paragraphs[lastIndex + 1] = paragraphs[lastIndex + 1].replace(beforeAfterSelection[beforeAfterSelection.size - 1].trim(), "")
+            removeParagraphs.add(paragraphs[lastIndex + 1])
+        }
+
+        for (i in 0 until firstIndex) {
+            removeParagraphs.add(paragraphs[i])
+        }
+
+        for (i in lastIndex + 1 until paragraphs.size) {
+            removeParagraphs.add(paragraphs[i])
+        }
+        refreshHTML()
     }
 
     private fun copyCardToClipboard() {
