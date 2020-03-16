@@ -740,7 +740,7 @@ class CardCuttingUI(private val stage: Stage) {
 
         val settingsMenu = Menu("Settings")
 
-        val formatMI = MenuItem("Edit card and cite format settings...")
+        val formatMI = MenuItem("Card and cite format settings...")
         formatMI.setOnAction {
             val window = FormatPrefsWindow()
             window.addOnCloseListener(Consumer {
