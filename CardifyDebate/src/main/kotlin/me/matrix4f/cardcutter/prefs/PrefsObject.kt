@@ -2,6 +2,7 @@ package me.matrix4f.cardcutter.prefs
 
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.ui.WindowDimensions
+import java.awt.event.KeyEvent
 
 class PrefsObject {
 
@@ -18,8 +19,10 @@ class PrefsObject {
     var endQualsWithComma = true
 
     var showParagraphBreaks = false
-    var pastePlainText = false
     var darkMode = false
+
+    var pastePlainText = false
+    var pasteShortcut = KeyEvent.VK_F2
 
     var emailAddress = ""
     var accessToken = ""

@@ -1,5 +1,6 @@
 package me.matrix4f.cardcutter.util
 
+import me.matrix4f.cardcutter.prefs.Prefs
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.event.KeyEvent
@@ -23,8 +24,8 @@ fun pasteObject(data: String, pasteMode: KeyboardPasteMode) {
         r.keyRelease(KeyEvent.VK_V)
         r.keyRelease(KeyEvent.VK_CONTROL)
     } else if (pasteMode == KeyboardPasteMode.PLAIN_TEXT) {
-        r.keyPress(KeyEvent.VK_F2)
-        r.keyRelease(KeyEvent.VK_F2)
+        r.keyPress(Prefs.get().pasteShortcut)
+        r.keyRelease(Prefs.get().pasteShortcut)
     }
     r.delay(500)
 }

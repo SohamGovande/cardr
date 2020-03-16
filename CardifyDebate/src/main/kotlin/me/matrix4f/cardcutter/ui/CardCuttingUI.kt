@@ -740,13 +740,18 @@ class CardCuttingUI(private val stage: Stage) {
 
         val settingsMenu = Menu("Settings")
 
-        val formatMI = MenuItem("Edit card and cite format...")
+        val formatMI = MenuItem("Edit card and cite format settings...")
         formatMI.setOnAction {
             val window = FormatPrefsWindow()
             window.addOnCloseListener(Consumer {
                 Platform.runLater { refreshHTML() }
             })
             window.show()
+        }
+
+        val wordPasteMI = MenuItem("Send to Word settings...")
+        wordPasteMI.setOnAction {
+            SendToWordSettingsWindow().show()
         }
 
         val condenseMI = CheckMenuItem("Condense paragraphs")
@@ -818,24 +823,19 @@ class CardCuttingUI(private val stage: Stage) {
             refreshHTML()
         }
 
-        val pastePlainTextMI = CheckMenuItem("Paste Plain Text to Word")
-        pastePlainTextMI.isSelected = Prefs.get().pastePlainText
-        pastePlainTextMI.setOnAction {
-            Prefs.get().pastePlainText = pastePlainTextMI.isSelected
-            Prefs.save()
-            refreshHTML()
-        }
-
         settingsMenu.items.add(formatMI)
+        settingsMenu.items.add(wordPasteMI)
+        settingsMenu.items.add(SeparatorMenuItem())
+
         settingsMenu.items.add(condenseMI)
         settingsMenu.items.add(useSmallDatesMI)
         settingsMenu.items.add(useEtAlMI)
         settingsMenu.items.add(endQualsWithCommaMI)
         settingsMenu.items.add(capitalizeAuthorsMI)
+
         settingsMenu.items.add(SeparatorMenuItem())
         settingsMenu.items.add(darkModeMI)
         settingsMenu.items.add(showParagraphBreaksMI)
-        settingsMenu.items.add(pastePlainTextMI)
 
         val aboutMenu = Menu("About")
 
@@ -1023,18 +1023,24 @@ class CardCuttingUI(private val stage: Stage) {
             }
         }
 
-        val cardBodyReplacement = "safd7asdyfkjahnw3k5nsd"
-        val cardHtml = generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = cardBodyReplacement)
-        val cardBodyIndex = cardHtml.indexOf(cardBodyReplacement)
-        val beforeBody = cardHtml.substring(0, cardBodyIndex)
-        var body = getCardBodyHTML(reader!!.getBodyParagraphText(false), false)
-        val afterBody = cardHtml.substring(cardBodyIndex + cardBodyReplacement.length)
+        if (Prefs.get().pastePlainText) {
+            val cardBodyReplacement = "safd7asdyfkjahnw3k5nsd"
+            val cardHtml = generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = cardBodyReplacement)
+            val cardBodyIndex = cardHtml.indexOf(cardBodyReplacement)
+            val beforeBody = cardHtml.substring(0, cardBodyIndex)
+            var body = getCardBodyHTML(reader!!.getBodyParagraphText(false), false)
+            if (body.endsWith("\n"))
+                body += "\n"
+            val afterBody = cardHtml.substring(cardBodyIndex + cardBodyReplacement.length)
 
-        pasteObject(beforeBody, KeyboardPasteMode.NORMAL)
-        pasteObject(body, KeyboardPasteMode.PLAIN_TEXT)
-        println(body)
-        if (afterBody != "</span></p>\n </body>\n</html>")
-            pasteObject(afterBody, KeyboardPasteMode.NORMAL)
+            pasteObject(beforeBody, KeyboardPasteMode.NORMAL)
+            pasteObject(body, KeyboardPasteMode.PLAIN_TEXT)
+            println(body)
+            if (afterBody != "</span></p>\n </body>\n</html>")
+                pasteObject(afterBody, KeyboardPasteMode.NORMAL)
+        } else {
+            pasteObject(generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = null), KeyboardPasteMode.NORMAL)
+        }
     }
 
     private fun updateWindowTitle(title: String) {
