@@ -24,13 +24,29 @@ fun showErrorDialog(brief: String, full: String) {
 fun showInfoDialog(brief: String, full: String) {
     Platform.runLater {
         val alert = Alert(Alert.AlertType.INFORMATION)
-        alert.title = "Error"
+        alert.title = "Message"
         alert.headerText = brief
         alert.contentText = full
         alert.showAndWait()
     }
 }
 
+fun showInfoDialog(brief: String, full: String, primaryOption: String, action: () -> Unit) {
+    Platform.runLater {
+        val primaryBT = ButtonType(primaryOption, ButtonBar.ButtonData.OK_DONE)
+        val exitBT = ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE)
+
+        val alert = Alert(Alert.AlertType.INFORMATION, "", primaryBT, exitBT)
+
+        alert.title = "Message"
+        alert.headerText = brief
+        alert.contentText = full
+        val result = alert.showAndWait()
+        if (result.isPresent && result.get() == primaryBT) {
+            action()
+        }
+    }
+}
 
 private fun urlEncode(str: String): String {
     return try {
