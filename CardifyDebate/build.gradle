@@ -37,7 +37,7 @@ task exportToApp {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'me.matrix4f.cardcutter.CardCutterMainKt'
+        attributes 'Main-Class': 'me.matrix4f.cardcutter.CardifyDebateMainKt'
     }
 }
 
