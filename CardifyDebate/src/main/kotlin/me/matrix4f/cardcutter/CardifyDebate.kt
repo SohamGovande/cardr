@@ -8,6 +8,7 @@ import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.ui.CardCuttingUI
 import me.matrix4f.cardcutter.ui.WindowDimensions
+import me.matrix4f.cardcutter.ui.windows.WelcomeWindow
 import org.apache.logging.log4j.LogManager
 
 class CardifyDebate: Application() {
@@ -62,6 +63,10 @@ class CardifyDebate: Application() {
                 stage.sizeToScene()
             } else {
                 ui!!.onWindowResized()
+            }
+
+            if (IS_FIRST_LAUNCH && WAS_FIRST_LAUNCH_SUCCESSFUL) {
+                WelcomeWindow().show()
             }
         } catch (e: Exception) {
             logger.error("Error loading window", e)

@@ -96,7 +96,6 @@ object Prefs {
                 save()
                 logger.info("Successfully initialized first launch properties - saving prefs as $prefs")
                 CardifyDebate.WAS_FIRST_LAUNCH_SUCCESSFUL = true
-                WelcomeWindow().show()
             } else {
                 logger.error("Error occurred while executing first launch tasks", error)
                 showErrorDialog(error)

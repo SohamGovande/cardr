@@ -16,11 +16,11 @@ import java.awt.Desktop
 import java.net.URL
 
 
-class WelcomeWindow : ModalWindow("Welcome to Cardify!") {
+class WelcomeWindow2 : ModalWindow("How do I use Cardify?") {
 
     override fun close(event: WindowEvent?) {
         super.close(event)
-        WelcomeWindow2().show()
+        SignInWindow(SignInLauncherOptions.WELCOME, ui!!.currentUser).show()
     }
 
     override fun generateUI(): Scene {
@@ -28,30 +28,23 @@ class WelcomeWindow : ModalWindow("Welcome to Cardify!") {
         box.spacing = 5.0
         box.padding = Insets(10.0)
 
-        val header = Label("Welcome to Cardify! What's next?")
+        val header = Label("How do I use Cardify?")
         header.font = Font.font(18.0)
-        header.textAlignment = TextAlignment.CENTER
 
-        val subheader = Label("Get the CardifyDebate Chrome extension.")
+        val subheader = Label("In your web browser, simply click the Cardify icon to turn a webpage into your next card.")
+        subheader.isWrapText = true
         subheader.font = Font.font(14.0)
-        subheader.textAlignment = TextAlignment.CENTER
 
-        val link = Hyperlink("Download on the Chrome Web Store for free.")
-        link.setOnAction {
-            Desktop.getDesktop().browse(URL("https://chrome.google.com/webstore/detail/cardifydebate/ifdnjffggmmjiammdpklgldliaaempce").toURI())
-        }
-        link.font = Font.font(14.0)
-        link.textAlignment = TextAlignment.CENTER
-
-        val imageView = ImageView(javaClass.getResource("/icon-128.png").toExternalForm())
-        val continueBtn = Button("Continue \u2192")
+        val imageView = ImageView(javaClass.getResource("/tutorial.png").toExternalForm())
+        imageView.fitWidth = 550.0
+        imageView.fitHeight = 293.0
+        val continueBtn = Button("I'm ready! \u2192")
         continueBtn.setOnAction {
             close(null)
         }
 
         box.children.add(header)
         box.children.add(subheader)
-        box.children.add(link)
         box.children.add(imageView)
         box.children.add(continueBtn)
 
@@ -62,7 +55,7 @@ class WelcomeWindow : ModalWindow("Welcome to Cardify!") {
     }
 
     companion object {
-        const val WIDTH = 400.0
-        const val HEIGHT = 265.0
+        const val WIDTH = 600.0
+        const val HEIGHT = 400.0
     }
 }
