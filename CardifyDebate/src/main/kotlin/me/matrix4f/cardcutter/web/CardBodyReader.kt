@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.web.body
+package me.matrix4f.cardcutter.web
 
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup

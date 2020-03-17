@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.scihub
+package me.matrix4f.cardcutter.web
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -6,7 +6,6 @@ import java.net.URL
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
-import java.util.function.Predicate
 
 class SciHubLoader(doi: String) {
 

@@ -8,7 +8,6 @@ import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.util.*
-import me.matrix4f.cardcutter.web.body.CardBodyReader
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
