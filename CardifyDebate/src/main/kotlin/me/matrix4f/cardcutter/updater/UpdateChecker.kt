@@ -18,8 +18,9 @@ class UpdateChecker {
     private fun showUpdateDialog(version: CardifyVersion) {
         val updateBT = ButtonType("Update Now", ButtonBar.ButtonData.OK_DONE)
         val remindBT = ButtonType("Remind Me Later", ButtonBar.ButtonData.CANCEL_CLOSE)
+        val seeWhatsNewBT = ButtonType("See what's new", ButtonBar.ButtonData.CANCEL_CLOSE)
 
-        val alert = Alert(Alert.AlertType.CONFIRMATION, "", updateBT, remindBT)
+        val alert = Alert(Alert.AlertType.CONFIRMATION, "", updateBT, remindBT, seeWhatsNewBT)
         alert.title = "Update Cardify"
         alert.headerText = "A new version of Cardify is available!"
         alert.contentText = "Version ${version.name} (${version.build}) is available for you to download. Would you like to download the update?"
@@ -28,6 +29,8 @@ class UpdateChecker {
         if (result.isPresent && result.get() == updateBT) {
             Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/download.html").toURI())
             System.exit(0)
+        } else if (result.isPresent && result.get() == seeWhatsNewBT) {
+            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/changelog.html").toURI())
         }
     }
 
