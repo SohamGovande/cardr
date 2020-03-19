@@ -16,7 +16,10 @@ import javafx.stage.StageStyle
 import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.auth.CardifyUser
 import me.matrix4f.cardcutter.prefs.Prefs
+import me.matrix4f.cardcutter.prefs.encryption.EncryptionHelper
+import org.apache.logging.log4j.LogManager
 import java.awt.Desktop
+import java.lang.Exception
 import java.net.URL
 
 
@@ -32,6 +35,31 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
             System.exit(0)
             event?.consume()
         }
+    }
+
+    private fun loadPassword() {
+        if (Prefs.get().encryptedPassword == "")
+            return
+
+        emailTF.text = "Loading..."
+        emailTF.isEditable = false
+        passwordTF.isEditable = false
+
+        Thread {
+            val passwordEncrypted = Prefs.get().encryptedPassword
+            val encryptor = EncryptionHelper(EncryptionHelper.getEncryptionInfo())
+            Platform.runLater {
+                emailTF.text = Prefs.get().emailAddress
+                emailTF.isEditable = true
+                passwordTF.isEditable = true
+
+                try {
+                    passwordTF.text = encryptor.decrypt(passwordEncrypted)
+                } catch (e: Exception) {
+                    logger.error("Unable to decrypt password", e)
+                }
+            }
+        }.start()
     }
 
     private fun onClickContinueBtn(e: ActionEvent) {
@@ -66,7 +94,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         return when (options) {
             SignInLauncherOptions.WELCOME -> "Please sign in below to continue."
             SignInLauncherOptions.TOKEN_EXPIRED -> "Your access token has expired. Please sign in again."
-            SignInLauncherOptions.MANUAL_SIGNIN -> ""
+            SignInLauncherOptions.MANUAL_SIGNIN -> "Please sign in to Cardify."
         }
     }
 
@@ -74,6 +102,8 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         val vbox = VBox()
         vbox.spacing = 5.0
         vbox.padding = Insets(10.0)
+
+        loadPassword()
 
         val gp = GridPane()
         gp.hgap = 5.0
@@ -104,7 +134,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         val subheader = Label(generateStatusMessage())
         val dontHaveAccount = Label("Don't have an account?")
         dontHaveAccount.style = "-fx-cursor: hand;"
-        dontHaveAccount.setTextFill(Color.BLUE)
+        dontHaveAccount.textFill = Color.BLUE
         dontHaveAccount.setOnMouseClicked {
             Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/sign-up.html").toURI())
         }
@@ -112,7 +142,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
 
         val forgotPassword = Label("Forgot password?")
         forgotPassword.style = "-fx-cursor: hand;"
-        forgotPassword.setTextFill(Color.BLUE)
+        forgotPassword.textFill = Color.BLUE
         forgotPassword.setOnMouseClicked {
             Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/forgot-password-instructions.html").toURI())
         }
@@ -136,6 +166,10 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
+    }
+
+    companion object {
+        val logger = LogManager.getLogger(SignInWindow::class.java)
     }
 
 }

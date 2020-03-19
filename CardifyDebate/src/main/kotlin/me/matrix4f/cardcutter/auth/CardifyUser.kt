@@ -3,13 +3,10 @@ package me.matrix4f.cardcutter.auth
 
 import me.matrix4f.cardcutter.util.makeCardifyRequest
 import me.matrix4f.cardcutter.prefs.Prefs
-import jdk.nashorn.internal.runtime.ScriptingFunctions.readLine
+import me.matrix4f.cardcutter.prefs.encryption.EncryptionHelper
 import org.apache.http.message.BasicNameValuePair
 import org.apache.logging.log4j.LogManager
 import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
-import java.nio.charset.StandardCharsets
 
 class CardifyUser {
 
@@ -42,6 +39,12 @@ class CardifyUser {
                 Prefs.get().accessToken = token
                 Prefs.get().emailAddress = email
                 Prefs.save()
+
+                Thread {
+                    val encryptor = EncryptionHelper(EncryptionHelper.getEncryptionInfo())
+                    Prefs.get().encryptedPassword = encryptor.encrypt(password)
+                    Prefs.save()
+                }.start()
             }
             return result
         } catch (e: Exception) {

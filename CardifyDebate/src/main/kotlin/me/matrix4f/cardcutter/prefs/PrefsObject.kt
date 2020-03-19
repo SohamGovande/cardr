@@ -26,6 +26,7 @@ class PrefsObject {
 
     var emailAddress = ""
     var accessToken = ""
+    var encryptedPassword = ""
 
     var windowDimensions = WindowDimensions(-1024.1024, 0.0, 0.0, 0.0, false)
 
