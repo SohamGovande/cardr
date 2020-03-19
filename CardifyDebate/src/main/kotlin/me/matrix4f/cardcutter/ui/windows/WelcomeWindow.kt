@@ -32,7 +32,7 @@ class WelcomeWindow : ModalWindow("Welcome to Cardify!") {
         header.font = Font.font(18.0)
         header.textAlignment = TextAlignment.CENTER
 
-        val subheader = Label("Get the CardifyDebate Chrome extension.")
+        val subheader = Label("Get the Cardify Chrome extension.")
         subheader.font = Font.font(14.0)
         subheader.textAlignment = TextAlignment.CENTER
 
