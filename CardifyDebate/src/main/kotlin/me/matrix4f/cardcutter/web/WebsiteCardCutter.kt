@@ -242,6 +242,12 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                 .flatMap { it.asIterable() }
                 .distinct()
                 .toTypedArray()
+        } else if (getHostName(url) == "e-flux") {
+            return doc.select(".article-authors")
+                .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
+                .flatMap { it.asIterable() }
+                .distinct()
+                .toTypedArray()
         }
         return null
     }
@@ -550,6 +556,8 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
             } else if (getHostName(url) == "sciencedirect") {
                 return doc.select(".title-text").text()
             } else if (getHostName(url) == "thecrimereport") {
+                return doc.select("h1").text()
+            } else if (getHostName(url) == "e-flux") {
                 return doc.select("h1").text()
             }
 

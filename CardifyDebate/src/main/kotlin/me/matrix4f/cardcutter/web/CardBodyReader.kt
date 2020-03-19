@@ -79,6 +79,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         return doc.getElementsByClass(".p-text")
     }
 
+    private fun eflux(): Elements {
+        return doc.select(".block-text p")
+    }
+
     private fun engadget(): Elements {
         return doc.select(".o-article_block p")
     }
@@ -350,6 +354,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             val hostName = hostName
                 .replace(" ","")
                 .replace(".","")
+                .replace("-","")
                 .replace(".org", "")
             logger.info("Loading article from host '$hostName'")
 
