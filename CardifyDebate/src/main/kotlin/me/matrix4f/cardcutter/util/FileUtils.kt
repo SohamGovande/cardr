@@ -29,7 +29,7 @@ fun downloadFileFromURL(url: String, downloadTo: File, logger: Logger) {
 }
 
 
-fun executeCommandBlocking(cmd: String, logger: Logger) {
+fun executeCommandBlocking(cmd: String, logger: Logger): String {
     logger.info("Running command '$cmd' (blocking)")
     val stdout = ByteArrayOutputStream()
     val stdoutPsh = PumpStreamHandler(stdout)
@@ -44,6 +44,7 @@ fun executeCommandBlocking(cmd: String, logger: Logger) {
     }
     val result = stdout.toString().replace("\n", "")
     logger.info("Command '$cmd' returned '$result'")
+    return result
 }
 
 

@@ -1,10 +1,7 @@
 package me.matrix4f.cardcutter.platformspecific
 
-import org.apache.commons.exec.CommandLine
-import org.apache.commons.exec.DefaultExecutor
-import org.apache.commons.exec.PumpStreamHandler
+import me.matrix4f.cardcutter.util.executeCommandBlocking
 import org.apache.logging.log4j.LogManager
-import java.io.ByteArrayOutputStream
 import java.nio.file.Paths
 
 
@@ -17,7 +14,10 @@ class MacMSWordInteractor {
      * Use this API
      * @return A list of all the titles of usable MS Word windows
      */
-    fun getValidWordWindows() = getWordWindows().toList()
+    fun getValidWordWindows() =
+        getWordWindows()
+            .filter { it != "missing value" }
+            .toList()
 
 
     /**
@@ -27,8 +27,8 @@ class MacMSWordInteractor {
      */
     fun getWordWindows(): Array<String> {
         val cmd = "osascript ${getWordWindowsFile.canonicalPath}"
-        val ret  = runCommand(cmd).split(", ")
-        return ret.toTypedArray();
+        val ret  = executeCommandBlocking(cmd, logger).split(", ")
+        return ret.toTypedArray()
     }
 
     /**
@@ -40,22 +40,6 @@ class MacMSWordInteractor {
         return selectWordWindow(docName)
     }
 
-    private fun runCommand(cmd: String): String {
-        val stdout = ByteArrayOutputStream()
-
-        val stdoutPsh = PumpStreamHandler(stdout)
-        val cmdLine = CommandLine.parse(cmd)
-        val executor = DefaultExecutor()
-        executor.streamHandler = stdoutPsh
-        try {
-            executor.execute(cmdLine)
-        } catch (e: Exception) {
-        }
-
-        val result = stdout.toString().replace("\n", "")
-        logger.info("Command '$cmd' returned '$result'")
-        return result
-    }
     /**
      * Brings a word window into focus
      * @param title The title of the window to be brought into focus
@@ -63,8 +47,8 @@ class MacMSWordInteractor {
      */
     fun selectWordWindow(title: String): Boolean {
         val cmd = "osascript ${selectWordWindowFile.canonicalPath} \"$title\""
-        logger.info("Selecting word window $title using command '$cmd'")
-        runCommand(cmd)
+        logger.info("Selecting word window $title")
+        executeCommandBlocking(cmd, logger)
         return true
     }
 
