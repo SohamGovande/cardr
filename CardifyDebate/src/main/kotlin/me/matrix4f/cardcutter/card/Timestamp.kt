@@ -1,6 +1,5 @@
 package me.matrix4f.cardcutter.card
 
-import com.sun.org.apache.xpath.internal.operations.Bool
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
 import me.matrix4f.cardcutter.prefs.Prefs
@@ -14,7 +13,7 @@ class Timestamp {
     var day: StringProperty = SimpleStringProperty("")
 
     fun yearAsInt(): Int? {
-        return if (hasYear()) year.get().toInt() else null;
+        return if (hasYear()) year.get().toInt() else null
     }
 
     private fun hasDay(): Boolean = !day.get().isNullOrEmpty()
@@ -49,7 +48,7 @@ class Timestamp {
                 val date = currentDate()
                 if (yearInt == date.year && !Prefs.get().onlyCardYear) {
                     // Card is from this year
-                    return "${month.get()}-${day.get()}";
+                    return "${month.get()}-${day.get()}"
                 } else {
                     // Card is from a previous year
 

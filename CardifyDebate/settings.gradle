@@ -1,2 +1,2 @@
-rootProject.name = 'cardcutter'
+rootProject.name = 'CardifyDebate'
 include 'app'

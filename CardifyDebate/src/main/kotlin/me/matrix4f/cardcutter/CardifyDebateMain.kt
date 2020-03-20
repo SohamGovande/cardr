@@ -79,6 +79,7 @@ fun main(args: Array<String>) {
     setLoggerDir()
 
     CardifyDebate.logger.info("Launching Cardify with the following arguments: ${Arrays.toString(args)}")
+    CardifyDebate.logger.info("Running on Java version ${System.getProperty("java.version")} by vendor ${System.getProperty("java.vendor")}")
 
     Application.launch(CardifyDebate::class.java)
 }
