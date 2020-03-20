@@ -1,7 +1,6 @@
 plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.3.70'
-    id 'com.github.johnrengelman.shadow' version '4.0.4'
     id 'org.openjfx.javafxplugin' version '0.0.8'
     id 'org.beryx.jlink' version '2.17.3'
 }
@@ -9,14 +8,13 @@ plugins {
 ext.kotlin_version = '1.3.70'
 group 'me.matrix4f'
 version '1.2.0'
-mainClassName = 'me.matrix4f.cardcutter.CardifyDebateMainKt'
 
 
 repositories {
     mavenCentral()
 }
 
-task exportToApp {
+task exportToRelease {
     copy {
         from 'build/libs/CardifyDebate-' + version + '.jar'
         into "C:\\Users\\vgsoh\\AppData\\Local\\CardifyDebate\\app"
@@ -25,9 +23,7 @@ task exportToApp {
 
 
 jar {
-    manifest {
-        attributes 'Main-Class': mainClassName
-    }
+    manifest { attributes 'Main-Class': mainClassName }
 }
 
 javafx {
@@ -68,35 +64,16 @@ jlink {
                 '--win-per-user-install',
                 '--win-upgrade-uuid', '74252fd4-d645-4244-a2fb-ee69474db56f',
                 '--win-shortcut',
-                '--description', 'An advanced, next-gen evidence collector for debate research.',
+                '--description', appDescription,
                 '--copyright', 'Copyright Soham Govande 2019-2020',
                 '--vendor', 'CardifyDebate'
         ]
     }
 }
 
-// Output to build/libs/CardifyDebate.jar
-shadowJar {
-    baseName = 'CardifyDebate'
-    classifier = null
-    version = version
-
-    doLast {
-        copy {
-            from 'build/libs/CardifyDebate.jar'
-            into "X:\\dev\\intellij\\CardifyDebate\\export"
-        }
-        copy {
-            from 'build/libs/CardifyDebate.jar'
-            into "C:\\Users\\vgsoh\\Google Drive\\Debate\\CardifyDebate"
-        }
-    }
-}
-shadowJar.dependsOn(jar)
-
 dependencies {
     compile 'org.jsoup:jsoup:1.12.1'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
+    compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     compile 'org.apache.httpcomponents:httpclient:4.5.10'
     compile 'org.apache.commons:commons-exec:1.3'
     compile 'com.google.code.gson:gson:2.8.5'
