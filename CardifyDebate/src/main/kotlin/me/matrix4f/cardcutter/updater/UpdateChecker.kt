@@ -8,6 +8,7 @@ import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
 import me.matrix4f.cardcutter.CardifyDebate
+import me.matrix4f.cardcutter.ui.windows.UpdateWindow
 import me.matrix4f.cardcutter.util.CardifyException
 import me.matrix4f.cardcutter.util.makeRequest
 import org.apache.logging.log4j.LogManager
@@ -23,12 +24,13 @@ class UpdateChecker {
         val alert = Alert(Alert.AlertType.CONFIRMATION, "", updateBT, remindBT, seeWhatsNewBT)
         alert.title = "Update Cardify"
         alert.headerText = "A new version of Cardify is available!"
-        alert.contentText = "Version ${version.name} (${version.build}) is available for you to download. Would you like to download the update?"
+        alert.contentText = "Version ${version.name} is available for you to download. Would you like to download the update?"
 
         val result = alert.showAndWait()
         if (result.isPresent && result.get() == updateBT) {
-            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/download.html").toURI())
-            System.exit(0)
+            UpdateWindow(version).show()
+//            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/download.html").toURI())
+//            System.exit(0)
         } else if (result.isPresent && result.get() == seeWhatsNewBT) {
             Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/changelog.html").toURI())
         }

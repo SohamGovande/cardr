@@ -21,17 +21,21 @@ fun showErrorDialog(brief: String, full: String) {
     }
 }
 
-fun showInfoDialog(brief: String, full: String) {
+fun showInfoDialogUnblocking(brief: String, full: String) {
     Platform.runLater {
-        val alert = Alert(Alert.AlertType.INFORMATION)
-        alert.title = "Message"
-        alert.headerText = brief
-        alert.contentText = full
-        alert.showAndWait()
+        showInfoDialogBlocking(brief, full)
     }
 }
 
-fun showInfoDialog(brief: String, full: String, primaryOption: String, action: () -> Unit) {
+fun showInfoDialogBlocking(brief: String, full: String) {
+    val alert = Alert(Alert.AlertType.INFORMATION)
+    alert.title = "Message"
+    alert.headerText = brief
+    alert.contentText = full
+    alert.showAndWait()
+}
+
+fun showInfoDialogUnblocking(brief: String, full: String, primaryOption: String, action: () -> Unit) {
     Platform.runLater {
         val primaryBT = ButtonType(primaryOption, ButtonBar.ButtonData.OK_DONE)
         val exitBT = ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE)

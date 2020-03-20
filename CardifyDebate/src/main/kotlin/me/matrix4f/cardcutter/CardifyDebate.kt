@@ -13,7 +13,7 @@ import org.apache.logging.log4j.LogManager
 
 class CardifyDebate: Application() {
 
-    private lateinit var stage: Stage
+    lateinit var stage: Stage
 
     private fun onWindowClose(event: WindowEvent) {
         Prefs.get().windowDimensions = WindowDimensions(stage)
@@ -21,6 +21,7 @@ class CardifyDebate: Application() {
     }
 
     override fun start(stage: Stage) {
+        instance = this
         this.stage = stage
         try {
             logger.info("Launched Cardify")
@@ -83,6 +84,8 @@ class CardifyDebate: Application() {
         var WAS_FIRST_LAUNCH_SUCCESSFUL = false
         val OVERRIDE_LOGIN_CHECK = true
         val RELEASE_MODE = true
+
+        var instance: CardifyDebate? = null
 
         val logger = LogManager.getLogger(CardifyDebate::class.java)
     }

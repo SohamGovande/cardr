@@ -4,14 +4,14 @@ import com.google.gson.GsonBuilder
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.prefs.firstlaunch.onFirstLaunch
 import me.matrix4f.cardcutter.prefs.firstlaunch.updateFrom
-import me.matrix4f.cardcutter.ui.windows.WelcomeWindow
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
 import me.matrix4f.cardcutter.util.showErrorDialog
-import me.matrix4f.cardcutter.util.showInfoDialog
+import me.matrix4f.cardcutter.util.showInfoDialogUnblocking
 import org.apache.logging.log4j.LogManager
 import java.awt.Desktop
 import java.net.URL
+import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -28,7 +28,7 @@ object Prefs {
             path = Paths.get("CardifySettings.json")
         } else {
             path = Paths.get(System.getProperty("user.home"), "CardifyDebate", "CardifySettings.json")
-            Files.createDirectories(path.parent)
+            try { Files.createDirectories(path.parent) } catch (e: FileAlreadyExistsException) { }
         }
         read()
     }
@@ -54,7 +54,7 @@ object Prefs {
                         if (error == null) {
                             prefs.lastUsedVersionInt = CardifyDebate.CURRENT_VERSION_INT
                             save()
-                            showInfoDialog("Succesfully updated Cardify!", "Updated Cardify from version $lastVersion to ${CardifyDebate.CURRENT_VERSION}.",  "See what's new") {
+                            showInfoDialogUnblocking("Succesfully updated Cardify!", "Updated Cardify from version $lastVersion to ${CardifyDebate.CURRENT_VERSION}.",  "See what's new") {
                                 Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/changelog.html").toURI())
                             }
                             logger.info("Successfully updated Cardify from b$lastVersion - saved prefs $prefs")

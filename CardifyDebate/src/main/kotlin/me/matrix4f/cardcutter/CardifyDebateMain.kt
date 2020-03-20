@@ -12,6 +12,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import java.io.BufferedReader
 import java.io.File
+import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.*
@@ -26,19 +27,12 @@ private fun setLoggerDir() {
         val dataDirFileExt = Paths.get(
             System.getProperty("user.home"), "CardifyDebate", "test.txt"
         )
-        Files.createDirectories(dataDirFileExt.parent)
+        try { Files.createDirectories(dataDirFileExt.parent) } catch (e: FileAlreadyExistsException) { }
         dataDir = dataDirFileExt.parent.toFile().canonicalPath + File.separator
     }
     System.setProperty("cardifydebate.data.dir", dataDir)
     (LogManager.getContext(false) as LoggerContext).configLocation = CardifyDebate::class.java.getResource("/log4j2.xml").toURI()
     CardifyDebate.logger.info("Set logger data directory to '$dataDir'")
-}
-
-private fun checkForUpdates() {
-    Thread {
-        val updateChecker = UpdateChecker()
-        updateChecker.checkForUpdates()
-    }.start()
 }
 
 fun main(args: Array<String>) {
@@ -85,8 +79,6 @@ fun main(args: Array<String>) {
     setLoggerDir()
 
     CardifyDebate.logger.info("Launching Cardify with the following arguments: ${Arrays.toString(args)}")
-
-    checkForUpdates()
 
     Application.launch(CardifyDebate::class.java)
 }
