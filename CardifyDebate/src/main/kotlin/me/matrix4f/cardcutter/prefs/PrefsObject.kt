@@ -21,7 +21,7 @@ class PrefsObject {
     var showParagraphBreaks = false
     var darkMode = false
 
-    var pastePlainText = false
+    var pastePlainText = true
     var pasteShortcut = KeyEvent.VK_F2
 
     var emailAddress = ""
