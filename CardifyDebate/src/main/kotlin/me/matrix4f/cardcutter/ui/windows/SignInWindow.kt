@@ -62,7 +62,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         }.start()
     }
 
-    private fun onClickContinueBtn(e: ActionEvent) {
+    private fun onClickContinueBtn(@Suppress("UNUSED_PARAMETER") e: ActionEvent) {
         continueBtn.text = "Processing..."
         continueBtn.isDisable = true
         Thread {

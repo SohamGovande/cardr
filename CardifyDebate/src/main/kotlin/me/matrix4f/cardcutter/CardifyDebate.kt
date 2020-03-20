@@ -15,7 +15,7 @@ class CardifyDebate: Application() {
 
     lateinit var stage: Stage
 
-    private fun onWindowClose(event: WindowEvent) {
+    private fun onWindowClose(@Suppress("UNUSED_PARAMETER") event: WindowEvent) {
         Prefs.get().windowDimensions = WindowDimensions(stage)
         Prefs.save()
     }
