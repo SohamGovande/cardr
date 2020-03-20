@@ -3,14 +3,10 @@ import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.prefs.PrefsObject
 import me.matrix4f.cardcutter.util.*
 import net.lingala.zip4j.ZipFile
-import org.apache.commons.exec.CommandLine
-import org.apache.commons.exec.DefaultExecutor
-import org.apache.commons.exec.PumpStreamHandler
 import org.apache.commons.io.IOUtils
 import org.apache.logging.log4j.LogManager
-import java.io.*
+import java.io.File
 import java.net.URL
-import java.nio.channels.Channels
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -19,31 +15,13 @@ private val logger = LogManager.getLogger(Prefs::class.java)
 
 @Throws(FirstLaunchException::class, Exception::class)
 private fun downloadChromeDataWindows(): File {
-    val cmd = "taskkill /f /im CardifyChromeApp.exe"
-    logger.info("Running command '$cmd'")
-    val stdout = ByteArrayOutputStream()
-    val stdoutPsh = PumpStreamHandler(stdout)
-    val cmdLine = CommandLine.parse(cmd)
-    val executor = DefaultExecutor()
-    executor.streamHandler = stdoutPsh
-    try {
-        executor.execute(cmdLine)
-    } catch (e: Exception) {
-    }
+    executeCommandBlocking("taskkill /f /im CardifyChromeApp.exe", logger)
 
     val executable = File("CardifyChromeApp.exe")
-    var dataStream = URL("http://cardifydebate.x10.bz/data/win/CardifyChromeApp-v1.2.0.exe").openStream()
-    var fos = FileOutputStream(executable)
-    fos.channel.transferFrom(Channels.newChannel(dataStream), 0, Long.MAX_VALUE)
-    dataStream.close()
-    fos.close()
+    downloadFileFromURL("http://cardifydebate.x10.bz/data/win/CardifyChromeApp-v1.2.0.exe", executable, logger)
 
     val jsonFile = File("me.matrix4f.cardify.json")
-    dataStream = URL("http://cardifydebate.x10.bz/data/win/ChromeAppNativeJson-v1.2.0.json").openStream()
-    fos = FileOutputStream(jsonFile)
-    fos.channel.transferFrom(Channels.newChannel(dataStream), 0, Long.MAX_VALUE)
-    dataStream.close()
-    fos.close()
+    downloadFileFromURL("http://cardifydebate.x10.bz/data/win/ChromeAppNativeJson-v1.2.0.json", jsonFile, logger)
 
     if (!jsonFile.exists())
         throw FirstLaunchException("Unable to download Chrome App Native JSON.")

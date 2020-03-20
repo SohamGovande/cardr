@@ -31,7 +31,6 @@ import me.matrix4f.cardcutter.ui.windows.*
 import me.matrix4f.cardcutter.updater.UpdateChecker
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
-import netscape.javascript.JSException
 import org.apache.commons.exec.util.StringUtils
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
@@ -975,7 +974,7 @@ class CardCuttingUI(private val stage: Stage) {
                 }
             }
             refreshHTML()
-        } catch (e: JSException) {
+        } catch (e: Exception) {
             success = false
         }
         if (!success) {
@@ -1000,25 +999,16 @@ class CardCuttingUI(private val stage: Stage) {
     }
 
     private fun keepOnlySelectedText() {
-        var success: Boolean
+        var success = false
         try {
             if (reader == null) {
                 throw NullPointerException("No reader found")
             }
             keepOnlyText(cardWV.engine.executeScript("getSelectionTextCustom()") as String)
             success = true
-        } catch (e: JSException) {
-            logger.error(e)
-            e.printStackTrace()
-            success = false
-        } catch (e: NullPointerException) {
-            logger.error(e)
-            e.printStackTrace()
-            success = false
         } catch (e: Exception) {
             logger.error(e)
             e.printStackTrace()
-            success = false
         }
 
         if (!success) {

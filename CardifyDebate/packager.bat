@@ -1,0 +1,1 @@
+"C:\Program Files\Java\jdk-11.0.6\bin\java.exe" --module-path "C:\Program Files\Java\jdk-11.0.6\jmods" --add-opens jdk.jlink/jdk.tools.jlink.internal.packager=jdk.packager -m jdk.packager/jdk.packager.Main create-installer msi --runtime-image "build/image" --module-path "build/libs" -m "CardifyDebate.main" --output "build/jpackage"
