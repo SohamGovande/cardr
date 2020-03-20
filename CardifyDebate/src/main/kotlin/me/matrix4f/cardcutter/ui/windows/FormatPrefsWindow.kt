@@ -12,6 +12,8 @@ import javafx.scene.web.HTMLEditor
 import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.prefs.Prefs
 import me.matrix4f.cardcutter.prefs.PrefsObject
+import me.matrix4f.cardcutter.util.OS
+import me.matrix4f.cardcutter.util.getOSType
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
@@ -67,7 +69,12 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
 
         editHBox.prefWidth = 600.0
 
-        resetBtn.setOnAction { editText.htmlText = PrefsObject.DEFAULT_CARD_FORMAT }
+        resetBtn.setOnAction {
+            var new = PrefsObject.DEFAULT_CARD_FORMAT
+            if (getOSType() == OS.MAC)
+                new = new.replace("Calibri", PrefsObject.MAC_CALIBRI_FONT)
+            editText.htmlText = new
+        }
         infoBtn.setOnAction {
             val alert = Alert(Alert.AlertType.NONE)
             alert.title = "Macros"
