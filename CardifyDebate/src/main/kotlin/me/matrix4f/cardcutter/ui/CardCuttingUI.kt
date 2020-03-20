@@ -40,6 +40,7 @@ import java.awt.Toolkit
 import java.io.InputStream
 import java.lang.NullPointerException
 import java.net.URL
+import java.nio.file.Paths
 import java.util.function.Consumer
 
 class CardCuttingUI(private val stage: Stage) {
@@ -929,6 +930,8 @@ class CardCuttingUI(private val stage: Stage) {
         versionMI.setOnAction { showInfoDialogBlocking("Cardify is running version ${CardifyDebate.CURRENT_VERSION}.", "") }
         val helpMI = MenuItem("Help & FAQs")
         helpMI.setOnAction { Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/faq.html").toURI()) }
+        val logMI = MenuItem("Open Log File")
+        logMI.setOnAction { Desktop.getDesktop().browse(Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifyDebateLog.txt").toFile().toURI()) }
 
         aboutMenu.items.add(creditsMI)
         aboutMenu.items.add(donateMI)
@@ -939,6 +942,7 @@ class CardCuttingUI(private val stage: Stage) {
         aboutMenu.items.add(SeparatorMenuItem())
         aboutMenu.items.add(helpMI)
         aboutMenu.items.add(versionMI)
+        aboutMenu.items.add(logMI)
 
         menuBar.menus.add(accountMenu)
         menuBar.menus.add(toolsMenu)
