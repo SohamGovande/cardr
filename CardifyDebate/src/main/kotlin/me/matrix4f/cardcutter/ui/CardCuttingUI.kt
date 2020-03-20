@@ -913,17 +913,22 @@ class CardCuttingUI(private val stage: Stage) {
 
         val aboutMenu = Menu("About")
 
-        val creditsMI = MenuItem("Credits...")
+        val creditsMI = MenuItem("Credits")
         creditsMI.setOnAction { CreditsWindow().show() }
-        val donateMI = MenuItem("Support development/donate...")
+        val donateMI = MenuItem("Support development/donate")
         donateMI.setOnAction { Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/donate.html").toURI()) }
 
-        val websiteMI = MenuItem("Visit website...")
+        val websiteMI = MenuItem("Visit website")
         websiteMI.setOnAction { Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz").toURI()) }
-        val chromeMI = MenuItem("Get Chrome Extension...")
+        val chromeMI = MenuItem("Get Chrome Extension")
         chromeMI.setOnAction { Desktop.getDesktop().browse(URL("https://chrome.google.com/webstore/detail/cardifydebate/ifdnjffggmmjiammdpklgldliaaempce").toURI()) }
-        val githubMI = MenuItem("Contribute on GitHub...")
+        val githubMI = MenuItem("Contribute on GitHub")
         githubMI.setOnAction { Desktop.getDesktop().browse(URL("https://www.github.com/SohamGovande/CardifyDebate").toURI()) }
+
+        val versionMI = MenuItem("Version")
+        versionMI.setOnAction { showInfoDialogBlocking("Cardify is running version ${CardifyDebate.CURRENT_VERSION}.", "") }
+        val helpMI = MenuItem("Help & FAQs")
+        helpMI.setOnAction { Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/faq.html").toURI()) }
 
         aboutMenu.items.add(creditsMI)
         aboutMenu.items.add(donateMI)
@@ -931,6 +936,9 @@ class CardCuttingUI(private val stage: Stage) {
         aboutMenu.items.add(websiteMI)
         aboutMenu.items.add(chromeMI)
         aboutMenu.items.add(githubMI)
+        aboutMenu.items.add(SeparatorMenuItem())
+        aboutMenu.items.add(helpMI)
+        aboutMenu.items.add(versionMI)
 
         menuBar.menus.add(accountMenu)
         menuBar.menus.add(toolsMenu)
