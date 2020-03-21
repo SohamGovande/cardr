@@ -21,14 +21,12 @@ val uiLock = Object()
 
 private fun setLoggerDir() {
     var dataDir = ""
-    if (getOSType() == OS.MAC) {
-        println("Detected macOS, changing data directory...")
-        val dataDirFileExt = Paths.get(
-            System.getProperty("user.home"), "CardifyDebate", "test.txt"
-        )
-        try { Files.createDirectories(dataDirFileExt.parent) } catch (e: FileAlreadyExistsException) { }
-        dataDir = dataDirFileExt.parent.toFile().canonicalPath + File.separator
-    }
+    println("Changing data directory...")
+    val dataDirFileExt = Paths.get(
+        System.getProperty("user.home"), "CardifyDebate", "test.txt"
+    )
+    try { Files.createDirectories(dataDirFileExt.parent) } catch (e: FileAlreadyExistsException) { }
+    dataDir = dataDirFileExt.parent.toFile().canonicalPath + File.separator
     System.setProperty("cardifydebate.data.dir", dataDir)
     val context = (LogManager.getContext(true) as LoggerContext)
     val log4j2 = CardifyDebate::class.java.getResource("/log4j2.xml")

@@ -7,8 +7,8 @@ import java.nio.file.Paths
 
 class MacMSWordInteractor {
 
-    val getWordWindowsFile = Paths.get(System.getProperty("user.home"), "CardifyDebate", "MacScripts", "getWordWindows.scpt").toFile()
-    val selectWordWindowFile = Paths.get(System.getProperty("user.home"), "CardifyDebate", "MacScripts", "selectWordWindow.scpt").toFile()
+    val getWordWindowsFile = Paths.get(System.getProperty("cardifydebate.data.dir"), "MacScripts", "getWordWindows.scpt").toFile()
+    val selectWordWindowFile = Paths.get(System.getProperty("cardifydebate.data.dir"), "MacScripts", "selectWordWindow.scpt").toFile()
 
     /**
      * Use this API

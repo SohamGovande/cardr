@@ -24,12 +24,8 @@ object Prefs {
     private val logger = LogManager.getLogger(Prefs::class.java)
 
     init {
-        if (getOSType() == OS.WINDOWS) {
-            path = Paths.get("CardifySettings.json")
-        } else {
-            path = Paths.get(System.getProperty("user.home"), "CardifyDebate", "CardifySettings.json")
-            try { Files.createDirectories(path.parent) } catch (e: FileAlreadyExistsException) { }
-        }
+        path = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifySettings.json")
+        try { Files.createDirectories(path.parent) } catch (e: FileAlreadyExistsException) { }
         read()
     }
 

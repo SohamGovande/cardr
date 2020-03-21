@@ -17,10 +17,10 @@ private val logger = LogManager.getLogger(Prefs::class.java)
 private fun downloadChromeDataWindows(): File {
     executeCommandBlocking("taskkill /f /im CardifyChromeApp.exe", logger)
 
-    val executable = File("CardifyChromeApp.exe")
+    val executable = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifyChromeApp.exe").toFile()
     downloadFileFromURL("http://cardifydebate.x10.bz/data/win/CardifyChromeApp-v1.2.0.exe", executable, logger)
 
-    val jsonFile = File("me.matrix4f.cardify.json")
+    val jsonFile = Paths.get(System.getProperty("cardifydebate.data.dir"), "me.matrix4f.cardify.json").toFile()
     downloadFileFromURL("http://cardifydebate.x10.bz/data/win/ChromeAppNativeJson-v1.2.0.json", jsonFile, logger)
 
     if (!jsonFile.exists())
@@ -37,12 +37,12 @@ private fun downloadChromeDataMacOS() {
     if (!jsonPath.parent.parent.toFile().exists())
         throw FirstLaunchException("No Google Chrome installation detected")
 
-    val executablePath = Paths.get(System.getProperty("user.home"), "CardifyDebate", "CardifyChromeApp")
-    val executableZipPath = Paths.get(System.getProperty("user.home"), "CardifyDebate", "CardifyChromeApp.zip")
+    val executablePath = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifyChromeApp")
+    val executableZipPath = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifyChromeApp.zip")
     try { Files.createDirectories(executablePath.parent) } catch (e: FileAlreadyExistsException) { }
 
     logger.info("Opening data stream for json file...")
-    var dataStream = URL("http://cardifydebate.x10.bz/data/mac/ChromeAppNativeJson-v1.2.0.json").openStream()
+    val dataStream = URL("http://cardifydebate.x10.bz/data/mac/ChromeAppNativeJson-v1.2.0.json").openStream()
 
     logger.info("Reading json file...")
     @Suppress("DEPRECATION") var data = IOUtils.toString(dataStream)
@@ -85,7 +85,7 @@ private fun onFirstLaunchWindows() {
 private fun onFirstLaunchMacOS() {
     downloadChromeDataMacOS()
 
-    val macScriptsPath = Paths.get(System.getProperty("user.home"), "CardifyDebate", "MacScripts")
+    val macScriptsPath = Paths.get(System.getProperty("cardifydebate.data.dir"), "MacScripts")
     try { Files.createDirectory(macScriptsPath) } catch (e: FileAlreadyExistsException) { }
 
     val getWordWindowsScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "getWordWindows.scpt")
