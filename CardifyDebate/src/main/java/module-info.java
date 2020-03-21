@@ -6,6 +6,7 @@ module CardifyDebate.main {
     requires java.base;
     requires java.sql;
     requires java.net.http;
+    requires java.scripting;
     requires org.jsoup;
     requires org.apache.commons.codec;
     requires kotlin.stdlib;

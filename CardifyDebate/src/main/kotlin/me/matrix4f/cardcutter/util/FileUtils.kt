@@ -1,9 +1,6 @@
 package me.matrix4f.cardcutter.util
 
-import org.apache.commons.exec.CommandLine
-import org.apache.commons.exec.DefaultExecuteResultHandler
-import org.apache.commons.exec.DefaultExecutor
-import org.apache.commons.exec.PumpStreamHandler
+import org.apache.commons.exec.*
 import org.apache.logging.log4j.Logger
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -13,7 +10,7 @@ import java.nio.channels.Channels
 
 
 fun makeFileExecutableViaChmod(path: String, logger: Logger) {
-    executeCommandBlocking("chmod +x \"$path\"", logger)
+    executeCommandBlocking("chmod +x \"$path\"", logger, true)
 }
 
 @Throws(Exception::class)
@@ -29,7 +26,7 @@ fun downloadFileFromURL(url: String, downloadTo: File, logger: Logger) {
 }
 
 
-fun executeCommandBlocking(cmd: String, logger: Logger): String {
+fun executeCommandBlocking(cmd: String, logger: Logger, allowNonzeroExit: Boolean): String {
     logger.info("Running command '$cmd' (blocking)")
     val stdout = ByteArrayOutputStream()
     val stdoutPsh = PumpStreamHandler(stdout)
@@ -39,8 +36,13 @@ fun executeCommandBlocking(cmd: String, logger: Logger): String {
     try {
         val exitValue = executor.execute(cmdLine)
         logger.info("$cmd terminated with  exit $exitValue")
-    } catch (e: Exception) {
-        logger.info("Error executing command $cmd", e)
+    } catch (e: ExecuteException) {
+        if (e.message!!.contains("Process exited with an error:") && allowNonzeroExit) {
+            logger.info("Error executing command $cmd but ignored return value '${e.message}'")
+        } else {
+            logger.error("Error executing command $cmd", e)
+            throw e
+        }
     }
     val result = stdout.toString().replace("\n", "")
     logger.info("Command '$cmd' returned '$result'")

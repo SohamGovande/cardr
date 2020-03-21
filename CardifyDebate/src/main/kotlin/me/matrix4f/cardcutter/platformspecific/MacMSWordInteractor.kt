@@ -27,7 +27,7 @@ class MacMSWordInteractor {
      */
     fun getWordWindows(): Array<String> {
         val cmd = "osascript ${getWordWindowsFile.canonicalPath}"
-        val ret  = executeCommandBlocking(cmd, logger).split(", ")
+        val ret  = executeCommandBlocking(cmd, logger, true).split(", ")
         return ret.toTypedArray()
     }
 
@@ -48,7 +48,7 @@ class MacMSWordInteractor {
     fun selectWordWindow(title: String): Boolean {
         val cmd = "osascript ${selectWordWindowFile.canonicalPath} \"$title\""
         logger.info("Selecting word window $title")
-        executeCommandBlocking(cmd, logger)
+        executeCommandBlocking(cmd, logger, true)
         return true
     }
 
