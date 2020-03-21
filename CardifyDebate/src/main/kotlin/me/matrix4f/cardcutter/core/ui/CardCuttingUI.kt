@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.ui
+package me.matrix4f.cardcutter.core.ui
 
 import javafx.application.Platform
 import javafx.beans.property.SimpleStringProperty
@@ -18,19 +18,19 @@ import javafx.scene.text.TextAlignment
 import javafx.scene.web.WebView
 import javafx.stage.Stage
 import me.matrix4f.cardcutter.CardifyDebate
-import me.matrix4f.cardcutter.auth.CardifyUser
-import me.matrix4f.cardcutter.card.Author
-import me.matrix4f.cardcutter.card.AuthorNameFormat
-import me.matrix4f.cardcutter.card.Cite
-import me.matrix4f.cardcutter.card.Timestamp
+import me.matrix4f.cardcutter.core.auth.CardifyUser
+import me.matrix4f.cardcutter.core.card.Author
+import me.matrix4f.cardcutter.core.card.AuthorNameFormat
+import me.matrix4f.cardcutter.core.card.Cite
+import me.matrix4f.cardcutter.core.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
 import me.matrix4f.cardcutter.platformspecific.MacMSWordInteractor
 import me.matrix4f.cardcutter.data.prefs.Prefs
 import me.matrix4f.cardcutter.data.prefs.PrefsObject
-import me.matrix4f.cardcutter.ui.windows.*
+import me.matrix4f.cardcutter.core.ui.windows.*
 import me.matrix4f.cardcutter.data.updater.UpdateChecker
 import me.matrix4f.cardcutter.util.*
-import me.matrix4f.cardcutter.web.WebsiteCardCutter
+import me.matrix4f.cardcutter.core.web.WebsiteCardCutter
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import java.awt.Desktop

@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.auth
+package me.matrix4f.cardcutter.core.auth
 
 data class CardifyResult(var func: String, var status: String, var reason: String, var additional_info: String) {
 

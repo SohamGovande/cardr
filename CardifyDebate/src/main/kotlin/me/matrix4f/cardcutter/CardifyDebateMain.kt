@@ -2,11 +2,9 @@ package me.matrix4f.cardcutter
 
 import javafx.application.Application
 import javafx.application.Platform
-import me.matrix4f.cardcutter.ui.CardCuttingUI
-import me.matrix4f.cardcutter.util.OS
-import me.matrix4f.cardcutter.util.getOSType
+import me.matrix4f.cardcutter.core.ui.CardCuttingUI
 import me.matrix4f.cardcutter.util.showErrorDialog
-import me.matrix4f.cardcutter.web.WebsiteCardCutter
+import me.matrix4f.cardcutter.core.web.WebsiteCardCutter
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import java.io.BufferedReader

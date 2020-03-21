@@ -1,7 +1,7 @@
 package me.matrix4f.cardcutter.util
 
 import com.google.gson.GsonBuilder
-import me.matrix4f.cardcutter.auth.CardifyResult
+import me.matrix4f.cardcutter.core.auth.CardifyResult
 import org.apache.http.NameValuePair
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpGet
@@ -48,10 +48,10 @@ fun makePOSTRequest(url: String, params: List<NameValuePair>): String? {
         val client = HttpClientBuilder.create()
             .build()
         val request = HttpPost(url)
-        request.setHeader("User-Agent", "Java client");
-        request.entity = UrlEncodedFormEntity(params);
+        request.setHeader("User-Agent", "Java client")
+        request.entity = UrlEncodedFormEntity(params)
 
-        val response = client.execute(request);
+        val response = client.execute(request)
 
         return response.entity.content.bufferedReader().use(BufferedReader::readText)
     } catch (e: IOException) {
@@ -68,9 +68,9 @@ fun makeRequest(url: String): String? {
     val client = HttpClientBuilder.create()
         .build()
     val request = HttpGet(url)
-    request.setHeader("User-Agent", "Java client");
+    request.setHeader("User-Agent", "Java client")
 
-    val response = client.execute(request);
+    val response = client.execute(request)
 
     return response.entity.content.bufferedReader().use(BufferedReader::readText)
 }

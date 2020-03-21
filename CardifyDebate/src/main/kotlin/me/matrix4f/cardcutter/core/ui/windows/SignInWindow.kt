@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.ui.windows
+package me.matrix4f.cardcutter.core.ui.windows
 
 import javafx.application.Platform
 import javafx.event.ActionEvent
@@ -13,7 +13,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.stage.WindowEvent
-import me.matrix4f.cardcutter.auth.CardifyUser
+import me.matrix4f.cardcutter.core.auth.CardifyUser
 import me.matrix4f.cardcutter.data.prefs.Prefs
 import me.matrix4f.cardcutter.data.encryption.EncryptionHelper
 import org.apache.logging.log4j.LogManager

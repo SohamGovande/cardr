@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.auth
+package me.matrix4f.cardcutter.core.auth
 
 
 import me.matrix4f.cardcutter.util.makeCardifyRequest

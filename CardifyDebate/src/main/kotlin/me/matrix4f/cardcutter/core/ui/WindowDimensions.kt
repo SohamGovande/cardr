@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.ui
+package me.matrix4f.cardcutter.core.ui
 
 import javafx.stage.Screen
 import javafx.stage.Stage

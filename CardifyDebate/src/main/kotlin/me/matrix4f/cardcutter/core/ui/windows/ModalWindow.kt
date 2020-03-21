@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.ui.windows
+package me.matrix4f.cardcutter.core.ui.windows
 
 import javafx.scene.Scene
 import javafx.stage.Modality

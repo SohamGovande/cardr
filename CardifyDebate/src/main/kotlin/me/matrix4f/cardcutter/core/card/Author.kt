@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.card
+package me.matrix4f.cardcutter.core.card
 
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty

@@ -6,9 +6,9 @@ import javafx.scene.image.Image
 import javafx.stage.Stage
 import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.data.prefs.Prefs
-import me.matrix4f.cardcutter.ui.CardCuttingUI
-import me.matrix4f.cardcutter.ui.WindowDimensions
-import me.matrix4f.cardcutter.ui.windows.WelcomeWindow
+import me.matrix4f.cardcutter.core.ui.CardCuttingUI
+import me.matrix4f.cardcutter.core.ui.WindowDimensions
+import me.matrix4f.cardcutter.core.ui.windows.WelcomeWindow
 import org.apache.logging.log4j.LogManager
 
 class CardifyDebate: Application() {

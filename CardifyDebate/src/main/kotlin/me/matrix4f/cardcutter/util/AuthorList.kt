@@ -1,6 +1,6 @@
 package me.matrix4f.cardcutter.util
 
-import me.matrix4f.cardcutter.card.Author
+import me.matrix4f.cardcutter.core.card.Author
 
 class AuthorList(val value: Array<Author>) {
 

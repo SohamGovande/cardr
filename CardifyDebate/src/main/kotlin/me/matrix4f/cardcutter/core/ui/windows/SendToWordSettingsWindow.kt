@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.ui.windows
+package me.matrix4f.cardcutter.core.ui.windows
 
 import javafx.collections.FXCollections
 import javafx.geometry.Insets

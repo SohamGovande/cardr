@@ -1,11 +1,11 @@
-package me.matrix4f.cardcutter.web
+package me.matrix4f.cardcutter.core.web
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import javafx.beans.property.SimpleStringProperty
 import me.matrix4f.cardcutter.CardifyDebate
-import me.matrix4f.cardcutter.card.Author
-import me.matrix4f.cardcutter.card.Timestamp
+import me.matrix4f.cardcutter.core.card.Author
+import me.matrix4f.cardcutter.core.card.Timestamp
 import me.matrix4f.cardcutter.data.prefs.Prefs
 import me.matrix4f.cardcutter.util.*
 import org.apache.logging.log4j.LogManager

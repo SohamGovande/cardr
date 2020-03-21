@@ -8,7 +8,7 @@ import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
 import me.matrix4f.cardcutter.CardifyDebate
-import me.matrix4f.cardcutter.ui.windows.UpdateWindow
+import me.matrix4f.cardcutter.core.ui.windows.UpdateWindow
 import me.matrix4f.cardcutter.util.CardifyException
 import me.matrix4f.cardcutter.util.makeRequest
 import org.apache.logging.log4j.LogManager

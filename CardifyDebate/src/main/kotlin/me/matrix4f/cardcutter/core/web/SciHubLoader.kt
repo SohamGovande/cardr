@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.web
+package me.matrix4f.cardcutter.core.web
 
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document

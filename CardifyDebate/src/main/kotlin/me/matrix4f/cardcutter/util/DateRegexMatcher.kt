@@ -1,7 +1,7 @@
 package me.matrix4f.cardcutter.util
 
 import javafx.beans.property.SimpleStringProperty
-import me.matrix4f.cardcutter.card.Timestamp
+import me.matrix4f.cardcutter.core.card.Timestamp
 import org.jsoup.nodes.Document
 import java.lang.Exception
 
