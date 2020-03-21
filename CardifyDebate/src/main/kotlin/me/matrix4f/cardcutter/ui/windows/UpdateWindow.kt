@@ -11,9 +11,9 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.CardifyDebate
-import me.matrix4f.cardcutter.prefs.Prefs
-import me.matrix4f.cardcutter.updater.CardifyVersion
-import me.matrix4f.cardcutter.updater.UpdateExecutor
+import me.matrix4f.cardcutter.data.prefs.Prefs
+import me.matrix4f.cardcutter.data.updater.CardifyVersion
+import me.matrix4f.cardcutter.data.updater.UpdateExecutor
 
 
 class UpdateWindow(private val version: CardifyVersion) : ModalWindow("Cardify Updater") {

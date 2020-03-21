@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.updater
+package me.matrix4f.cardcutter.data.updater
 
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType

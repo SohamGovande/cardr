@@ -7,7 +7,7 @@ import javafx.scene.control.Label
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.web.WebView
-import me.matrix4f.cardcutter.prefs.Prefs
+import me.matrix4f.cardcutter.data.prefs.Prefs
 import java.awt.Desktop
 import java.net.URL
 

@@ -14,8 +14,8 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.auth.CardifyUser
-import me.matrix4f.cardcutter.prefs.Prefs
-import me.matrix4f.cardcutter.prefs.encryption.EncryptionHelper
+import me.matrix4f.cardcutter.data.prefs.Prefs
+import me.matrix4f.cardcutter.data.encryption.EncryptionHelper
 import org.apache.logging.log4j.LogManager
 import java.awt.Desktop
 import java.lang.Exception
@@ -31,7 +31,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
 
     override fun close(event: WindowEvent?) {
         if (!readyToClose && options != SignInLauncherOptions.MANUAL_SIGNIN) {
-            System.exit(0)
+            exitProcess(0)
             event?.consume()
         }
     }

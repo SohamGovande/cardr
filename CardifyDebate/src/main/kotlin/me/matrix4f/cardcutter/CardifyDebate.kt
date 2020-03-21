@@ -5,7 +5,7 @@ import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import javafx.stage.WindowEvent
-import me.matrix4f.cardcutter.prefs.Prefs
+import me.matrix4f.cardcutter.data.prefs.Prefs
 import me.matrix4f.cardcutter.ui.CardCuttingUI
 import me.matrix4f.cardcutter.ui.WindowDimensions
 import me.matrix4f.cardcutter.ui.windows.WelcomeWindow
@@ -75,14 +75,14 @@ class CardifyDebate: Application() {
     }
 
     companion object {
-        const val WIDTH = 815.0
+        const val WIDTH = 830.0
         const val HEIGHT = 600.0
 
         const val CURRENT_VERSION = "v1.2.0"
         const val CURRENT_VERSION_INT = 3
         var IS_FIRST_LAUNCH = false
         var WAS_FIRST_LAUNCH_SUCCESSFUL = false
-        val OVERRIDE_LOGIN_CHECK = true
+        val OVERRIDE_LOGIN_CHECK = false
         val RELEASE_MODE = true
 
         var instance: CardifyDebate? = null

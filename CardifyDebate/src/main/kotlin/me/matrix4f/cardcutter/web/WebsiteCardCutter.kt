@@ -6,7 +6,7 @@ import javafx.beans.property.SimpleStringProperty
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.card.Author
 import me.matrix4f.cardcutter.card.Timestamp
-import me.matrix4f.cardcutter.prefs.Prefs
+import me.matrix4f.cardcutter.data.prefs.Prefs
 import me.matrix4f.cardcutter.util.*
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup

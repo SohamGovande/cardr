@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.updater
+package me.matrix4f.cardcutter.data.updater
 
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
@@ -30,7 +30,7 @@ class UpdateChecker {
         if (result.isPresent && result.get() == updateBT) {
             UpdateWindow(version).show()
 //            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/download.html").toURI())
-//            System.exit(0)
+//            exitProcess(0)
         } else if (result.isPresent && result.get() == seeWhatsNewBT) {
             Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/changelog.html").toURI())
         }

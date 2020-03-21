@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.prefs
+package me.matrix4f.cardcutter.data.prefs
 
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.ui.WindowDimensions

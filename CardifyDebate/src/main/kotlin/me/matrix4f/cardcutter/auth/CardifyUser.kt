@@ -2,8 +2,8 @@ package me.matrix4f.cardcutter.auth
 
 
 import me.matrix4f.cardcutter.util.makeCardifyRequest
-import me.matrix4f.cardcutter.prefs.Prefs
-import me.matrix4f.cardcutter.prefs.encryption.EncryptionHelper
+import me.matrix4f.cardcutter.data.prefs.Prefs
+import me.matrix4f.cardcutter.data.encryption.EncryptionHelper
 import org.apache.http.message.BasicNameValuePair
 import org.apache.logging.log4j.LogManager
 import java.io.*

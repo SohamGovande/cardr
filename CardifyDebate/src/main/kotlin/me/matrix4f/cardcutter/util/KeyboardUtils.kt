@@ -1,6 +1,6 @@
 package me.matrix4f.cardcutter.util
 
-import me.matrix4f.cardcutter.prefs.Prefs
+import me.matrix4f.cardcutter.data.prefs.Prefs
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.event.KeyEvent

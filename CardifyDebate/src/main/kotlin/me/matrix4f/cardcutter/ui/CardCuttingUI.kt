@@ -25,10 +25,10 @@ import me.matrix4f.cardcutter.card.Cite
 import me.matrix4f.cardcutter.card.Timestamp
 import me.matrix4f.cardcutter.platformspecific.MSWordInteractor
 import me.matrix4f.cardcutter.platformspecific.MacMSWordInteractor
-import me.matrix4f.cardcutter.prefs.Prefs
-import me.matrix4f.cardcutter.prefs.PrefsObject
+import me.matrix4f.cardcutter.data.prefs.Prefs
+import me.matrix4f.cardcutter.data.prefs.PrefsObject
 import me.matrix4f.cardcutter.ui.windows.*
-import me.matrix4f.cardcutter.updater.UpdateChecker
+import me.matrix4f.cardcutter.data.updater.UpdateChecker
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
 import org.apache.logging.log4j.LogManager

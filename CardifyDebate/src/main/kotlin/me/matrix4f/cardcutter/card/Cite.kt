@@ -1,7 +1,7 @@
 package me.matrix4f.cardcutter.card
 
 import javafx.beans.property.StringProperty
-import me.matrix4f.cardcutter.prefs.Prefs
+import me.matrix4f.cardcutter.data.prefs.Prefs
 
 data class Cite(val authors: Array<Author>,
                 val date: Timestamp,

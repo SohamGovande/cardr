@@ -1,4 +1,4 @@
-package me.matrix4f.cardcutter.prefs.encryption
+package me.matrix4f.cardcutter.data.encryption
 
 import com.google.gson.GsonBuilder
 import me.matrix4f.cardcutter.util.makeRequest

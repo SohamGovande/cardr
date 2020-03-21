@@ -10,6 +10,7 @@ import java.io.PrintWriter
 import java.io.UnsupportedEncodingException
 import java.net.URI
 import java.net.URLEncoder
+import kotlin.system.exitProcess
 
 fun showErrorDialog(brief: String, full: String) {
     Platform.runLater {
@@ -91,6 +92,6 @@ fun showErrorDialog(e: Exception) {
         forceClose = false
     }
     if (forceClose) {
-        System.exit(0)
+        exitProcess(0)
     }
 }

@@ -1,9 +1,9 @@
-package me.matrix4f.cardcutter.prefs
+package me.matrix4f.cardcutter.data.prefs
 
 import com.google.gson.GsonBuilder
 import me.matrix4f.cardcutter.CardifyDebate
-import me.matrix4f.cardcutter.prefs.firstlaunch.onFirstLaunch
-import me.matrix4f.cardcutter.prefs.firstlaunch.updateFrom
+import me.matrix4f.cardcutter.data.firstlaunch.onFirstLaunch
+import me.matrix4f.cardcutter.data.firstlaunch.updateFrom
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
 import me.matrix4f.cardcutter.util.showErrorDialog

@@ -2,7 +2,7 @@ package me.matrix4f.cardcutter.card
 
 import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
-import me.matrix4f.cardcutter.prefs.Prefs
+import me.matrix4f.cardcutter.data.prefs.Prefs
 import me.matrix4f.cardcutter.util.convertMonthNumberToName
 import me.matrix4f.cardcutter.util.currentDate
 

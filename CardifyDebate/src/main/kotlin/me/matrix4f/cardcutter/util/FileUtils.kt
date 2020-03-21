@@ -25,7 +25,7 @@ fun downloadFileFromURL(url: String, downloadTo: File, logger: Logger) {
     fos.close()
 }
 
-
+@Throws(Exception::class)
 fun executeCommandBlocking(cmd: String, logger: Logger, allowNonzeroExit: Boolean): String {
     logger.info("Running command '$cmd' (blocking)")
     val stdout = ByteArrayOutputStream()
@@ -49,7 +49,7 @@ fun executeCommandBlocking(cmd: String, logger: Logger, allowNonzeroExit: Boolea
     return result
 }
 
-
+@Throws(Exception::class)
 fun executeCommandUnblocking(cmd: String, logger: Logger) {
     logger.info("Running command '$cmd' (unblocking)")
     val stdout = ByteArrayOutputStream()

@@ -1,6 +1,6 @@
-package me.matrix4f.cardcutter.prefs.firstlaunch
-import me.matrix4f.cardcutter.prefs.Prefs
-import me.matrix4f.cardcutter.prefs.PrefsObject
+package me.matrix4f.cardcutter.data.firstlaunch
+import me.matrix4f.cardcutter.data.prefs.Prefs
+import me.matrix4f.cardcutter.data.prefs.PrefsObject
 import me.matrix4f.cardcutter.util.*
 import net.lingala.zip4j.ZipFile
 import org.apache.commons.io.IOUtils

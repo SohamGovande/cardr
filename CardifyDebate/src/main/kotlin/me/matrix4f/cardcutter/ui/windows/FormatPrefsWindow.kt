@@ -10,8 +10,8 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.web.HTMLEditor
 import javafx.stage.WindowEvent
-import me.matrix4f.cardcutter.prefs.Prefs
-import me.matrix4f.cardcutter.prefs.PrefsObject
+import me.matrix4f.cardcutter.data.prefs.Prefs
+import me.matrix4f.cardcutter.data.prefs.PrefsObject
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
 import java.awt.Toolkit
