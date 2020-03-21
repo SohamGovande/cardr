@@ -31,7 +31,6 @@ import me.matrix4f.cardcutter.ui.windows.*
 import me.matrix4f.cardcutter.updater.UpdateChecker
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.web.WebsiteCardCutter
-import org.apache.commons.exec.util.StringUtils
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import java.awt.Desktop

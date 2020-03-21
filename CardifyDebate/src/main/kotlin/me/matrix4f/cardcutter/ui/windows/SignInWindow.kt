@@ -12,7 +12,6 @@ import javafx.scene.layout.GridPane
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
-import javafx.stage.StageStyle
 import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.auth.CardifyUser
 import me.matrix4f.cardcutter.prefs.Prefs

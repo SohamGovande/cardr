@@ -3,7 +3,6 @@ package me.matrix4f.cardcutter
 import javafx.application.Application
 import javafx.application.Platform
 import me.matrix4f.cardcutter.ui.CardCuttingUI
-import me.matrix4f.cardcutter.updater.UpdateChecker
 import me.matrix4f.cardcutter.util.OS
 import me.matrix4f.cardcutter.util.getOSType
 import me.matrix4f.cardcutter.util.showErrorDialog
@@ -31,7 +30,9 @@ private fun setLoggerDir() {
         dataDir = dataDirFileExt.parent.toFile().canonicalPath + File.separator
     }
     System.setProperty("cardifydebate.data.dir", dataDir)
-    (LogManager.getContext(false) as LoggerContext).configLocation = CardifyDebate::class.java.getResource("/log4j2.xml").toURI()
+    val context = (LogManager.getContext(true) as LoggerContext)
+    val log4j2 = CardifyDebate::class.java.getResource("/log4j2.xml")
+    context.configLocation = log4j2.toURI()
     CardifyDebate.logger.info("Set logger data directory to '$dataDir'")
 }
 

@@ -9,7 +9,6 @@ import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
-import javafx.stage.StageStyle
 import me.matrix4f.cardcutter.prefs.Prefs
 
 class CreditsWindow : ModalWindow("Credits") {

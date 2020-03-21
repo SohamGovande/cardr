@@ -9,7 +9,6 @@ import javafx.scene.control.ProgressBar
 import javafx.scene.image.Image
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
-import javafx.scene.text.TextAlignment
 import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.prefs.Prefs
