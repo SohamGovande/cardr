@@ -20,6 +20,7 @@ import org.apache.logging.log4j.LogManager
 import java.awt.Desktop
 import java.lang.Exception
 import java.net.URL
+import kotlin.system.exitProcess
 
 
 class SignInWindow(private val options: SignInLauncherOptions, private val currentUser: CardifyUser) : ModalWindow("Sign in to Cardify") {
@@ -32,7 +33,6 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
     override fun close(event: WindowEvent?) {
         if (!readyToClose && options != SignInLauncherOptions.MANUAL_SIGNIN) {
             exitProcess(0)
-            event?.consume()
         }
     }
 

@@ -16,7 +16,7 @@ import java.awt.Desktop
 import java.net.URL
 
 class UpdateChecker {
-    private fun showUpdateDialog(version: CardifyVersion) {
+    private fun showUpdateDialog(version: CardifyVersion, updaterVersion: CardifyUpdaterVersion) {
         val updateBT = ButtonType("Update Now", ButtonBar.ButtonData.OK_DONE)
         val remindBT = ButtonType("Remind Me Later", ButtonBar.ButtonData.CANCEL_CLOSE)
         val seeWhatsNewBT = ButtonType("See what's new", ButtonBar.ButtonData.CANCEL_CLOSE)
@@ -28,9 +28,7 @@ class UpdateChecker {
 
         val result = alert.showAndWait()
         if (result.isPresent && result.get() == updateBT) {
-            UpdateWindow(version).show()
-//            Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/download.html").toURI())
-//            exitProcess(0)
+            UpdateWindow(version, updaterVersion).show()
         } else if (result.isPresent && result.get() == seeWhatsNewBT) {
             Desktop.getDesktop().browse(URL("http://cardifydebate.x10.bz/changelog.html").toURI())
         }
@@ -48,10 +46,17 @@ class UpdateChecker {
                 throw CardifyException("Unable to parse version info JSON")
             }
 
+            val latestUpdaterVersion: CardifyUpdaterVersion
+            try {
+                latestUpdaterVersion = gson.fromJson(jsonParent["updaterVersion"], CardifyUpdaterVersion::class.java)
+            } catch (e: Exception) {
+                throw CardifyException("Unable to parse updater version info JSON")
+            }
+
             if (latestVersion.build > CardifyDebate.CURRENT_VERSION_INT) {
                 logger.info("Latest version is ${latestVersion} - needs to update!")
 
-                Platform.runLater { showUpdateDialog(latestVersion) }
+                Platform.runLater { showUpdateDialog(latestVersion, latestUpdaterVersion) }
             } else {
                 logger.info("Latest version is ${latestVersion} - no need to update.")
                 // Already updated

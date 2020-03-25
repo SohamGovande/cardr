@@ -12,16 +12,17 @@ import javafx.scene.text.Font
 import javafx.stage.WindowEvent
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.data.prefs.Prefs
+import me.matrix4f.cardcutter.data.updater.CardifyUpdaterVersion
 import me.matrix4f.cardcutter.data.updater.CardifyVersion
 import me.matrix4f.cardcutter.data.updater.UpdateExecutor
 
 
-class UpdateWindow(private val version: CardifyVersion) : ModalWindow("Cardify Updater") {
+class UpdateWindow(private val version: CardifyVersion, private val updaterVersion: CardifyUpdaterVersion) : ModalWindow("Cardify Updater") {
 
     private val box = VBox()
     private val subheader = Label("Ready to install Cardify ${version.name}?")
     private val updateBtn = Button("Update Now")
-    private val updater = UpdateExecutor(version)
+    private val updater = UpdateExecutor(version, updaterVersion)
     private val updaterThread = Thread {
         updater.update()
     }

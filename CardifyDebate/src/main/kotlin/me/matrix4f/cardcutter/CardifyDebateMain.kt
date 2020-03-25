@@ -18,7 +18,7 @@ var ui: CardCuttingUI? = null
 val uiLock = Object()
 
 private fun setLoggerDir() {
-    var dataDir = ""
+    val dataDir: String
     println("Changing data directory...")
     val dataDirFileExt = Paths.get(
         System.getProperty("user.home"), "CardifyDebate", "test.txt"

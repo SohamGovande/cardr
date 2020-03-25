@@ -1,63 +1,48 @@
 package me.matrix4f.cardcutter.data.updater
 
-import javafx.application.Platform
-import me.matrix4f.cardcutter.util.*
-import net.lingala.zip4j.ZipFile
+import me.matrix4f.cardcutter.CardifyDebate
+import me.matrix4f.cardcutter.util.Hash
+import me.matrix4f.cardcutter.util.downloadFileFromURL
+import me.matrix4f.cardcutter.util.executeCommandBlocking
+import me.matrix4f.cardcutter.util.executeCommandUnblocking
 import org.apache.logging.log4j.LogManager
-import java.awt.Desktop
-import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.system.exitProcess
 
-class UpdateExecutor(private val version: CardifyVersion) {
+class UpdateExecutor(private val version: CardifyVersion, private val updaterVersion: CardifyUpdaterVersion) {
 
     var messageHandler = { _: String -> Unit }
     var onClose = { Unit }
 
     fun update() {
-        val zipPath = getInstallerFilePath()
-        val zipPathFile = zipPath.toFile()
+        logger.info("Checking Cardify updater...")
+        messageHandler("Checking Cardify updater...")
+        val cardifyUpdaterPath = Paths.get("app", "CardifyUpdater.jar")
+        val cardifyUpdaterFile = cardifyUpdaterPath.toFile()
+        cardifyUpdaterFile.parentFile.mkdir()
 
-        logger.info("Downloading new installer file...")
-        messageHandler("Downloading new Cardify installer. This may take several minutes.")
-        downloadFileFromURL(version.getURL(), zipPathFile, logger)
+        var readSha256 = ""
+        if (cardifyUpdaterFile.exists()) {
+            readSha256 = Hash.SHA256.checksum(cardifyUpdaterFile)!!
+        }
 
-        logger.info("Extracting zipped executable...")
-        messageHandler("Unzipping executable.")
-        val zipFile = ZipFile(zipPathFile)
-        zipFile.extractAll(zipPath.parent.toFile().absolutePath)
-        zipPathFile.deleteOnExit()
+        if (readSha256 != updaterVersion.sha256) {
+            messageHandler("Downloading Cardify updater...")
+            logger.info("SHA-256 match didn't succeed - downloading updater")
 
-        messageHandler("Finished installer download.")
-        val installerPath = initInstallerFile(zipPath)
-        if (getOSType() == OS.MAC) {
-            Platform.runLater {
-                onClose()
-                showInfoDialogBlocking("Please read the instructions below.", "1. Once you click OK, a Finder window will appear containing the new Cardify update. \n2. To install the update, RIGHT CLICK the file called '${version.getInstallerName()}' and select Open in the action menu. \n3. Finally, click 'Open' in the dialog box that follows. \n\nClick OK to confirm you have read this message.")
-                Desktop.getDesktop().browse(installerPath.parent.toFile().toURI())
-                exitProcess(0)
-            }
+            downloadFileFromURL("http://cardifydebate.x10.bz/data/CardifyUpdater.jar", cardifyUpdaterFile, logger)
         } else {
-            val installerFile = installerPath.toFile()
-            installerFile.setExecutable(true)
-            executeCommandUnblocking("\"${installerFile.canonicalPath}\"", logger)
-            Thread.sleep(500)
-            exitProcess(0)
+            logger.info("SHA-256 match succeeded - no need to download updater")
         }
-    }
-
-    private fun getInstallerFilePath(): Path {
-        val path = Paths.get(System.getProperty("cardifydebate.data.dir"), "Cardify Updates", "CardifyNewVersion.zip")
-        path.parent.toFile().mkdir()
-        return path
-    }
-
-    private fun initInstallerFile(zipPath: Path): Path {
-        val installerPath = Paths.get(zipPath.parent.toFile().absolutePath, version.getInstallerName())
-        if (getOSType() == OS.MAC) {
-            makeFileExecutableViaChmod(installerPath.toFile().absolutePath, logger)
+        val javaExe: String
+        if (CardifyDebate.RELEASE_MODE) {
+            javaExe = "\"runtime/bin/java.exe\""
+        } else {
+            javaExe = "java"
         }
-        return installerPath
+        val cmd = "$javaExe -jar \"${cardifyUpdaterFile.canonicalPath}\""
+        executeCommandBlocking(cmd, logger, allowNonzeroExit = true)
+        exitProcess(0)
     }
 
     companion object {
