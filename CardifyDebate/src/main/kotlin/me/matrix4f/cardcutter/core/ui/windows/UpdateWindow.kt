@@ -17,12 +17,12 @@ import me.matrix4f.cardcutter.data.updater.CardifyVersion
 import me.matrix4f.cardcutter.data.updater.UpdateExecutor
 
 
-class UpdateWindow(private val version: CardifyVersion, private val updaterVersion: CardifyUpdaterVersion) : ModalWindow("Cardify Updater") {
+class UpdateWindow(private val version: CardifyVersion) : ModalWindow("Cardify Updater") {
 
     private val box = VBox()
     private val subheader = Label("Ready to install Cardify ${version.name}?")
     private val updateBtn = Button("Update Now")
-    private val updater = UpdateExecutor(version, updaterVersion)
+    private val updater = UpdateExecutor(version)
     private val updaterThread = Thread {
         updater.update()
     }

@@ -9,7 +9,7 @@ import org.apache.logging.log4j.LogManager
 import java.nio.file.Paths
 import kotlin.system.exitProcess
 
-class UpdateExecutor(private val version: CardifyVersion, private val updaterVersion: CardifyUpdaterVersion) {
+class UpdateExecutor(private val version: CardifyVersion) {
 
     var messageHandler = { _: String -> Unit }
     var onClose = { Unit }
@@ -26,14 +26,6 @@ class UpdateExecutor(private val version: CardifyVersion, private val updaterVer
             readSha256 = Hash.SHA256.checksum(cardifyUpdaterFile)!!
         }
 
-        if (readSha256 != updaterVersion.sha256) {
-            messageHandler("Downloading Cardify updater...")
-            logger.info("SHA-256 match didn't succeed - downloading updater")
-
-            downloadFileFromURL("http://cardifydebate.x10.bz/data/CardifyUpdater.jar", cardifyUpdaterFile, logger)
-        } else {
-            logger.info("SHA-256 match succeeded - no need to download updater")
-        }
         val javaExe: String
         if (CardifyDebate.RELEASE_MODE) {
             javaExe = "\"runtime/bin/java.exe\""

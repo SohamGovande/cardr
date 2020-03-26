@@ -60,7 +60,7 @@ class MSWordInteractor {
                     else
                         System.loadLibrary("NativeDllInterface-Win32")
                 }
-            } catch (e: Exception) {
+            } catch (e: Throwable) {
                 LOADED_JNI = false
                 logger.error("Unable to load native functions", e)
             }
