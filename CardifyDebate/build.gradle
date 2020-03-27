@@ -32,7 +32,7 @@ shadowJar {
 }
 
 jar {
-    manifest { attributes 'Main-Class': 'me.matrix4f.cardcutter.CardifyDebateMainKt' }
+    manifest { attributes 'Main-Class': mainClassName }
 }
 
 javafx {
