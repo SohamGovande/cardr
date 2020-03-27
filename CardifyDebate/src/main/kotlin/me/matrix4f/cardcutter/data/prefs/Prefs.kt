@@ -1,6 +1,8 @@
 package me.matrix4f.cardcutter.data.prefs
 
 import com.google.gson.GsonBuilder
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import me.matrix4f.cardcutter.CardifyDebate
 import me.matrix4f.cardcutter.data.firstlaunch.onFirstLaunch
 import me.matrix4f.cardcutter.data.firstlaunch.updateFrom
@@ -64,6 +66,18 @@ object Prefs {
                     }
                 }
             } else {
+                val oldPrefsPath = getOldPrefsPath()
+                if (Files.exists(oldPrefsPath)) {
+                    val oldPrefsData = String(Files.readAllBytes(oldPrefsPath))
+                    val oldPrefsJson = JsonParser().parse(oldPrefsData) as JsonObject
+                    val version1_1_0 =  2
+                    if (oldPrefsJson["lastUsedVersionInt"].asInt <= version1_1_0) {
+                        Files.copy(oldPrefsPath, path)
+                        read()
+                        return
+                    }
+                }
+
                 if (getOSType() == OS.MAC) {
                     prefs.cardFormat = prefs.cardFormat.replace("Calibri", PrefsObject.MAC_CALIBRI_FONT)
                     save()
@@ -73,6 +87,13 @@ object Prefs {
         } catch (e: Exception) {
             logger.error("Unable to read preferences", e)
         }
+    }
+
+    private fun getOldPrefsPath(): Path {
+        if (getOSType() == OS.MAC)
+            return Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifySettings.json")
+        else
+            return Paths.get(System.getProperty("user.home"), "AppData", "Local", "CardifyDebate", "app", "CardifySettings.json")
     }
 
     fun save() {
