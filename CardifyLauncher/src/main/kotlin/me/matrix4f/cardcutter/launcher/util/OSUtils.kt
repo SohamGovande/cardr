@@ -13,10 +13,6 @@ fun getOSType(): OS? {
 }
 
 
-fun getProcessorBits(): Int {
-    return System.getProperty("sun.arch.data.model", "32").toInt()
-}
-
 enum class OS {
     WINDOWS, MAC, LINUX
 }

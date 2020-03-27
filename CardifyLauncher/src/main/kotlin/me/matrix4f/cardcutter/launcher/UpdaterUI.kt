@@ -5,7 +5,6 @@ import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.control.Label
 import javafx.scene.control.ProgressBar
-import javafx.scene.image.Image
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.stage.Stage
@@ -14,10 +13,10 @@ import me.matrix4f.cardcutter.launcher.updater.CardifyVersionData
 import me.matrix4f.cardcutter.launcher.updater.UpdateExecutor
 import org.apache.logging.log4j.LogManager
 
-class UpdaterUI(private val stage: Stage, private val version: CardifyVersionData, private val cardifyLauncher: CardifyLauncher) {
+class UpdaterUI(private val stage: Stage, version: CardifyVersionData, cardifyLauncher: CardifyLauncher) {
 
     private val box = VBox()
-    private val subheader = Label("This may take several minutes. Don't close this window.")
+    private val subheader = Label("This may take 1-2 minutes.")
     private val updater = UpdateExecutor(version, cardifyLauncher)
     private val updaterThread = Thread {
         updater.update()
@@ -66,9 +65,7 @@ class UpdaterUI(private val stage: Stage, private val version: CardifyVersionDat
         box.children.add(header)
         box.children.add(subheader)
 
-        val scene = Scene(box, WIDTH, HEIGHT)
-        stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
-        return scene
+        return Scene(box, WIDTH, HEIGHT)
     }
 
     companion object {

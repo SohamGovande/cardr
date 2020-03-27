@@ -4,6 +4,8 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import javafx.application.Application
+import javafx.application.Platform
+import javafx.scene.image.Image
 import javafx.stage.Stage
 import me.matrix4f.cardcutter.launcher.updater.CardifyVersion
 import me.matrix4f.cardcutter.launcher.updater.CardifyVersionData
@@ -78,25 +80,31 @@ class CardifyLauncher : Application() {
     override fun start(stage: Stage) {
         System.setProperty("java.net.preferIPv4Stack", "true")
 
-        val versionData = getLatestVersion()
-        val currentSha256 = getCurrentCardifyChecksum()
-        logger.info("Read sha256 '$currentSha256'")
-        logger.info("Latest version data: $versionData")
-        if (versionData.cardifyVersion.name == "NONE" || currentSha256 != versionData.cardifyVersion.sha256) {
-            val updaterUI = UpdaterUI(stage, versionData, this)
-            val scene = updaterUI.initialize()
-            stage.scene = scene
-            stage.show()
-            stage.title = "CardifyDebate Launcher"
+        Thread {
+            val versionData = getLatestVersion()
+            val currentSha256 = getCurrentCardifyChecksum()
+            logger.info("Read sha256 '$currentSha256'")
+            logger.info("Latest version data: $versionData")
+            if (versionData.cardifyVersion.name == "NONE" || currentSha256 != versionData.cardifyVersion.sha256) {
+                Platform.runLater {
+                    val updaterUI = UpdaterUI(stage, versionData, this)
+                    stage.scene = updaterUI.initialize()
+                    updaterUI.startUpdate()
+                }
+            } else {
+                launchCardify(false)
+            }
+        }.start()
 
-            updaterUI.startUpdate()
-        } else {
-            launchCardify(false)
-        }
+        val loadingUI = LoadingUI()
+        stage.scene = loadingUI.initialize()
+        stage.title = "Launcher"
+        stage.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
+        stage.show()
     }
 
     companion object {
-        val RELEASE_MODE = true
+        val RELEASE_MODE = false
         val logger = LogManager.getLogger(CardifyLauncher::class.java)
     }
 }

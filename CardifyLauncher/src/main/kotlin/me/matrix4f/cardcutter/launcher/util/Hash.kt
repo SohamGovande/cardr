@@ -6,7 +6,7 @@ import java.security.MessageDigest
 import java.util.*
 
 enum class Hash(val hashName: String) {
-    MD5("MD5"), SHA1("SHA1"), SHA256("SHA-256"), SHA512("SHA-512");
+    SHA256("SHA-256");
 
     fun checksum(input: File): String? {
         try {

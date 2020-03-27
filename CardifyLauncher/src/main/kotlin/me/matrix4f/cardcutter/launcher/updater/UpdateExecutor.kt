@@ -21,7 +21,7 @@ class UpdateExecutor(private val version: CardifyVersionData, private val launch
         val zipPath = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifyDebate.jar")
         val zipPathFile = zipPath.toFile()
 
-        messageHandler("Downloading Cardify update...")
+        messageHandler("This may take 1-2 minutes.")
         downloadFileFromURL(version.cardifyVersion.jarUrl, zipPathFile, logger)
 
         launcher.launchCardify(true)
