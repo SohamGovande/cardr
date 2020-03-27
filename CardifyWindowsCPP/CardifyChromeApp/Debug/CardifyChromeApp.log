@@ -1,6 +1,0 @@
-﻿  main.cpp
-x:\dev\cardcutter\cardcutter_cpp\cardifychromeapp\main.cpp(37): error C2061: syntax error: identifier '_TCHAR'
-x:\dev\cardcutter\cardcutter_cpp\cardifychromeapp\main.cpp(64): error C3861: 'ProcessMessage': identifier not found
-x:\dev\cardcutter\cardcutter_cpp\cardifychromeapp\main.cpp(76): error C2065: 'utf8Buffer': undeclared identifier
-x:\dev\cardcutter\cardcutter_cpp\cardifychromeapp\main.cpp(74): error C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
-  c:\program files (x86)\windows kits\10\include\10.0.17763.0\ucrt\stdio.h(208): note: see declaration of 'fopen'
