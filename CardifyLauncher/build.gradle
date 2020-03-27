@@ -57,13 +57,16 @@ jlink {
         installerOptions = [
                 '--type', 'msi',
 
+                '--resource-dir', 'X:\\dev\\intellij\\CardifyDebate\\CardifyLauncher\\jpackage\\resources',
+                '--description', 'An advanced, next-gen evidence collector for debate research.',
                 '--win-menu',
                 '--win-menu-group', 'CardifyDebate',
                 '--win-per-user-install',
                 '--win-upgrade-uuid', '74252fd4-d645-4244-a2fb-ee69474db56f',
                 '--win-shortcut',
-                '--copyright', 'Copyright Soham Govande 2019-2020',
-                '--vendor', 'CardifyDebate, Inc'
+                '--copyright', 'Copyright Soham Govande 2019-2020. All rights reserved.',
+                '--vendor', 'CardifyDebate, Inc',
+                '--verbose'
         ]
     }
 }
