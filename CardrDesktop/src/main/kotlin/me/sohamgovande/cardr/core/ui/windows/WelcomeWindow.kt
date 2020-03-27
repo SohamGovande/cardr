@@ -16,6 +16,8 @@ import java.net.URL
 
 class WelcomeWindow : ModalWindow("Welcome to cardr!") {
 
+    var linkOpened = false
+
     override fun close(event: WindowEvent?) {
         super.close(event)
         WelcomeWindow2().show()
@@ -34,9 +36,10 @@ class WelcomeWindow : ModalWindow("Welcome to cardr!") {
         subheader.font = Font.font(14.0)
         subheader.textAlignment = TextAlignment.CENTER
 
-        val link = Hyperlink("Download on the Chrome Web Store for free.")
+        val link = Hyperlink("Click here to get it for free.")
         link.setOnAction {
             Desktop.getDesktop().browse(URL("https://chrome.google.com/webstore/detail/cardifydebate/ifdnjffggmmjiammdpklgldliaaempce").toURI())
+            linkOpened = true
         }
         link.font = Font.font(14.0)
         link.textAlignment = TextAlignment.CENTER
@@ -44,6 +47,9 @@ class WelcomeWindow : ModalWindow("Welcome to cardr!") {
         val imageView = ImageView(javaClass.getResource("/icon-128.png").toExternalForm())
         val continueBtn = Button("Continue \u2192")
         continueBtn.setOnAction {
+            if (!linkOpened) {
+                link.fire()
+            }
             close(null)
         }
 

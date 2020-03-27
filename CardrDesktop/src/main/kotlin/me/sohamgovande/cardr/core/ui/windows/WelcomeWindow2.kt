@@ -10,6 +10,8 @@ import javafx.scene.text.Font
 import javafx.stage.WindowEvent
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.ui
+import java.awt.Desktop
+import java.net.URL
 
 
 class WelcomeWindow2 : ModalWindow("How do I use cardr?") {
