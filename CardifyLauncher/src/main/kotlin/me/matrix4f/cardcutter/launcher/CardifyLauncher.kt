@@ -57,9 +57,9 @@ class CardifyLauncher : Application() {
         val javaExe: String
         val dllFolderPath = Paths.get("dlls").toAbsolutePath()
         if (RELEASE_MODE) {
-            javaExe = "\"runtime/bin/java.exe\""
+            javaExe = "\"runtime/bin/javaw.exe\""
         } else {
-            javaExe = "java"
+            javaExe = "javaw"
         }
 
         var fullArgs = ""
