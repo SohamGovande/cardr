@@ -28,7 +28,6 @@ import me.matrix4f.cardcutter.platformspecific.MacMSWordInteractor
 import me.matrix4f.cardcutter.data.prefs.Prefs
 import me.matrix4f.cardcutter.data.prefs.PrefsObject
 import me.matrix4f.cardcutter.core.ui.windows.*
-import me.matrix4f.cardcutter.data.updater.UpdateChecker
 import me.matrix4f.cardcutter.util.*
 import me.matrix4f.cardcutter.core.web.WebsiteCardCutter
 import org.apache.logging.log4j.LogManager
@@ -377,18 +376,10 @@ class CardCuttingUI(private val stage: Stage) {
         propertyYearTF.textProperty().bindBidirectional(this.timestamp.year)
 
         Thread {
-            logger.info("Checking for updates")
-            checkForUpdates()
-
             logger.info("Checking login status")
             checkLoginStatus()
         }.start()
         loaded = true
-    }
-
-    private fun checkForUpdates() {
-        val updateChecker = UpdateChecker()
-        updateChecker.checkForUpdates()
     }
 
     private fun loadMenuIcons() {
