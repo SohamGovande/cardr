@@ -1,29 +1,30 @@
 package me.matrix4f.cardcutter.launcher.util
 
-import java.io.File
-import java.io.FileInputStream
+import org.apache.logging.log4j.LogManager
+import java.nio.file.Files
+import java.nio.file.Path
 import java.security.MessageDigest
-import java.util.*
+import kotlin.experimental.and
 
-enum class Hash(val hashName: String) {
-    SHA256("SHA-256");
+private val logger = LogManager.getLogger("me.matrix4f.cardcutter.launcher.util.Hash")
 
-    fun checksum(input: File): String? {
-        try {
-            FileInputStream(input).use { `in` ->
-                val digest = MessageDigest.getInstance(hashName)
-                val block = ByteArray(4096)
-                var length: Int
-                while (`in`.read(block).also { length = it } > 0) {
-                    digest.update(block, 0, length)
-                }
-                val bytes = digest.digest()
-                return Base64.getEncoder().encodeToString(bytes)
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        return null
+private fun encodeHex(digest: ByteArray): String {
+    val sb = StringBuilder()
+    for (i in digest.indices) {
+        sb.append(Integer.toString((digest[i] and 0xff.toByte()) + 0x100, 16).substring(1))
     }
+    return sb.toString()
+}
 
+fun sha256File(path: Path): String {
+    try {
+        val md = MessageDigest.getInstance("SHA-256")
+        val buffer = Files.readAllBytes(path)
+        md.update(buffer)
+        val digest = md.digest()
+        return encodeHex(digest)
+    } catch (e: Exception) {
+        logger.error("Unable to get SHA256 of ${path.toFile().canonicalPath}", e)
+        return e.message ?: ""
+    }
 }

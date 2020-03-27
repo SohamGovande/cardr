@@ -7,6 +7,7 @@ import java.io.File
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.*
 
 var programArguments: Array<String> = arrayOf()
 
@@ -28,5 +29,6 @@ private fun setLoggerDir() {
 fun main(args: Array<String>) {
     setLoggerDir()
     programArguments = args
+    CardifyLauncher.logger.info("Launched with arguments ${Arrays.toString(args)}")
     Application.launch(CardifyLauncher::class.java)
 }

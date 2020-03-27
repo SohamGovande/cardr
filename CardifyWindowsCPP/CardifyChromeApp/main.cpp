@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <io.h>
 #include <Windows.h>
+#include <Shlobj.h>
 #include "json.hpp"
 
 using json = nlohmann::json;
@@ -118,10 +119,17 @@ int main(int argc, char** argv)
 			htmlFile << html;
 			htmlFile.close();
 
-			std::string command = "..\\CardifyDebate.exe \"" + url + "\" " + id;
-			out << "Running system command: " << command << std::endl;
+			TCHAR userHome[MAX_PATH];
+			if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userHome))) {
+				out << "Detected user home " << userHome << std::endl;
 
-			system(command.c_str());
+				std::string command =  userHome + std::string("\\AppData\\Local\\CardifyLauncher\\CardifyLauncher.exe \"") + url + "\" " + id;
+				out << "Running system command: " << command << std::endl;
+
+				system(command.c_str());
+			} else {
+				out << "Unable to get user home directory" << std::endl;
+			}
 
 			out.close();
 		}

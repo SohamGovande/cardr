@@ -27,7 +27,6 @@ idea {
 
 shadowJar {
     baseName = 'CardifyDebate'
-    version = null
     classifier = null
 }
 

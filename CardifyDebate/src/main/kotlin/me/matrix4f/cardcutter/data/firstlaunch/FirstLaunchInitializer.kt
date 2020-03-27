@@ -17,13 +17,10 @@ private val logger = LogManager.getLogger(Prefs::class.java)
 private fun downloadChromeDataWindows(): File {
     executeCommandBlocking("taskkill /f /im CardifyChromeApp.exe", logger, true)
 
-    val executablePath = Paths.get("extension", "test.txt").parent
-    try { Files.createDirectories(executablePath) } catch (e: FileAlreadyExistsException) { }
-
-    val executable = Paths.get("extension", "CardifyChromeApp.exe").toFile()
+    val executable = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifyChromeApp.exe").toFile()
     downloadFileFromURL("http://cardifydebate.x10.bz/data/win/CardifyChromeApp-v1.2.0.exe", executable, logger)
 
-    val jsonFile = Paths.get("extension", "me.matrix4f.cardify.json").toFile()
+    val jsonFile = Paths.get(System.getProperty("cardifydebate.data.dir"), "me.matrix4f.cardify.json").toFile()
     downloadFileFromURL("http://cardifydebate.x10.bz/data/win/ChromeAppNativeJson-v1.2.0.json", jsonFile, logger)
 
     if (!jsonFile.exists())

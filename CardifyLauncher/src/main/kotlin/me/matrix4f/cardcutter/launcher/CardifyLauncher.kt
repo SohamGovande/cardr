@@ -11,15 +11,16 @@ import me.matrix4f.cardcutter.launcher.updater.CardifyVersion
 import me.matrix4f.cardcutter.launcher.updater.CardifyVersionData
 import me.matrix4f.cardcutter.launcher.util.*
 import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.core.LoggerContext
-import java.io.File
-import java.nio.file.FileAlreadyExistsException
-import java.nio.file.Files
+import java.lang.reflect.Method
+import java.net.URL
+import java.net.URLClassLoader
 import java.nio.file.Paths
 import kotlin.system.exitProcess
 
+
 class CardifyLauncher : Application() {
 
+    private lateinit var stage: Stage
     private val cardifyUpdaterPath = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifyDebate.jar")
 
     private fun getLatestVersion(): CardifyVersionData {
@@ -48,14 +49,22 @@ class CardifyLauncher : Application() {
 
         var readSha256 = ""
         if (cardifyUpdaterFile.exists()) {
-            readSha256 = Hash.SHA256.checksum(cardifyUpdaterFile)!!
+            readSha256 = sha256File(cardifyUpdaterPath)
         }
         return readSha256
     }
 
     fun launchCardify(suppressArgs: Boolean) {
+//        val child = URLClassLoader(arrayOf<URL>(cardifyUpdaterPath.toFile().toURI().toURL()),
+//            this.javaClass.classLoader
+//        )
+//        val classToLoad = Class.forName("me.matrix4f.cardcutter.CardifyDebate", true, child)
+//        val method: Method = classToLoad.getDeclaredMethod("start", Stage::class.java)
+//        val instance = classToLoad.newInstance()
+//        Platform.runLater { method.invoke(instance, stage) }
+
         val javaExe: String
-        val dllFolderPath = Paths.get("dlls").toAbsolutePath()
+        val dllFolderPath = Paths.get(System.getProperty("user.home"), "AppData", "Local", "CardifyLauncher", "dlls")
         if (RELEASE_MODE) {
             javaExe = "\"runtime/bin/javaw.exe\""
         } else {
@@ -78,6 +87,7 @@ class CardifyLauncher : Application() {
     }
 
     override fun start(stage: Stage) {
+        this.stage = stage
         System.setProperty("java.net.preferIPv4Stack", "true")
 
         Thread {
