@@ -6,8 +6,8 @@ plugins {
     id 'org.openjfx.javafxplugin' version '0.0.8'
 }
 
-group 'me.matrix4f.cardcutter'
-version '2.0.0'
+group 'me.matrix4f.carder'
+version '0.0.1'
 mainClassName = 'me.matrix4f.cardcutter.launcher.CardifyLauncherMainKt'
 
 repositories {
@@ -39,33 +39,43 @@ jlink {
     forceMerge 'log4j-api'
 
     jpackageImage.doLast {
+        def dllFolder = new File('build/jpackage/CardifyLauncher/dlls')
+        dllFolder.mkdirs()
+
         copy {
-            from "C:\\Users\\vgsoh\\Desktop\\CC Extension\\native"
-            into "build/jpackage/CardifyLauncher"
-            include "dlls/**"
+            from '..\\CardifyWindowsCPP\\bin\\Release\\NativeDllInterface\\Win32'
+            into "build/jpackage/CardifyLauncher/dlls"
+            include "*.dll"
+        }
+        copy {
+            from '..\\CardifyWindowsCPP\\bin\\Release\\NativeDllInterface\\x64'
+            into "build/jpackage/CardifyLauncher/dlls"
+            include "*.dll"
         }
     }
 
     jpackage {
-        jpackageHome = "C:\\Program Files\\Java\\jdk-14"
-        appVersion = '0.0.1'
+        jpackageHome = jpackageJDK14Home
+        appVersion = appVersionLauncher
 
         imageOptions = [
-                '--icon', 'X:\\dev\\intellij\\CardifyDebate\\CardifyExtension\\icons\\icon.ico'
+                '--icon', appWindowsICO
         ]
 
         installerOptions = [
                 '--type', 'msi',
 
-                '--resource-dir', 'X:\\dev\\intellij\\CardifyDebate\\CardifyLauncher\\jpackage\\resources',
-                '--description', 'An advanced, next-gen evidence collector for debate research.',
+                '--resource-dir', jpackageResourceDir,
+                '--description', appDescription,
+                '--copyright', appCopyright,
+                '--vendor', appCompany,
+
                 '--win-menu',
                 '--win-menu-group', 'CardifyDebate',
                 '--win-per-user-install',
-                '--win-upgrade-uuid', '74252fd4-d645-4244-a2fb-ee69474db56f',
+                '--win-upgrade-uuid', windowsUpgradeUUID,
                 '--win-shortcut',
-                '--copyright', 'Copyright Soham Govande 2019-2020. All rights reserved.',
-                '--vendor', 'CardifyDebate, Inc',
+
                 '--verbose'
         ]
     }
