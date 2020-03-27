@@ -8,6 +8,7 @@ import javafx.stage.WindowEvent
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.WindowDimensions
+import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.core.ui.windows.WelcomeWindow
 import org.apache.logging.log4j.LogManager
 
@@ -75,7 +76,7 @@ class CardrDesktop: Application() {
     }
 
     companion object {
-        const val WIDTH = 830.0
+        const val WIDTH = 850.0
         const val HEIGHT = 600.0
 
         const val CURRENT_VERSION = "v1.2.0"
@@ -84,6 +85,7 @@ class CardrDesktop: Application() {
         var WAS_FIRST_LAUNCH_SUCCESSFUL = false
         val OVERRIDE_LOGIN_CHECK = false
         val RELEASE_MODE = false
+        val FORCE_AUTOUPDATE = true
 
         var instance: CardrDesktop? = null
 

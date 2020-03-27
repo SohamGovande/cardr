@@ -27,8 +27,10 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
     }
 
     override fun close(event: WindowEvent?) {
-        Prefs.get().cardFormat = editText.htmlText.replace("contenteditable=\"true\"","")
-        Prefs.save()
+        if (!forcedClose) {
+            Prefs.get().cardFormat = editText.htmlText.replace("contenteditable=\"true\"", "")
+            Prefs.save()
+        }
         super.close(event)
     }
 

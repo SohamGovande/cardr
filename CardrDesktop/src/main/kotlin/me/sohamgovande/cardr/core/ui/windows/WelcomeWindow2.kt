@@ -18,7 +18,8 @@ class WelcomeWindow2 : ModalWindow("How do I use cardr?") {
 
     override fun close(event: WindowEvent?) {
         super.close(event)
-        SignInWindow(SignInLauncherOptions.WELCOME, ui!!.currentUser).show()
+        if (!forcedClose)
+            SignInWindow(SignInLauncherOptions.WELCOME, ui!!.currentUser).show()
     }
 
     override fun generateUI(): Scene {

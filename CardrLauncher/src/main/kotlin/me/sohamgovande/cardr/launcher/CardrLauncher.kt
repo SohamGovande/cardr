@@ -18,7 +18,7 @@ import kotlin.system.exitProcess
 class CardrLauncher : Application() {
 
     private lateinit var stage: Stage
-    private val cardifyUpdaterPath = Paths.get(System.getProperty("cardr.data.dir"), "Cardr.jar")
+    private val cardrUpdaterPath = Paths.get(System.getProperty("cardr.data.dir"), "Cardr.jar")
 
     private fun getLatestVersion(): CardrVersionData {
         val logger = LogManager.getLogger(CardrLauncher::class.java)
@@ -28,7 +28,7 @@ class CardrLauncher : Application() {
             val jsonParent = JsonParser().parse(data) as JsonObject
             val latestVersion: CardrVersion
             try {
-                latestVersion = gson.fromJson(jsonParent["latestVersion"], CardrVersion::class.java)
+                latestVersion = gson.fromJson(jsonParent["latestVersionLauncher"], CardrVersion::class.java)
             } catch (e: Exception) {
                 throw CardrException("Unable to parse version info JSON")
             }
@@ -42,11 +42,11 @@ class CardrLauncher : Application() {
     }
 
     private fun getCurrentChecksum(): String {
-        val cardifyUpdaterFile = cardifyUpdaterPath.toFile()
+        val cardrFile = cardrUpdaterPath.toFile()
 
         var readSha256 = ""
-        if (cardifyUpdaterFile.exists()) {
-            readSha256 = sha256File(cardifyUpdaterPath)
+        if (cardrFile.exists()) {
+            readSha256 = sha256File(cardrUpdaterPath)
         }
         return readSha256
     }
@@ -69,7 +69,7 @@ class CardrLauncher : Application() {
 
         val cmd = "$javaExe " +
             "-Djava.library.path=\"${dllFolderPath.toFile().canonicalPath}\" " +
-            "-jar \"${cardifyUpdaterPath.toFile().canonicalPath}\"" +
+            "-jar \"${cardrUpdaterPath.toFile().canonicalPath}\"" +
             fullArgs
         executeCommandUnblocking(cmd, logger)
         exitProcess(0)

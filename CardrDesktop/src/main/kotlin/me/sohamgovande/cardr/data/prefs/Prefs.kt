@@ -92,7 +92,7 @@ object Prefs {
 
     private fun getOldPrefsPath(): Path {
         if (getOSType() == OS.MAC)
-            return Paths.get(System.getProperty("cardr.data.dir"), "CardifySettings.json")
+            return Paths.get(System.getProperty("user.home"), "CardifyDebate", "CardifySettings.json")
         else
             return Paths.get(System.getProperty("user.home"), "AppData", "Local", "CardifyDebate", "app", "CardifySettings.json")
     }

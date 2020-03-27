@@ -32,6 +32,10 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
     private var readyToClose = false
 
     override fun close(event: WindowEvent?) {
+        if (forcedClose) {
+            super.close(event)
+            return
+        }
         if (!readyToClose && options != SignInLauncherOptions.MANUAL_SIGNIN) {
             exitProcess(0)
         }

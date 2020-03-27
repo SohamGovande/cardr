@@ -30,6 +30,7 @@ import me.sohamgovande.cardr.data.prefs.PrefsObject
 import me.sohamgovande.cardr.core.ui.windows.*
 import me.sohamgovande.cardr.util.*
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
+import me.sohamgovande.cardr.data.updater.UpdateChecker
 import me.sohamgovande.cardr.data.urls.UrlHelper
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
@@ -379,6 +380,9 @@ class CardrUI(private val stage: Stage) {
         Thread {
             logger.info("Checking login status")
             checkLoginStatus()
+
+            logger.info("Checking for updates")
+            checkForUpdates()
         }.start()
         loaded = true
     }
@@ -403,6 +407,10 @@ class CardrUI(private val stage: Stage) {
             btn.graphic = loadMiniIcon("/search.png")
         }
 
+    }
+
+    private fun checkForUpdates() {
+        UpdateChecker().checkForUpdates()
     }
 
     private fun checkLoginStatus() {

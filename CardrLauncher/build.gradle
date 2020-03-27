@@ -65,10 +65,10 @@ jlink {
         installerOptions = [
                 '--type', 'msi',
 
-                '--resource-dir', jpackageResourceDir,
                 '--description', appDescription,
-                '--copyright', appCopyright,
+                '--resource-dir', jpackageResourceDir,
                 '--vendor', appCompany,
+                '--copyright', appCopyright,
 
                 '--win-menu',
                 '--win-menu-group', 'cardr',

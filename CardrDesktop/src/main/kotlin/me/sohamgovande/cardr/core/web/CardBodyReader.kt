@@ -358,7 +358,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
                 .replace(".org", "")
             logger.info("Loading article from host '$hostName'")
 
-            if (doc.text().toLowerCase().contains("cardify error")) {
+            if (doc.text().toLowerCase().contains("cardr error")) {
                 return doc.select("p")
             }
 

@@ -34,7 +34,7 @@ private fun downloadChromeDataWindows(): File {
 private fun downloadChromeDataMacOS() {
     logger.info("Entered macOS First Launch")
     logger.info("Creating paths...")
-    val jsonPath = Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Google", "Chrome", "NativeMessagingHosts", "me.matrix4f.cardify.json")
+    val jsonPath = Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Google", "Chrome", "NativeMessagingHosts", "me.sohamgovande.cardr.json")
     if (!jsonPath.parent.parent.toFile().exists())
         throw FirstLaunchException("No Google Chrome installation detected")
 
@@ -73,9 +73,9 @@ private fun onFirstLaunchWindows() {
     val jsonFile = downloadChromeDataWindows()
 
     val commands = arrayOf(
-        "REG DELETE \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.matrix4f.cardify\" /f",
-        "REG DELETE \"HKLM\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.matrix4f.cardify\" /f",
-        "REG ADD \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.matrix4f.cardify\" /ve /t REG_SZ /d \"${jsonFile.absolutePath}\" /f"
+        "REG DELETE \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /f",
+        "REG DELETE \"HKLM\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /f",
+        "REG ADD \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /ve /t REG_SZ /d \"${jsonFile.absolutePath}\" /f"
     )
     for (cmd in commands) {
         executeCommandBlocking(cmd, logger, true)

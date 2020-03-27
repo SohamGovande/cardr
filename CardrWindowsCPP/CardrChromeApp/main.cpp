@@ -123,7 +123,7 @@ int main(int argc, char** argv)
 			if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userHome))) {
 				out << "Detected user home " << userHome << std::endl;
 
-				std::string command =  userHome + std::string("\\AppData\\Local\\CardifyLauncher\\CardifyLauncher.exe \"") + url + "\" " + id;
+				std::string command = std::string("\"") + userHome + std::string("\\AppData\\Local\\cardr\\cardr.exe\" \"") + url + "\" " + id;
 				out << "Running system command: " << command << std::endl;
 
 				system(command.c_str());

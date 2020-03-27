@@ -8,6 +8,7 @@
     "process": "http://www.cardr.x10.bz/process.php",
     "history": "http://cardr.x10.bz/history.php",
     "signUp": "http://cardr.x10.bz/sign-up.html",
+    "changelog": "http://cardr.x10.bz/changelog.html",
     "encryptionInfo": "http://cardr.x10.bz/data/EncryptionInfo.json",
     "forgotPassword": "http://cardr.x10.bz/forgot-password-instructions.html",
 

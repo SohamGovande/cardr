@@ -21,7 +21,8 @@ class WelcomeWindow : ModalWindow("Welcome to cardr!") {
 
     override fun close(event: WindowEvent?) {
         super.close(event)
-        WelcomeWindow2().show()
+        if (!forcedClose)
+            WelcomeWindow2().show()
     }
 
     override fun generateUI(): Scene {

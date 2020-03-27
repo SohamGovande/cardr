@@ -138,6 +138,7 @@
        <Custom Action='LaunchInstalledExe' After='InstallFinalize'>NOT Installed AND NOT REMOVE</Custom>
     </InstallExecuteSequence>
 
+    <!-- Edit the following line from cardr.exe to CardrLauncher.exe if using a launcher-based model -->
     <CustomAction Id="LaunchInstalledExe"
         Directory="INSTALLDIR"
         ExeCommand="[SystemFolder]cmd.exe /C start cardr.exe" />

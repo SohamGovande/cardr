@@ -22,9 +22,11 @@ class SendToWordSettingsWindow : ModalWindow("Settings - Send to Word") {
     private lateinit var pasteShortcutKeyCB: ComboBox<String>
 
     override fun close(event: WindowEvent?) {
-        Prefs.get().pastePlainText = plainTextRB.isSelected
-        Prefs.get().pasteShortcut = pasteShortcutKeyCB.selectionModel.selectedIndex + KeyEvent.VK_F1
-        Prefs.save()
+        if (!forcedClose) {
+            Prefs.get().pastePlainText = plainTextRB.isSelected
+            Prefs.get().pasteShortcut = pasteShortcutKeyCB.selectionModel.selectedIndex + KeyEvent.VK_F1
+            Prefs.save()
+        }
         super.close(event)
     }
 
