@@ -28,12 +28,12 @@ object Prefs {
     init {
         path = Paths.get(System.getProperty("cardifydebate.data.dir"), "CardifySettings.json")
         try { Files.createDirectories(path.parent) } catch (e: FileAlreadyExistsException) { }
-        read()
+        read(true)
     }
 
     fun get(): PrefsObject = prefs
 
-    fun read() {
+    fun read(allowCopyOldVersion: Boolean) {
         try {
             if (Files.exists(path)) {
                 val readObject: PrefsObject? = gson.fromJson(String(Files.readAllBytes(path)), PrefsObject::class.java)
@@ -67,13 +67,13 @@ object Prefs {
                 }
             } else {
                 val oldPrefsPath = getOldPrefsPath()
-                if (Files.exists(oldPrefsPath)) {
+                if (Files.exists(oldPrefsPath) && allowCopyOldVersion) {
                     val oldPrefsData = String(Files.readAllBytes(oldPrefsPath))
                     val oldPrefsJson = JsonParser().parse(oldPrefsData) as JsonObject
                     val version1_1_0 =  2
                     if (oldPrefsJson["lastUsedVersionInt"].asInt <= version1_1_0) {
                         Files.copy(oldPrefsPath, path)
-                        read()
+                        read(false)
                         return
                     }
                 }
