@@ -74,8 +74,8 @@ int main(int argc, char** argv)
 			fwrite(jsonMsg, 1, iLen, stdout);
 			fflush(stdout);
 
-			std::ofstream out("CardifyChromeAppLog.txt");
-			out << "Cardify Chrome App - Last Updated v1.2.0" << std::endl;
+			std::ofstream out("CardrChromeAppLog.txt");
+			out << "Cardr Chrome App - Last Updated v1.2.0" << std::endl;
 
 			std::string jsonString(jsonMsg, iSize);
 			out << "Received data '" << jsonString << "'" << std::endl;
@@ -101,9 +101,9 @@ int main(int argc, char** argv)
 			out << "Creating ID..." << std::endl;
 			std::string id = std::to_string(rand() % 1000);
 			out << "Created ID " << id << std::endl;
-			std::string selectionFilepath = "CardifySelection-" + id + ".txt";
+			std::string selectionFilepath = "CardrSelection-" + id + ".txt";
 			out << "Created selection path " << selectionFilepath << std::endl;
-			std::string htmlFilepath = "CardifyPage-" + id + ".html";
+			std::string htmlFilepath = "CardrPage-" + id + ".html";
 			out << "Created html path " << htmlFilepath << std::endl;
 
 			out << "Writing selection data to file " << selectionFilepath << std::endl;
@@ -123,7 +123,7 @@ int main(int argc, char** argv)
 			if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userHome))) {
 				out << "Detected user home " << userHome << std::endl;
 
-				std::string command = std::string("\"") + userHome + std::string("\\AppData\\Local\\cardr\\cardr.exe\" \"") + url + "\" " + id;
+				std::string command = std::string("\"\"") + userHome + std::string("\\AppData\\Local\\cardr\\cardr.exe\" \"\"") + url + "\" " + id;
 				out << "Running system command: " << command << std::endl;
 
 				system(command.c_str());
