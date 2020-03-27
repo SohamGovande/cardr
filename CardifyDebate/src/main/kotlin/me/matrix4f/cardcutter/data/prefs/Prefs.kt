@@ -22,7 +22,7 @@ object Prefs {
 
     private val path: Path
     private val gson = GsonBuilder().setPrettyPrinting().setLenient().create()
-    private var prefs = PrefsObject()
+    private var prefs = PrefsObject(null)
     private val logger = LogManager.getLogger(Prefs::class.java)
 
     init {
