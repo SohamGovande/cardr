@@ -16,15 +16,19 @@ repositories {
 
 task exportToRelease {
     copy {
-        from 'build/libs/CardifyDebate-' + version + '.jar'
-        into "C:\\Users\\vgsoh\\AppData\\Local\\CardifyDebate\\app"
+        from 'build/libs/CardifyDebate.jar'
+        into "C:\\Users\\vgsoh\\CardifyDebate"
     }
 }
 
 idea {
-    module {
-        inheritOutputDirs = true
-    }
+    module { inheritOutputDirs = true }
+}
+
+shadowJar {
+    baseName = 'CardifyDebate'
+    version = null
+    classifier = null
 }
 
 jar {
