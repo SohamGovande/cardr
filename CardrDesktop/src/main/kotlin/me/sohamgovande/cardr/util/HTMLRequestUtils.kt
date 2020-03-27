@@ -2,6 +2,7 @@ package me.sohamgovande.cardr.util
 
 import com.google.gson.GsonBuilder
 import me.sohamgovande.cardr.core.auth.CardrResult
+import me.sohamgovande.cardr.data.urls.UrlHelper
 import org.apache.http.NameValuePair
 import org.apache.http.client.entity.UrlEncodedFormEntity
 import org.apache.http.client.methods.HttpGet
@@ -14,10 +15,11 @@ import java.io.IOException
 
 private val logger = LogManager.getLogger("me.sohamgovande.cardr.util.HTMLRequestUtils")
 
+@Suppress("FoldInitializerAndIfToElvis")
 fun makeCardrRequest(function: String, params: MutableList<BasicNameValuePair>): CardrResult {
     params.add(BasicNameValuePair("function", function))
     val resultData = makePOSTRequest(
-        "http://www.cardr.x10.bz/process.php",
+        UrlHelper.get("process"),
         params
     )
     if (resultData == null) {

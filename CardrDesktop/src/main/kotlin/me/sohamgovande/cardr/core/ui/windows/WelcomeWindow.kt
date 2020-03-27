@@ -10,6 +10,7 @@ import javafx.scene.text.Font
 import javafx.scene.text.TextAlignment
 import javafx.stage.WindowEvent
 import me.sohamgovande.cardr.data.prefs.Prefs
+import me.sohamgovande.cardr.data.urls.UrlHelper
 import java.awt.Desktop
 import java.net.URL
 
@@ -38,7 +39,7 @@ class WelcomeWindow : ModalWindow("Welcome to cardr!") {
 
         val link = Hyperlink("Click here to get it for free.")
         link.setOnAction {
-            Desktop.getDesktop().browse(URL("https://chrome.google.com/webstore/detail/cardifydebate/ifdnjffggmmjiammdpklgldliaaempce").toURI())
+            UrlHelper.browse("extension")
             linkOpened = true
         }
         link.font = Font.font(14.0)

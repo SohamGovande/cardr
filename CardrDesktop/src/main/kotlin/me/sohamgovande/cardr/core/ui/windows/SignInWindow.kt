@@ -16,6 +16,7 @@ import javafx.stage.WindowEvent
 import me.sohamgovande.cardr.core.auth.CardrUser
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.encryption.EncryptionHelper
+import me.sohamgovande.cardr.data.urls.UrlHelper
 import org.apache.logging.log4j.LogManager
 import java.awt.Desktop
 import java.lang.Exception
@@ -135,7 +136,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         dontHaveAccount.style = "-fx-cursor: hand;"
         dontHaveAccount.textFill = Color.BLUE
         dontHaveAccount.setOnMouseClicked {
-            Desktop.getDesktop().browse(URL("http://cardr.x10.bz/sign-up.html").toURI())
+            UrlHelper.browse("signUp")
         }
 
 
@@ -143,7 +144,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         forgotPassword.style = "-fx-cursor: hand;"
         forgotPassword.textFill = Color.BLUE
         forgotPassword.setOnMouseClicked {
-            Desktop.getDesktop().browse(URL("http://cardr.x10.bz/forgot-password-instructions.html").toURI())
+            UrlHelper.browse("forgotPassword")
         }
 
         val headerCardBody = Label("Card Body")

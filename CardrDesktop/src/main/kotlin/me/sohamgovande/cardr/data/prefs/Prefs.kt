@@ -20,13 +20,12 @@ import java.nio.file.Paths
 
 object Prefs {
 
-    private val path: Path
+    private val path = Paths.get(System.getProperty("cardr.data.dir"), "CardrSettings.json")
     private val gson = GsonBuilder().setPrettyPrinting().setLenient().create()
     private var prefs = PrefsObject(null)
     private val logger = LogManager.getLogger(Prefs::class.java)
 
     init {
-        path = Paths.get(System.getProperty("cardr.data.dir"), "CardrSettings.json")
         try { Files.createDirectories(path.parent) } catch (e: FileAlreadyExistsException) { }
         read(true)
     }
@@ -67,6 +66,8 @@ object Prefs {
                 }
             } else {
                 val oldPrefsPath = getOldPrefsPath()
+
+                // Move old preferences to new folder
                 if (Files.exists(oldPrefsPath) && allowCopyOldVersion) {
                     val oldPrefsData = String(Files.readAllBytes(oldPrefsPath))
                     val oldPrefsJson = JsonParser().parse(oldPrefsData) as JsonObject

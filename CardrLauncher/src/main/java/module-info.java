@@ -12,5 +12,6 @@ module CardrLauncher.main {
     requires zip4j;
     requires javafx.controls;
     requires java.desktop;
+    requires commons.io;
     exports me.sohamgovande.cardr.launcher;
 }

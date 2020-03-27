@@ -23,7 +23,7 @@ class CardrLauncher : Application() {
     private fun getLatestVersion(): CardrVersionData {
         val logger = LogManager.getLogger(CardrLauncher::class.java)
         try {
-            val data = makeRequest("http://cardr.x10.bz/data/VersionInfo.json")
+            val data = makeRequest(UrlHelper.get("versionInfo"))
             val gson = GsonBuilder().setPrettyPrinting().setLenient().create()
             val jsonParent = JsonParser().parse(data) as JsonObject
             val latestVersion: CardrVersion

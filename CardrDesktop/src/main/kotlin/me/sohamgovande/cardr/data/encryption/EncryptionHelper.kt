@@ -1,6 +1,7 @@
 package me.sohamgovande.cardr.data.encryption
 
 import com.google.gson.GsonBuilder
+import me.sohamgovande.cardr.data.urls.UrlHelper
 import me.sohamgovande.cardr.util.makeRequest
 import org.apache.commons.codec.binary.Base64
 import org.apache.logging.log4j.LogManager
@@ -75,7 +76,7 @@ class EncryptionHelper(private val info: EncryptionInfo) {
         @JvmStatic
         fun getEncryptionInfo(): EncryptionInfo {
             try {
-                return GsonBuilder().create().fromJson(makeRequest("http://cardr.x10.bz/data/EncryptionInfo.json"), EncryptionInfo::class.java)
+                return GsonBuilder().create().fromJson(makeRequest(UrlHelper.get("encryptionInfo")), EncryptionInfo::class.java)
             } catch (e: Exception) {
                 logger.error("Unable to extract encryption key - attempting to use default", e)
                 return EncryptionInfo("af8199fd84720b524f22f7aaa2a04ca75b372ffec3b01d6fa6de29a23bc97b8d")

@@ -1,12 +1,12 @@
 package me.sohamgovande.cardr.data.firstlaunch
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.prefs.PrefsObject
+import me.sohamgovande.cardr.data.urls.UrlHelper
 import me.sohamgovande.cardr.util.*
 import net.lingala.zip4j.ZipFile
 import org.apache.commons.io.IOUtils
 import org.apache.logging.log4j.LogManager
 import java.io.File
-import java.net.URL
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -19,10 +19,10 @@ private fun downloadChromeDataWindows(): File {
     executeCommandBlocking("taskkill /f /im CardrChromeApp.exe", logger, true)
 
     val executable = Paths.get(System.getProperty("cardr.data.dir"), "CardrChromeApp.exe").toFile()
-    downloadFileFromURL("http://cardr.x10.bz/data/win/CardrChromeApp-1.2.0.exe", executable, logger)
+    downloadFileFromURL(UrlHelper.get("winChromeApp"), executable, logger)
 
     val jsonFile = Paths.get(System.getProperty("cardr.data.dir"), "me.sohamgovande.cardr.json").toFile()
-    downloadFileFromURL("http://cardr.x10.bz/data/win/ChromeAppNativeJson-1.2.0.json", jsonFile, logger)
+    downloadFileFromURL(UrlHelper.get("winChromeJson"), jsonFile, logger)
 
     if (!jsonFile.exists())
         throw FirstLaunchException("Unable to download Chrome App Native JSON.")
@@ -43,7 +43,7 @@ private fun downloadChromeDataMacOS() {
     try { Files.createDirectories(executablePath.parent) } catch (e: FileAlreadyExistsException) { }
 
     logger.info("Opening data stream for json file...")
-    val dataStream = URL("http://cardr.x10.bz/data/mac/ChromeAppNativeJson-1.2.0.json").openStream()
+    val dataStream = UrlHelper.url("macChromeJson").openStream()
 
     logger.info("Reading json file...")
     @Suppress("DEPRECATION") var data = IOUtils.toString(dataStream)
@@ -53,7 +53,7 @@ private fun downloadChromeDataMacOS() {
     data = data.replace("%FILEPATH%", executablePath.toFile().absolutePath)
     Files.write(jsonPath, data.toByteArray())
 
-    downloadFileFromURL("http://cardr.x10.bz/data/mac/CardrChromeApp-1.2.0.zip", executableZipPath.toFile(), logger)
+    downloadFileFromURL(UrlHelper.get("macChromeApp"), executableZipPath.toFile(), logger)
 
     logger.info("Extracting zipped executable...")
     val zipFile = ZipFile(executableZipPath.toFile())
@@ -92,8 +92,8 @@ private fun onFirstLaunchMacOS() {
     val getWordWindowsScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "getWordWindows.scpt")
     val selectWordWindowScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "selectWordWindow.scpt")
 
-    downloadFileFromURL("http://cardr.x10.bz/data/mac/MacScripts/getWordWindows.scpt", getWordWindowsScriptPath.toFile(), logger)
-    downloadFileFromURL("http://cardr.x10.bz/data/mac/MacScripts/selectWordWindow.scpt", selectWordWindowScriptPath.toFile(), logger)
+    downloadFileFromURL(UrlHelper.get("getWordWindows"), getWordWindowsScriptPath.toFile(), logger)
+    downloadFileFromURL(UrlHelper.get("selectWordWindow"), selectWordWindowScriptPath.toFile(), logger)
 
     if (!selectWordWindowScriptPath.toFile().exists())
         throw FirstLaunchException("Unable to download AppleScript 'selectWordWindow'.")

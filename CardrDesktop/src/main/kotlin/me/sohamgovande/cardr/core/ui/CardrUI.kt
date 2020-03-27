@@ -30,6 +30,7 @@ import me.sohamgovande.cardr.data.prefs.PrefsObject
 import me.sohamgovande.cardr.core.ui.windows.*
 import me.sohamgovande.cardr.util.*
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
+import me.sohamgovande.cardr.data.urls.UrlHelper
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import java.awt.Desktop
@@ -755,11 +756,6 @@ class CardrUI(private val stage: Stage) {
 
         val accountMenu = Menu("Account")
 
-        val signUpMI = MenuItem("Sign up...")
-        signUpMI.setOnAction {
-            Desktop.getDesktop().browse(URL("http://cardr.x10.bz/sign-up.html").toURI())
-        }
-
         val signInMI = MenuItem("Sign in...")
         signInMI.setOnAction { SignInWindow(SignInLauncherOptions.MANUAL_SIGNIN, currentUser).show() }
         val historyMI = MenuItem("Card History")
@@ -768,7 +764,6 @@ class CardrUI(private val stage: Stage) {
             HistoryWindow().show()
         }
 
-        accountMenu.items.add(signUpMI)
         accountMenu.items.add(signInMI)
         accountMenu.items.add(SeparatorMenuItem())
         accountMenu.items.add(historyMI)
@@ -906,19 +901,19 @@ class CardrUI(private val stage: Stage) {
         val creditsMI = MenuItem("Credits")
         creditsMI.setOnAction { CreditsWindow().show() }
         val donateMI = MenuItem("Support development/donate")
-        donateMI.setOnAction { Desktop.getDesktop().browse(URL("http://cardr.x10.bz/donate.html").toURI()) }
+        donateMI.setOnAction { UrlHelper.browse("donate") }
 
         val websiteMI = MenuItem("Visit website")
-        websiteMI.setOnAction { Desktop.getDesktop().browse(URL("http://cardr.x10.bz").toURI()) }
+        websiteMI.setOnAction { UrlHelper.browse("homepage") }
         val chromeMI = MenuItem("Get Chrome Extension")
-        chromeMI.setOnAction { Desktop.getDesktop().browse(URL("https://chrome.google.com/webstore/detail/cardifydebate/ifdnjffggmmjiammdpklgldliaaempce").toURI()) }
+        chromeMI.setOnAction { UrlHelper.browse("extension") }
         val githubMI = MenuItem("Contribute on GitHub")
-        githubMI.setOnAction { Desktop.getDesktop().browse(URL("https://www.github.com/SohamGovande/cardr").toURI()) }
+        githubMI.setOnAction { UrlHelper.browse("github") }
 
         val versionMI = MenuItem("Version")
         versionMI.setOnAction { showInfoDialogBlocking("Cardr is running version ${CardrDesktop.CURRENT_VERSION}.", "") }
         val helpMI = MenuItem("Help & FAQs")
-        helpMI.setOnAction { Desktop.getDesktop().browse(URL("http://cardr.x10.bz/faq.html").toURI()) }
+        helpMI.setOnAction { UrlHelper.browse("faq") }
         val logMI = MenuItem("Open Log File")
         logMI.setOnAction { Desktop.getDesktop().browse(Paths.get(System.getProperty("cardr.data.dir"), "CardrDesktopLog.txt").toFile().toURI()) }
 

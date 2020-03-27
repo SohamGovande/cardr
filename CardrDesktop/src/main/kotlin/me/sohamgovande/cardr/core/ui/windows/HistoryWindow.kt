@@ -8,6 +8,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.web.WebView
 import me.sohamgovande.cardr.data.prefs.Prefs
+import me.sohamgovande.cardr.data.urls.UrlHelper
 import java.awt.Desktop
 import java.net.URL
 
@@ -29,7 +30,7 @@ class HistoryWindow: ModalWindow("Card History") {
         val header = Label("Card History")
         header.font = Font.font(20.0)
 
-        webView.engine.load("http://cardr.x10.bz/history.php?email=${Prefs.get().emailAddress}&token=${Prefs.get().accessToken}&dark_mode=${Prefs.get().darkMode}")
+        webView.engine.load("${UrlHelper.get("history")}?email=${Prefs.get().emailAddress}&token=${Prefs.get().accessToken}&dark_mode=${Prefs.get().darkMode}")
         webView.engine.locationProperty().addListener { _, oldLoc, loc ->
             if (loc != null && !loc.contains("cardr.x10.bz")) {
                 Platform.runLater { webView.engine.load(oldLoc) }
