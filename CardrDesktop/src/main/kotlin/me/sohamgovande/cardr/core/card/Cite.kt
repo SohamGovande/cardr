@@ -11,7 +11,7 @@ data class Cite(val authors: Array<Author>,
 
     fun getAuthorName(nameFormat: AuthorNameFormat): String {
         if (authors.size > 1) {
-            if (Prefs.get().useEtAl && nameFormat == AuthorNameFormat.LAST_NAME) {
+            if (Prefs.get().useEtAl && nameFormat == AuthorNameFormat.LAST_NAME && authors.size > 2) {
                 return "${authors[0].toString(nameFormat)} et al."
             }
 

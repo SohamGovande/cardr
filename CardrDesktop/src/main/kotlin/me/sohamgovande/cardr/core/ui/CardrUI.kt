@@ -837,7 +837,7 @@ class CardrUI(private val stage: Stage) {
             refreshHTML()
         }
 
-        val useEtAlMI = CheckMenuItem("Use 'et al.' for >1 author")
+        val useEtAlMI = CheckMenuItem("Use 'et al.' for >2 authors")
         useEtAlMI.isSelected = Prefs.get().useEtAl
         useEtAlMI.setOnAction {
             Prefs.get().useEtAl = useEtAlMI.isSelected
