@@ -74,7 +74,6 @@ object Prefs {
                     val version1_1_0 =  2
                     if (oldPrefsJson["lastUsedVersionInt"].asInt <= version1_1_0) {
                         Files.copy(oldPrefsPath, path)
-                        Files.delete(oldPrefsPath)
                         read(false)
                         return
                     }
