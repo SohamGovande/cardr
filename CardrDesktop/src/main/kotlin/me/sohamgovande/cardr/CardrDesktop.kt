@@ -77,7 +77,7 @@ class CardrDesktop: Application() {
     }
 
     companion object {
-        const val WIDTH = 850.0
+        const val WIDTH = 825.0
         const val HEIGHT = 600.0
 
         const val CURRENT_VERSION = "v1.2.0"

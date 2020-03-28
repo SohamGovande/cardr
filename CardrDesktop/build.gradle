@@ -80,9 +80,9 @@ jlink {
                 '--type', 'msi',
 
                 '--resource-dir', jpackageResourceDir,
+                '--description', appDescription,
                 '--copyright', appCopyright,
                 '--vendor', appCompany,
-                '--description', appDescription,
 
                 '--win-menu',
                 '--win-menu-group', 'cardr',
