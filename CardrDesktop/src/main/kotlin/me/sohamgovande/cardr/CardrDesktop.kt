@@ -84,8 +84,8 @@ class CardrDesktop: Application() {
         var IS_FIRST_LAUNCH = false
         var WAS_FIRST_LAUNCH_SUCCESSFUL = false
         val OVERRIDE_LOGIN_CHECK = false
-        val RELEASE_MODE = false
-        val FORCE_AUTOUPDATE = true
+        val RELEASE_MODE = true
+        val FORCE_AUTOUPDATE = false
 
         var instance: CardrDesktop? = null
 
