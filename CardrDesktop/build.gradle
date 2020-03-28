@@ -3,7 +3,6 @@ plugins {
     id 'idea'
     id 'org.jetbrains.kotlin.jvm' version '1.3.70'
     id 'org.openjfx.javafxplugin' version '0.0.8'
-    id 'com.github.johnrengelman.shadow' version '5.2.0'
     id 'org.beryx.jlink' version '2.17.3'
 }
 
@@ -24,11 +23,6 @@ task exportToRelease {
 
 idea {
     module { inheritOutputDirs = true }
-}
-
-shadowJar {
-    baseName = 'Cardr'
-    classifier = null
 }
 
 jar {
