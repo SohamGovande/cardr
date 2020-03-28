@@ -230,15 +230,7 @@ class CardrUI(private val stage: Stage) {
         cdm1.children.add(copyBtn)
         cdm1.children.add(editCardFormat)
 
-//        val cdm2 = FlowPane()
-//        cdm2.hgap = 5.0
-//        cdm2.vgap = 5.0
-//        cdm1.children.add(highlightBtn)
-//        cdm1.children.add(underlineBtn)
-//        cdm1.children.add(emphasizeBtn)
-
         cardDisplayMenu.children.add(cdm1)
-//        cardDisplayMenu.children.add(cdm2)
 
         cardDisplayArea.children.add(cardDisplayMenu)
         cardDisplayArea.children.add(cardWV)
@@ -252,6 +244,8 @@ class CardrUI(private val stage: Stage) {
 
         panel.children.add(searchBarPanel)
         panel.children.add(bodyAreaPanel)
+
+        cardTag.addListener { _, _, title -> updateWindowTitle(title) }
 
         logger.info("Initializing Word windows")
         refreshWordWindows()
@@ -1130,7 +1124,7 @@ class CardrUI(private val stage: Stage) {
             var trimmed = title.substring(0, Math.min(title.length, 100))
             if (title.length >= 100)
                 trimmed += "..."
-            stage.title = "$trimmed - cardr"
+            stage.title = "$trimmed - cardr ${CardrDesktop.CURRENT_VERSION}"
         }
     }
 

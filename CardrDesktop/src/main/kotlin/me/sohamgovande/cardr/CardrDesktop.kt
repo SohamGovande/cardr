@@ -26,7 +26,7 @@ class CardrDesktop: Application() {
         this.stage = stage
         try {
             logger.info("Launched Cardr")
-            stage.title = "cardr"
+            stage.title = "cardr ${CURRENT_VERSION}"
             stage.isResizable = true
             stage.width = WIDTH
             stage.height = HEIGHT
@@ -36,6 +36,7 @@ class CardrDesktop: Application() {
             var changedWindowDimensions = false
             val windowDimensions = Prefs.get().windowDimensions
             logger.info("Applying window dimensions: $windowDimensions")
+            @Suppress("SENSELESS_COMPARISON")
             if (windowDimensions != null && windowDimensions.x != -1024.1024) {
                 changedWindowDimensions = true
                 windowDimensions.apply(stage)
