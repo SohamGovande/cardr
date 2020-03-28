@@ -1,6 +1,4 @@
-#include <stdio.h>
 #include <fcntl.h>
-#include <stdlib.h>
 #include <time.h>
 #include <string>
 #include <fstream>
@@ -41,6 +39,26 @@ int SetBinaryMode(FILE* file)
 
 	return 0;
 }
+
+std::string GetLastErrorAsString()
+{
+	//Get the error message, if any.
+	DWORD errorMessageID = ::GetLastError();
+	if (errorMessageID == 0)
+		return std::string(); //No error message has been recorded
+
+	LPSTR messageBuffer = nullptr;
+	size_t size = FormatMessageA(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
+		NULL, errorMessageID, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPSTR)&messageBuffer, 0, NULL);
+
+	std::string message(messageBuffer, size);
+
+	//Free the buffer.
+	LocalFree(messageBuffer);
+
+	return message;
+}
+
 
 // main logic
 int main(int argc, char** argv)
@@ -123,10 +141,46 @@ int main(int argc, char** argv)
 			if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userHome))) {
 				out << "Detected user home " << userHome << std::endl;
 
-				std::string command = std::string("\"\"") + userHome + std::string("\\AppData\\Local\\cardr\\cardr.exe\" \"\"") + url + "\" " + id;
-				out << "Running system command: " << command << std::endl;
+				std::string currentDir = userHome + std::string("\\AppData\\Local\\cardr\\");
+				std::string appName = currentDir + "cardr.exe";
+				std::string cmdLine = appName + " \"" + url + "\" " + id;
 
-				system(command.c_str());
+				out << "Current dir: " << currentDir << std::endl;
+				out << "Application path: " << appName << std::endl;
+				out << "Command line: " << cmdLine<< std::endl;
+				
+				char* cmdLineChars = new char[cmdLine.size() + 1];
+				cmdLine.copy(cmdLineChars, cmdLine.size() + 1);
+				cmdLineChars[cmdLine.size()] = '\0';
+
+				STARTUPINFO si;
+				PROCESS_INFORMATION pi;
+
+				ZeroMemory(&si, sizeof(si));
+				si.cb = sizeof(si);
+				ZeroMemory(&pi, sizeof(pi));
+
+				if (CreateProcessA(
+					appName.c_str(),
+					cmdLineChars,
+					NULL,
+					NULL,
+					FALSE,
+					CREATE_NEW_PROCESS_GROUP,
+					NULL,
+					currentDir.c_str(),
+					&si,
+					&pi
+				)) {
+					out << "Successfully launched process" << std::endl;
+					CloseHandle(pi.hProcess);
+					CloseHandle(pi.hThread);
+				}
+				else {
+					out << "Erorr launching process: " << GetLastErrorAsString() << std::endl;
+				}
+
+				delete[] cmdLineChars;
 			} else {
 				out << "Unable to get user home directory" << std::endl;
 			}
