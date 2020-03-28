@@ -36,7 +36,7 @@ class CardrDesktop: Application() {
             var changedWindowDimensions = false
             val windowDimensions = Prefs.get().windowDimensions
             logger.info("Applying window dimensions: $windowDimensions")
-            if (windowDimensions.x != -1024.1024) {
+            if (windowDimensions != null && windowDimensions.x != -1024.1024) {
                 changedWindowDimensions = true
                 windowDimensions.apply(stage)
             }

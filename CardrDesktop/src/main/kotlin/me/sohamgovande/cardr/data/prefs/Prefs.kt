@@ -6,13 +6,12 @@ import com.google.gson.JsonParser
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.data.firstlaunch.onFirstLaunch
 import me.sohamgovande.cardr.data.firstlaunch.updateFrom
+import me.sohamgovande.cardr.data.urls.UrlHelper
 import me.sohamgovande.cardr.util.OS
 import me.sohamgovande.cardr.util.getOSType
 import me.sohamgovande.cardr.util.showErrorDialog
 import me.sohamgovande.cardr.util.showInfoDialogUnblocking
 import org.apache.logging.log4j.LogManager
-import java.awt.Desktop
-import java.net.URL
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -46,13 +45,14 @@ object Prefs {
                     logger.info("Read preferences successfully: $prefs")
 
                     val lastVersion = readObject.lastUsedVersionInt
+                    val lastVersionName = readObject.lastUsedVersion
                     if (lastVersion < CardrDesktop.CURRENT_VERSION_INT) {
                         val error = updateFrom(lastVersion, CardrDesktop.CURRENT_VERSION_INT)
                         if (error == null) {
                             prefs.lastUsedVersionInt = CardrDesktop.CURRENT_VERSION_INT
                             save()
-                            showInfoDialogUnblocking("Succesfully updated cardr!", "Updated cardr from version $lastVersion to ${CardrDesktop.CURRENT_VERSION}.",  "See what's new") {
-                                Desktop.getDesktop().browse(URL("http://cardr.x10.bz/changelog.html").toURI())
+                            showInfoDialogUnblocking("Successfully updated cardr!", "Updated cardr from version $lastVersionName to ${CardrDesktop.CURRENT_VERSION}.",  "See what's new") {
+                                UrlHelper.browse("changelog")
                             }
                             logger.info("Successfully updated cardr from b$lastVersion - saved prefs $prefs")
                         } else {
