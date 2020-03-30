@@ -20,7 +20,7 @@ object UrlHelper {
     fun read() {
         try {
             val stream = javaClass.getResourceAsStream("/urls.json")
-            val jsonStr = IOUtils.toString(stream)
+            @Suppress("DEPRECATION") val jsonStr = IOUtils.toString(stream)
             IOUtils.closeQuietly(stream)
             data = JsonParser().parse(jsonStr) as JsonObject
         } catch (e: Exception) {

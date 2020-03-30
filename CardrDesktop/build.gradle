@@ -71,7 +71,7 @@ jlink {
         jvmArgs = [ '-Djava.library.path="dlls"' ]
 
         installerOptions = [
-                '--type', 'msi',
+                '--type', 'exe',
 
                 '--resource-dir', jpackageResourceDir,
                 '--description', appDescription,

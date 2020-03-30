@@ -59,8 +59,7 @@ class UpdateWindow(private val version: CardrVersion) : ModalWindow("Updater") {
 
     override fun generateUI(): Scene {
         CardrDesktop.instance!!.stage.close()
-        val openWindows = openWindows
-        val iter = ModalWindow.openWindows.iterator()
+        val iter = openWindows.iterator()
         while (iter.hasNext()) {
             val it = iter.next()
             it.forcedClose = true
