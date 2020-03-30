@@ -42,13 +42,13 @@ class Timestamp {
                 }
 
                 else
-                    return "${month.get()}-${day.get()}-${year.get()}"
+                    return "${month.get()}${getSeparator()}${day.get()}${getSeparator()}${year.get()}"
             } else {
                 val yearInt = yearIntOrNull.toInt()
                 val date = currentDate()
                 if (yearInt == date.year && !Prefs.get().onlyCardYear) {
                     // Card is from this year
-                    return "${month.get()}-${day.get()}"
+                    return "${month.get()}${getSeparator()}${day.get()}"
                 } else {
                     // Card is from a previous year
 
@@ -67,5 +67,13 @@ class Timestamp {
         return "Timestamp(year=${year.get()}, month=${month.get()}, day=${day.get()})"
     }
 
-
+    companion object {
+        fun getSeparator(): String {
+            return if (Prefs.get().useSlashInsteadOfDash) {
+                "/"
+            } else {
+                "-"
+            }
+        }
+    }
 }

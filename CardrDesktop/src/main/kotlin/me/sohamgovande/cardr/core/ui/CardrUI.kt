@@ -571,7 +571,7 @@ class CardrUI(private val stage: Stage) {
                     .replace("{AuthorFirstName}", cite.getAuthorName(AuthorNameFormat.FIRST_NAME))
                     .replace("{Qualifications}", cite.getAuthorQualifications())
                     .replace("{DateFull}", cite.date.toString(true))
-                    .replace("{CurrentDate}", "${now.monthValue}-${now.dayOfMonth}-${now.year}")
+                    .replace("{CurrentDate}", "${now.monthValue}${Timestamp.getSeparator()}${now.dayOfMonth}${Timestamp.getSeparator()}${now.year}")
                     .replace("{Publication}", cite.publication)
                     .replace("{Title}", cite.title)
                     .replace("{Url}", cite.url)
@@ -847,6 +847,14 @@ class CardrUI(private val stage: Stage) {
             refreshHTML()
         }
 
+        val useSlashMI = CheckMenuItem("Use / instead of - in dates")
+        useSlashMI.isSelected = Prefs.get().useSlashInsteadOfDash
+        useSlashMI.setOnAction {
+            Prefs.get().useSlashInsteadOfDash = useSlashMI.isSelected
+            Prefs.save()
+            refreshHTML()
+        }
+
         val endQualsWithCommaMI = CheckMenuItem("Automatically append \", \" to last author qualification")
         endQualsWithCommaMI.isSelected = Prefs.get().endQualsWithComma
         endQualsWithCommaMI.setOnAction {
@@ -893,6 +901,7 @@ class CardrUI(private val stage: Stage) {
         settingsMenu.items.add(useEtAlMI)
         settingsMenu.items.add(endQualsWithCommaMI)
         settingsMenu.items.add(capitalizeAuthorsMI)
+        settingsMenu.items.add(useSlashMI)
 
         settingsMenu.items.add(SeparatorMenuItem())
         settingsMenu.items.add(darkModeMI)

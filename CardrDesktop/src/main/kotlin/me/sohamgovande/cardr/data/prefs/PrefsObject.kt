@@ -21,6 +21,8 @@ data class PrefsObject(val unused: Nothing?) {
     var showParagraphBreaks = false
     var darkMode = false
 
+    var useSlashInsteadOfDash = false
+
     var pastePlainText = true
     var pasteShortcut = KeyEvent.VK_F2
 
