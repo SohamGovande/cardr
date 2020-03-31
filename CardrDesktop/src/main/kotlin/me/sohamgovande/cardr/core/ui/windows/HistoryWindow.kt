@@ -4,6 +4,7 @@ import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.control.Label
+import javafx.scene.image.Image
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.web.WebView
@@ -44,6 +45,7 @@ class HistoryWindow: ModalWindow("Card History") {
 
         val scene = Scene(vbox, 600.0, 400.0)
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
+        super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
     }
 
