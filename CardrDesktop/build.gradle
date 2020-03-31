@@ -58,6 +58,11 @@ jlink {
             into "build/jpackage/cardr/dlls"
             include "*.dll"
         }
+        copy {
+            from 'C:\\program files\\java\\jre1.8.0_211\\lib\\security'
+            into 'build/jpackage/cardr/runtime/lib/security'
+            include "cacerts"
+        }
     }
 
     jpackage {
@@ -74,9 +79,9 @@ jlink {
                 '--type', 'exe',
 
                 '--resource-dir', jpackageResourceDir,
-                '--description', appDescription,
                 '--copyright', appCopyright,
                 '--vendor', appCompany,
+                '--description', appDescription,
 
                 '--win-menu',
                 '--win-menu-group', 'cardr',

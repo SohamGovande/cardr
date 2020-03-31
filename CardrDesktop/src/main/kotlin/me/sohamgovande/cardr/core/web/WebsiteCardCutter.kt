@@ -15,6 +15,10 @@ import org.jsoup.select.Elements
 import java.io.BufferedReader
 import java.net.URI
 import java.nio.file.Paths
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.*
+
 
 class WebsiteCardCutter(private val url: String, private val cardID: String?) {
 
@@ -607,6 +611,24 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                     sb.append('\n')
             }
             return sb.toString()
+        }
+    }
+
+    companion object {
+        fun fixSSLExceptions() {
+            val trustAllCerts: Array<TrustManager> = arrayOf(
+                object : X509TrustManager {
+                    override fun getAcceptedIssuers(): Array<X509Certificate>? = null
+
+                    override fun checkClientTrusted(certs: Array<X509Certificate?>?, authType: String?) {}
+                    override fun checkServerTrusted(certs: Array<X509Certificate?>?, authType: String?) {}
+                }
+            )
+
+            val sc = SSLContext.getInstance("SSL")
+            sc.init(null, trustAllCerts, SecureRandom())
+            HttpsURLConnection.setDefaultSSLSocketFactory(sc.socketFactory)
+            HttpsURLConnection.setDefaultHostnameVerifier { _, _ -> true }
         }
     }
 }
