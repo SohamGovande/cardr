@@ -129,6 +129,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         useSlashMI.setOnAction {
             Prefs.get().useSlashInsteadOfDash = useSlashMI.isSelected
             Prefs.save()
+            cardrUI.loadDateSeparatorLabels()
             cardrUI.refreshHTML()
         }
 

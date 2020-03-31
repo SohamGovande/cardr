@@ -11,8 +11,6 @@ import javafx.scene.effect.ColorAdjust
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.KeyCode
-import javafx.scene.input.KeyCodeCombination
-import javafx.scene.input.KeyCombination
 import javafx.scene.layout.*
 import javafx.scene.text.TextAlignment
 import javafx.scene.web.WebView
@@ -31,7 +29,6 @@ import me.sohamgovande.cardr.core.ui.windows.*
 import me.sohamgovande.cardr.util.*
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import me.sohamgovande.cardr.data.updater.UpdateChecker
-import me.sohamgovande.cardr.data.urls.UrlHelper
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import java.awt.Desktop
@@ -39,8 +36,6 @@ import java.awt.Toolkit
 import java.io.InputStream
 import java.lang.NullPointerException
 import java.net.URL
-import java.nio.file.Paths
-import java.util.function.Consumer
 
 class CardrUI(private val stage: Stage) {
 
@@ -81,8 +76,9 @@ class CardrUI(private val stage: Stage) {
     private val gotoUrlButton = Button("GO")
     private val bodyAreaPanel = HBox()
 
-    private val slashLabel = Label("      /      ")
-    private val slashLabel2 = Label("      /      ")
+    var slashLabelText = "  _  "
+    private val slashLabel = Label(slashLabelText)
+    private val slashLabel2 = Label(slashLabelText)
     private val dateGrid = GridPane()
 
     private val cardDisplayArea = VBox()
@@ -221,6 +217,7 @@ class CardrUI(private val stage: Stage) {
         cardDisplayMenu.spacing = 5.0
 
         loadMenuIcons()
+        loadDateSeparatorLabels()
 
         highlightBtn.setOnAction { highlightSelectedText() }
         underlineBtn.setOnAction { underlineSelectedText() }
@@ -771,6 +768,12 @@ class CardrUI(private val stage: Stage) {
 
     private fun underlineSelectedText() {
         cardWV.engine.executeScript("underlineSelectedText()")
+    }
+
+    fun loadDateSeparatorLabels() {
+        val newText = slashLabelText.replace("_", Timestamp.getSeparator())
+        slashLabel.text = newText
+        slashLabel2.text = newText
     }
 
 
