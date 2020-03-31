@@ -1,14 +1,17 @@
 package me.sohamgovande.cardr.core.auth
 
 
-import me.sohamgovande.cardr.util.makeCardrRequest
-import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.encryption.EncryptionHelper
+import me.sohamgovande.cardr.data.prefs.Prefs
+import me.sohamgovande.cardr.util.makeCardrRequest
 import org.apache.http.message.BasicNameValuePair
 import org.apache.logging.log4j.LogManager
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.PrintWriter
 
 class CardrUser {
+
+    var onSuccessfulLogin = { -> Unit }
 
     fun visitWebsite(url: String) {
         makeCardrRequest("upd_history", mutableListOf(
@@ -20,10 +23,13 @@ class CardrUser {
     }
 
     fun renew(): CardrResult {
-        return makeCardrRequest("renew", mutableListOf(
+        val result = makeCardrRequest("renew", mutableListOf(
             BasicNameValuePair("email", Prefs.get().emailAddress),
             BasicNameValuePair("token", Prefs.get().accessToken)
         ))
+        if (result.wasSuccessful())
+            onSuccessfulLogin()
+        return result
     }
 
     fun login(email: String, password: String): CardrResult {
@@ -39,6 +45,7 @@ class CardrUser {
                 Prefs.get().accessToken = token
                 Prefs.get().emailAddress = email
                 Prefs.save()
+                onSuccessfulLogin()
 
                 Thread {
                     val encryptor = EncryptionHelper(EncryptionHelper.getEncryptionInfo())
