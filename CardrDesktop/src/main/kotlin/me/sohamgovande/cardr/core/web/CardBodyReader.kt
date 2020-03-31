@@ -276,6 +276,10 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         })
     }
 
+    private fun liberalistia(): Elements {
+        return doc.select("div[data-layout-label='Post Body'] p")
+    }
+
     private fun thefederalist(): Elements {
         return doc.select(".entry-content p, .entry-content h2, .entry-content h3")
     }
@@ -373,7 +377,7 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
         } catch (e: Exception) {
 
             // NoSuchMethodException is normal, it means the host was unrecognized
-            if (!(e is NoSuchMethodException)) {
+            if (e !is NoSuchMethodException) {
                 logger.error("Error reading card body", e)
             }
 

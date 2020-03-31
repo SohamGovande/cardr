@@ -290,13 +290,10 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
         var authors: Array<Author>? = arrayOf()
 
         if (metaJson.has("author")) {
-            var authorJson = metaJson["author"]
-            if (authorJson.isJsonPrimitive && authorJson.asJsonPrimitive.isString) {
-                authorJson = JsonParser().parse(authorJson.asString).asJsonObject
-            }
+            val authorJson = metaJson["author"]
             if (authorJson.isJsonObject)
                 author = authorJson.asJsonObject["name"].asString
-            else if (authorJson.isJsonPrimitive)
+            else if (authorJson.isJsonPrimitive && authorJson.asJsonPrimitive.isString)
                 author = authorJson.asJsonPrimitive.asString
             else if (authorJson.isJsonArray) {
                 val array = authorJson.asJsonArray
