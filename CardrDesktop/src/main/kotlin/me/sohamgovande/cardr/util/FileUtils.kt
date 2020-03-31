@@ -44,7 +44,7 @@ fun executeCommandBlocking(cmd: String, logger: Logger, allowNonzeroExit: Boolea
             throw e
         }
     }
-    val result = stdout.toString().replace("\n", "")
+    val result = stdout.toString()
     logger.info("Command '$cmd' returned '$result'")
     return result
 }
