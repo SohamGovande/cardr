@@ -17,13 +17,16 @@ import java.net.URI
 import java.nio.file.Paths
 import java.security.SecureRandom
 import java.security.cert.X509Certificate
-import javax.net.ssl.*
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 
 class WebsiteCardCutter(private val url: String, private val cardID: String?) {
 
     private val logger = LogManager.getLogger(javaClass)
-    private var doc: Document
+    private lateinit var doc: Document
     private val meta: Elements
     private var metaJson: JsonObject
 
@@ -39,7 +42,7 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
     init {
         try {
             if (cardID == null) {
-                doc = Jsoup.connect(url).get()
+                loadURL(url)
             } else {
                 try {
                     val htmlDataFile = Paths.get(System.getProperty("cardr.data.dir"), "CardrPage-$cardID.html").toFile()
@@ -49,7 +52,7 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                         htmlDataFile.deleteOnExit()
                 } catch (e: Exception) {
                     logger.error("Unable to load card ID $cardID", e)
-                    doc = Jsoup.connect(url).get()
+                    loadURL(url)
                 }
             }
         } catch (e: Exception) {
@@ -126,6 +129,28 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
             { ensureYYYYFormat(it[14]?.value ?: currentDate().year.toString()) }))
     }
 
+    @Throws(Exception::class)
+    private fun loadURL(url: String) {
+        try {
+            doc = Jsoup.connect(url).get()
+            logger.info("Successfully loaded URL $url")
+        } catch (e: Exception) {
+            logger.info("Unable to load URL $url normally - trying to fall back on TLS v1.2")
+            try {
+                // Fallback on TLS v1.2
+                val connection = Jsoup.connect(url)
+                val sslContext = SSLContext.getInstance("TLSv1.2")
+                sslContext.init(null, null, SecureRandom())
+                val socketFactory = sslContext.socketFactory
+                connection.sslSocketFactory(socketFactory)
+                doc = connection.get()
+            } catch (e: Exception) {
+                logger.info("TLS 1.2 fallback failed - error loading URL")
+                throw e
+            }
+        }
+    }
+
     private fun findMeta(vararg attributes: String): String? {
         for (metaTag in meta) {
             for (attrib in attributes ) {
@@ -139,10 +164,10 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
         return null
     }
 
-    protected fun getAuthorFromName(name: String): Author {
-        if (name.equals("BBC News"))
+    private fun getAuthorFromName(name: String): Author {
+        if (name == "BBC News")
             return Author("", "BBC")
-        else if (name.equals("Phys"))
+        else if (name == "Phys")
             return Author("", "Phys")
 
         val lastSpace = name.trim().lastIndexOf(' ')
@@ -154,7 +179,7 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
         return Author(firstName, lastName)
     }
 
-    protected fun getAuthorFromXML(): Array<Author>? {
+    private fun getAuthorFromXML(): Array<Author>? {
         var authorStr: String = findMeta("author", "dcterms.creator", "og:article:author") ?: return null
         if (authorStr.contains("www"))
             return null
@@ -611,24 +636,6 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                     sb.append('\n')
             }
             return sb.toString()
-        }
-    }
-
-    companion object {
-        fun fixSSLExceptions() {
-            val trustAllCerts: Array<TrustManager> = arrayOf(
-                object : X509TrustManager {
-                    override fun getAcceptedIssuers(): Array<X509Certificate>? = null
-
-                    override fun checkClientTrusted(certs: Array<X509Certificate?>?, authType: String?) {}
-                    override fun checkServerTrusted(certs: Array<X509Certificate?>?, authType: String?) {}
-                }
-            )
-
-            val sc = SSLContext.getInstance("SSL")
-            sc.init(null, trustAllCerts, SecureRandom())
-            HttpsURLConnection.setDefaultSSLSocketFactory(sc.socketFactory)
-            HttpsURLConnection.setDefaultHostnameVerifier { _, _ -> true }
         }
     }
 }

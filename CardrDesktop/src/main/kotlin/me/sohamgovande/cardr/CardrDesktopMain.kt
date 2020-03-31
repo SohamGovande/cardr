@@ -74,7 +74,6 @@ fun main(args: Array<String>) {
     }
 
     setLoggerDir()
-    WebsiteCardCutter.fixSSLExceptions()
 
     CardrDesktop.logger.info("Launching Cardr with the following arguments: ${Arrays.toString(args)}")
     CardrDesktop.logger.info("Running on Java version ${System.getProperty("java.version")} by vendor ${System.getProperty("java.vendor")}")
