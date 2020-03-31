@@ -1,19 +1,24 @@
 package me.sohamgovande.cardr.core.ui
 
+import de.codecentric.centerdevice.MenuToolkit
 import javafx.scene.control.*
 import javafx.scene.input.KeyCode
 import javafx.scene.input.KeyCodeCombination
 import javafx.scene.input.KeyCombination
+import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.windows.*
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.urls.UrlHelper
+import me.sohamgovande.cardr.util.OS
 import me.sohamgovande.cardr.util.currentDate
+import me.sohamgovande.cardr.util.getOSType
 import me.sohamgovande.cardr.util.showInfoDialogBlocking
 import java.awt.Desktop
 import java.nio.file.Paths
 import java.util.function.Consumer
+
 
 class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
@@ -21,6 +26,17 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
     
     fun onSuccessfulLogin() {
         signInMI.text = "Log out..."
+    }
+
+    fun apply(panel: VBox) {
+        if (getOSType() == OS.WINDOWS) {
+            panel.children.add(VBox(generateMenuBar()))
+        } else {
+            val tk = MenuToolkit.toolkit()
+            val defaultApplicationMenu = tk.createDefaultApplicationMenu("cardr")
+            tk.setApplicationMenu(defaultApplicationMenu)
+            tk.setGlobalMenuBar(generateMenuBar())
+        }
     }
 
     fun generateMenuBar(): MenuBar {

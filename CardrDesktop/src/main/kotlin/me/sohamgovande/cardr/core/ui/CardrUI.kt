@@ -119,7 +119,7 @@ class CardrUI(private val stage: Stage) {
         stage.heightProperty().addListener { _, _, _ -> onWindowResized() }
 
         logger.info("Generating menu bar")
-        panel.children.add(VBox(menubarHelper.generateMenuBar()))
+        menubarHelper.apply(panel)
 
         logger.info("Creating UI components")
         searchBarPanel.spacing = 5.0

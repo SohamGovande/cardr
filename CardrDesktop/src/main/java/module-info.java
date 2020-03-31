@@ -18,6 +18,7 @@ module CardrDesktop.main {
     requires gson;
     requires org.apache.logging.log4j;
     requires org.apache.logging.log4j.core;
+    requires centerdevice.nsmenufx;
 
     exports me.sohamgovande.cardr;
 }

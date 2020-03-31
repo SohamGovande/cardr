@@ -104,6 +104,7 @@ dependencies {
     implementation 'org.apache.logging.log4j:log4j-core:2.13.0'
     implementation 'commons-io:commons-io:2.5'
     implementation 'net.lingala.zip4j:zip4j:2.3.0'
+    implementation "de.codecentric.centerdevice:centerdevice-nsmenufx:2.1.7"
 
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
