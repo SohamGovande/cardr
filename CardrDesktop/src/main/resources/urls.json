@@ -11,6 +11,7 @@
     "changelog": "http://cardr.x10.bz/changelog.html",
     "encryptionInfo": "http://cardr.x10.bz/data/EncryptionInfo.json",
     "forgotPassword": "http://cardr.x10.bz/forgot-password-instructions.html",
+    "supportedSitesSpreadsheet": "https://docs.google.com/spreadsheets/d/155sEjiKnhkijTjyAL06CBGPHPm9VPWI-wH27Ncwk9-E/edit?usp=sharing",
 
     "winChromeApp": "http://cardr.x10.bz/data/win/CardrChromeApp-1.2.0.exe",
     "winChromeJson": "http://cardr.x10.bz/data/win/ChromeAppNativeJson-1.2.0.json",

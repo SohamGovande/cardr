@@ -214,6 +214,11 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         chromeMI.setOnAction { UrlHelper.browse("extension") }
         val githubMI = MenuItem("Contribute on GitHub")
         githubMI.setOnAction { UrlHelper.browse("github") }
+        val viewSupportedSites = MenuItem("View supported websites")
+        viewSupportedSites.setOnAction {
+            showInfoDialogBlocking("Supported websites", "Once you click OK, cardr will display a list of supported websites. These are NOT the only websites you can use cardr on, but are the ones that cardr offers 100% integration for. For other websites that aren't on this list, cardr will still work most of the time.")
+            UrlHelper.browse("supportedSitesSpreadsheet")
+        }
 
         val versionMI = MenuItem("Version")
         versionMI.setOnAction { showInfoDialogBlocking("Cardr is running version ${CardrDesktop.CURRENT_VERSION}.", "") }
@@ -222,16 +227,21 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         val logMI = MenuItem("Open Log File")
         logMI.setOnAction { Desktop.getDesktop().browse(Paths.get(System.getProperty("cardr.data.dir"), "CardrDesktopLog.txt").toFile().toURI()) }
 
-        aboutMenu.items.add(creditsMI)
         aboutMenu.items.add(donateMI)
+
         aboutMenu.items.add(SeparatorMenuItem())
         aboutMenu.items.add(websiteMI)
         aboutMenu.items.add(chromeMI)
         aboutMenu.items.add(githubMI)
+        aboutMenu.items.add(viewSupportedSites)
+
         aboutMenu.items.add(SeparatorMenuItem())
         aboutMenu.items.add(helpMI)
         aboutMenu.items.add(versionMI)
         aboutMenu.items.add(logMI)
+
+        aboutMenu.items.add(SeparatorMenuItem())
+        aboutMenu.items.add(creditsMI)
 
         menuBar.menus.add(accountMenu)
         menuBar.menus.add(toolsMenu)
