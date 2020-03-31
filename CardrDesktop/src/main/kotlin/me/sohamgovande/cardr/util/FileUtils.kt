@@ -35,7 +35,7 @@ fun executeCommandBlocking(cmd: String, logger: Logger, allowNonzeroExit: Boolea
     executor.streamHandler = stdoutPsh
     try {
         val exitValue = executor.execute(cmdLine)
-        logger.info("$cmd terminated with  exit $exitValue")
+        logger.info("$cmd terminated with exit $exitValue")
     } catch (e: ExecuteException) {
         if (e.message!!.contains("Process exited with an error:") && allowNonzeroExit) {
             logger.info("Error executing command $cmd but ignored return value '${e.message}'")
