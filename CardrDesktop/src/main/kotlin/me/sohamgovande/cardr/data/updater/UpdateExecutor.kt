@@ -25,9 +25,9 @@ class UpdateExecutor(private val version: CardrVersion) {
         if (getOSType() == OS.MAC) {
             Platform.runLater {
                 onClose()
-                showInfoDialogBlocking("Please read the instructions below.", "1. Once you click OK, a Finder window will appear containing the new cardr update. \n2. To install the update, RIGHT CLICK the file called '${version.getInstallerName()}' and select Open in the action menu. \n3. Finally, click 'Open' in the dialog box that follows. \n\nClick OK to confirm you have read this message.")
-                Desktop.getDesktop().browse(installerPath.parent.toFile().toURI())
-                System.exit(0)
+                showInfoDialogBlocking("Please read the instructions below.", "1. Once you click OK, a Finder window will appear containing the new cardr update. \n2. To install the update, RIGHT CLICK the file called '${version.getInstallerName()}' and select 'Open' in the action menu. \n3. Finally, click 'Open Anyway' in the dialog box that follows. \n\nClick OK to confirm you have read this message.")
+                Desktop.getDesktop().browse(Paths.get(System.getProperty("cardr.data.dir", "Cardr Updates")).toUri())
+                exitProcess(0)
             }
         } else {
             Desktop.getDesktop().open(installerPath.toFile())

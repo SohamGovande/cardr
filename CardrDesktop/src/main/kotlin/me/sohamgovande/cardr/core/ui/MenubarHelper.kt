@@ -12,7 +12,9 @@ import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.windows.*
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.urls.UrlHelper
+import me.sohamgovande.cardr.util.OS
 import me.sohamgovande.cardr.util.currentDate
+import me.sohamgovande.cardr.util.getOSType
 import me.sohamgovande.cardr.util.showInfoDialogBlocking
 import java.awt.Desktop
 import java.nio.file.Paths
@@ -33,13 +35,19 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
     fun applyMacMenubar() {
         val tk = MenuToolkit.toolkit()
-        val defaultApplicationMenu = tk.createDefaultApplicationMenu("cardr")
-        tk.setApplicationMenu(defaultApplicationMenu)
+        val appMenu = Menu("cardr")
+        val appMenuItem1 = MenuItem("Welcome to cardr!")
+        appMenu.items.add(appMenuItem1)
+        tk.setApplicationMenu(appMenu)
         tk.setGlobalMenuBar(generateMenuBar())
     }
 
     fun generateMenuBar(): MenuBar {
         val menuBar = MenuBar()
+
+        val emptyMacMenu = Menu("cardr")
+        val testEmptyMI = Menu("Welcome to cardr!")
+        emptyMacMenu.items.add(testEmptyMI)
 
         val accountMenu = Menu("Account")
         
@@ -242,6 +250,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         aboutMenu.items.add(SeparatorMenuItem())
         aboutMenu.items.add(creditsMI)
 
+        if (getOSType() == OS.MAC) { menuBar.menus.add(emptyMacMenu) }
         menuBar.menus.add(accountMenu)
         menuBar.menus.add(toolsMenu)
         menuBar.menus.add(settingsMenu)
