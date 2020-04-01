@@ -10,6 +10,8 @@ import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.WindowDimensions
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.core.ui.windows.WelcomeWindow
+import me.sohamgovande.cardr.util.OS
+import me.sohamgovande.cardr.util.getOSType
 import org.apache.logging.log4j.LogManager
 
 class CardrDesktop: Application() {
@@ -71,7 +73,12 @@ class CardrDesktop: Application() {
             if (IS_FIRST_LAUNCH && WAS_FIRST_LAUNCH_SUCCESSFUL) {
                 WelcomeWindow().show()
             }
-        } catch (e: Exception) {
+
+            if (getOSType() == OS.WINDOWS) {
+                logger.info("Generating mac menu bar")
+                ui!!.menubarHelper.applyMacMenubar()
+            }
+        } catch (e: Throwable) {
             logger.error("Error loading window", e)
         }
     }

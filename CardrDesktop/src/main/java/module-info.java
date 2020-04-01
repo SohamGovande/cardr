@@ -2,6 +2,7 @@ module CardrDesktop.main {
     requires javafx.web;
     requires javafx.controls;
     requires javafx.base;
+    requires javafx.fxml;
     requires java.desktop;
     requires java.base;
     requires java.sql;

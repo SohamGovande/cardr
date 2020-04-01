@@ -108,7 +108,7 @@ class CardrUI(private val stage: Stage) {
     var currentUser = CardrUser()
 
     private var reader: WebsiteCardCutter? = null
-    private val menubarHelper = MenubarHelper(this, stage)
+    val menubarHelper = MenubarHelper(this, stage)
 
     init {
         currentUser.onSuccessfulLogin = menubarHelper::onSuccessfulLogin
@@ -118,8 +118,10 @@ class CardrUI(private val stage: Stage) {
         stage.widthProperty().addListener { _, _, _ -> onWindowResized() }
         stage.heightProperty().addListener { _, _, _ -> onWindowResized() }
 
-        logger.info("Generating menu bar")
-        menubarHelper.apply(panel)
+        if (getOSType() == OS.WINDOWS) {
+            logger.info("Generating basic menu bar")
+            menubarHelper.applyBasicMenubar(panel)
+        }
 
         logger.info("Creating UI components")
         searchBarPanel.spacing = 5.0

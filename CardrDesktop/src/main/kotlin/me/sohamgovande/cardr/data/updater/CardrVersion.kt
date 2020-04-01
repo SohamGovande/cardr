@@ -9,6 +9,6 @@ data class CardrVersion(val name: String, val build: Int, val urlWindows: String
     }
 
     fun getInstallerName(): String {
-        return if (getOSType() == OS.MAC) "cardr-${name}.dmg" else "cardr-${name}.msi"
+        return if (getOSType() == OS.MAC) "cardr-${name}.pkg" else "cardr-${name}.msi"
     }
 }
