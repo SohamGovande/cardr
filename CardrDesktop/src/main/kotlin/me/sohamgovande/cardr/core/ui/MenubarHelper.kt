@@ -25,7 +25,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
     private val signInMI = MenuItem("Sign in...")
     
     fun onSuccessfulLogin() {
-        signInMI.text = "Log out..."
+        Platform.runLater { signInMI.text = "Log out..." }
     }
 
     fun apply(panel: VBox) {
