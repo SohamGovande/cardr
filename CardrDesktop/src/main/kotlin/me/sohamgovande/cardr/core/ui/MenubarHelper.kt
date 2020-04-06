@@ -187,7 +187,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             }
         }
 
-        val showParagraphBreaksMI = CheckMenuItem("Show paragraphs breaks")
+        val showParagraphBreaksMI = CheckMenuItem("Show paragraph breaks")
         showParagraphBreaksMI.isSelected = Prefs.get().showParagraphBreaks
         showParagraphBreaksMI.setOnAction {
             Prefs.get().showParagraphBreaks = showParagraphBreaksMI.isSelected
