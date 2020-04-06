@@ -141,7 +141,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             cardrUI.refreshHTML()
         }
 
-        val capitalizeAuthorsMI = CheckMenuItem("Capitalize authors' names")
+        val capitalizeAuthorsMI = CheckMenuItem("Make authors' names ALL CAPS")
         capitalizeAuthorsMI.isSelected = Prefs.get().capitalizeAuthors
         capitalizeAuthorsMI.setOnAction {
             Prefs.get().capitalizeAuthors = capitalizeAuthorsMI.isSelected
@@ -149,7 +149,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             cardrUI.refreshHTML()
         }
 
-        val useSlashMI = CheckMenuItem("Use / instead of - in dates")
+        val useSlashMI = CheckMenuItem("Use / instead of - as date separator")
         useSlashMI.isSelected = Prefs.get().useSlashInsteadOfDash
         useSlashMI.setOnAction {
             Prefs.get().useSlashInsteadOfDash = useSlashMI.isSelected
@@ -158,7 +158,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             cardrUI.refreshHTML()
         }
 
-        val endQualsWithCommaMI = CheckMenuItem("Automatically append \", \" to last author qualification")
+        val endQualsWithCommaMI = CheckMenuItem("Automatically add \", \" to last author qual")
         endQualsWithCommaMI.isSelected = Prefs.get().endQualsWithComma
         endQualsWithCommaMI.setOnAction {
             Prefs.get().endQualsWithComma = endQualsWithCommaMI.isSelected
@@ -195,6 +195,13 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             cardrUI.refreshHTML()
         }
 
+        val hidePlainPasteWarningMI = CheckMenuItem("Hide plaintext paste warning")
+        hidePlainPasteWarningMI.isSelected = Prefs.get().hidePastePlainTextDialog
+        hidePlainPasteWarningMI.setOnAction {
+            Prefs.get().hidePastePlainTextDialog = hidePlainPasteWarningMI.isSelected
+            Prefs.save()
+        }
+
         settingsMenu.items.add(formatMI)
         settingsMenu.items.add(wordPasteMI)
         settingsMenu.items.add(SeparatorMenuItem())
@@ -205,10 +212,11 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         settingsMenu.items.add(endQualsWithCommaMI)
         settingsMenu.items.add(capitalizeAuthorsMI)
         settingsMenu.items.add(useSlashMI)
+        settingsMenu.items.add(showParagraphBreaksMI)
 
         settingsMenu.items.add(SeparatorMenuItem())
         settingsMenu.items.add(darkModeMI)
-        settingsMenu.items.add(showParagraphBreaksMI)
+        settingsMenu.items.add(hidePlainPasteWarningMI)
 
         val aboutMenu = Menu("About")
 

@@ -658,7 +658,6 @@ class CardrUI(private val stage: Stage) {
             elem.attr("style", "$oldStyle${if (oldStyle.contains("font-size:11pt;")) { "line-height:20px;" } else { "" }}margin: 1px 0px 12px 0px; padding: 0px 0px 0px 0px;")
         }
         for (elem in doc.select("h4")) {
-            logger.info("h4 " + elem.attr("style"))
             elem.attr("style", "padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;")
         }
 
@@ -913,8 +912,14 @@ class CardrUI(private val stage: Stage) {
     }
 
     private fun showSendToWordAlert() {
-        if (Prefs.get().pastePlainText) {
-            showInfoDialogBlocking("Sent card to Verbatim.", "You currently have the PASTE PLAIN TEXT setting enabled, so you can currently ONLY send cards to Verbatim-enabled Word windows (NOT regular Word windows). If you would like to send cards to ALL word windows, go to 'Settings > Send to Word settings' and change the selected paste option to HTML.")
+        if (Prefs.get().pastePlainText && !Prefs.get().hidePastePlainTextDialog) {
+            showInfoDialogBlocking("Sent card to Verbatim.",
+                "You currently have the PASTE PLAIN TEXT setting enabled, so you can currently ONLY send cards to Verbatim-enabled Word windows (NOT regular Word windows). If you would like to send cards to ALL word windows, go to 'Settings > Send to Word settings' and change the selected paste option to HTML.",
+                "Never show this warning") {
+                Prefs.get().hidePastePlainTextDialog = true
+                Prefs.save()
+                showInfoDialogBlocking("Message will no longer be displayed.", "You can revert this setting under 'Settings > Hide plaintext paste warning'.")
+            }
         }
     }
 
