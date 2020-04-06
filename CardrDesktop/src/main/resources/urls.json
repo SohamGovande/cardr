@@ -18,5 +18,6 @@
     "macChromeJson": "http://cardr.x10.bz/data/mac/ChromeAppNativeJson-1.2.0.json",
     "macChromeApp": "http://cardr.x10.bz/data/mac/CardrChromeApp-1.2.0.zip",
     "getWordWindows": "http://cardr.x10.bz/data/mac/MacScripts/getWordWindows-1.2.0.scpt",
-    "selectWordWindow":"http://cardr.x10.bz/data/mac/MacScripts/selectWordWindow-1.2.0.scpt"
+    "selectWordWindow": "http://cardr.x10.bz/data/mac/MacScripts/selectWordWindow-1.2.0.scpt",
+    "pasteToWord": "http://cardr.x10.bz/data/mac/MacScripts/pasteToWord-1.2.0.scpt"
 }
