@@ -28,6 +28,7 @@ data class PrefsObject(val unused: Nothing?) {
 
     var hidePastePlainTextDialog = false
     var hideCopyDialog = false
+    var hideUpdateDialog = false
 
     var emailAddress = ""
     var accessToken = ""

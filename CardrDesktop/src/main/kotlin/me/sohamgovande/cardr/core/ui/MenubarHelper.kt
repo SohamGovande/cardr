@@ -26,6 +26,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
     private val signInMI = MenuItem("Sign in...")
     val hidePlainPasteWarningMI = CheckMenuItem("Hide plaintext paste dialog")
     val hideCopyPasteWarningMI = CheckMenuItem("Hide copy/paste dialog")
+    val hideUpdateWarningMI = CheckMenuItem("Hide update dialog")
 
     private val ctrlKeyMask: KeyCombination.Modifier 
         get() = if (getOSType() == OS.MAC) KeyCombination.META_DOWN else KeyCombination.CONTROL_DOWN
@@ -208,9 +209,15 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             Prefs.get().hideCopyDialog = hideCopyPasteWarningMI.isSelected
             Prefs.save()
         }
+        hideUpdateWarningMI.isSelected = Prefs.get().hideUpdateDialog
+        hideUpdateWarningMI.setOnAction {
+            Prefs.get().hideUpdateDialog = hideUpdateWarningMI.isSelected
+            Prefs.save()
+        }
         val messagesMenu = Menu("Messages")
         messagesMenu.items.add(hidePlainPasteWarningMI)
         messagesMenu.items.add(hideCopyPasteWarningMI)
+        messagesMenu.items.add(hideUpdateWarningMI)
 
         settingsMenu.items.add(formatMI)
         settingsMenu.items.add(wordPasteMI)

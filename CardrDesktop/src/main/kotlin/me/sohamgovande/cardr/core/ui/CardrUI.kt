@@ -408,7 +408,7 @@ class CardrUI(private val stage: Stage) {
     }
 
     private fun checkForUpdates() {
-        UpdateChecker().checkForUpdates()
+        UpdateChecker(this).checkForUpdates()
     }
 
     private fun checkLoginStatus() {
