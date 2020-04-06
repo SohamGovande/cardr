@@ -20,7 +20,13 @@ fun pasteObject(data: String, pasteMode: KeyboardPasteMode) {
         if (pasteMode == KeyboardPasteMode.NORMAL) {
             MacMSWordInteractor().pasteToWord()
         } else {
-            MacMSWordInteractor().pasteMatchToWord()
+            val r = Robot()
+            r.autoDelay = 0
+
+            copy(data)
+            r.keyPress(Prefs.get().pasteShortcut)
+            r.keyRelease(Prefs.get().pasteShortcut)
+            r.delay(500)
         }
         return
     } else {
