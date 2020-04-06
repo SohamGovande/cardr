@@ -49,11 +49,16 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
     fun generateMenuBar(): MenuBar {
         val menuBar = MenuBar()
 
-        val macApplicationMenu = MenuToolkit.toolkit().createDefaultApplicationMenu("cardr")
-
+        val macApplicationMenu: Menu
+        if (getOSType() == OS.MAC) {
+            val tk = MenuToolkit.toolkit()
+            macApplicationMenu = Menu("cardr", null, tk.createHideMenuItem("cardr"), tk.createHideOthersMenuItem(),
+                    tk.createUnhideAllMenuItem(), SeparatorMenuItem(), tk.createQuitMenuItem("cardr"))
+        } else {
+            macApplicationMenu = Menu()
+        }
         val accountMenu = Menu("Account")
-
-
+        
         signInMI.setOnAction {
             Prefs.get().encryptedPassword = ""
             Prefs.get().emailAddress = ""
