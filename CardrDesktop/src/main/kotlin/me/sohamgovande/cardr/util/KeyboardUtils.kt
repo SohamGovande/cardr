@@ -1,6 +1,7 @@
 package me.sohamgovande.cardr.util
 
 import me.sohamgovande.cardr.data.prefs.Prefs
+import me.sohamgovande.cardr.platformspecific.MacMSWordInteractor
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.event.KeyEvent
@@ -14,18 +15,29 @@ private fun copy(str: String) {
 }
 
 fun pasteObject(data: String, pasteMode: KeyboardPasteMode) {
-    val r = Robot()
-    r.autoDelay = 0
+    if (getOSType() == OS.MAC) {
+        copy(data)
+        if (pasteMode == KeyboardPasteMode.NORMAL) {
+            MacMSWordInteractor().pasteToWord()
+        } else {
+            MacMSWordInteractor().pasteMatchToWord()
+        }
+        return
+    } else {
+        val r = Robot()
+        r.autoDelay = 0
 
-    copy(data)
-    if (pasteMode == KeyboardPasteMode.NORMAL) {
-        r.keyPress(KeyEvent.VK_CONTROL)
-        r.keyPress(KeyEvent.VK_V)
-        r.keyRelease(KeyEvent.VK_V)
-        r.keyRelease(KeyEvent.VK_CONTROL)
-    } else if (pasteMode == KeyboardPasteMode.PLAIN_TEXT) {
-        r.keyPress(Prefs.get().pasteShortcut)
-        r.keyRelease(Prefs.get().pasteShortcut)
+        copy(data)
+        if (pasteMode == KeyboardPasteMode.NORMAL) {
+            val ctrlKey = KeyEvent.VK_CONTROL
+            r.keyPress(ctrlKey)
+            r.keyPress(KeyEvent.VK_V)
+            r.keyRelease(KeyEvent.VK_V)
+            r.keyRelease(ctrlKey)
+        } else if (pasteMode == KeyboardPasteMode.PLAIN_TEXT) {
+            r.keyPress(Prefs.get().pasteShortcut)
+            r.keyRelease(Prefs.get().pasteShortcut)
+        }
+        r.delay(500)
     }
-    r.delay(500)
 }
