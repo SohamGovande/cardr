@@ -256,7 +256,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         versionMI.setOnAction { showInfoDialogBlocking("Cardr is running version ${CardrDesktop.CURRENT_VERSION}.", "") }
         val helpMI = MenuItem("Help & FAQs")
         helpMI.setOnAction { UrlHelper.browse("faq") }
-        val logMI = MenuItem("Open Log File")
+        val logMI = MenuItem("Open Log")
         logMI.setOnAction { Desktop.getDesktop().browse(Paths.get(System.getProperty("cardr.data.dir"), "CardrDesktopLog.txt").toFile().toURI()) }
         val sendToDeveloperMI = MenuItem("Send Log to Developer")
         sendToDeveloperMI.setOnAction {
