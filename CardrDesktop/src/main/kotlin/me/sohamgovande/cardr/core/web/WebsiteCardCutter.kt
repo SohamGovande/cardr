@@ -214,7 +214,7 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
                 .distinct()
                 .toTypedArray()
         } else if (getPublication() == "The Diplomat") {
-            return doc.select(".td-author strong")
+            return doc.select(".td-author strong, .td-author a[itemprop=author]")
                 .map { authorMatcher.evaluateString("By " + it.text())?.value ?: arrayOf(getAuthorFromName(it.text())) }
                 .flatMap { it.asIterable() }
                 .distinct()
