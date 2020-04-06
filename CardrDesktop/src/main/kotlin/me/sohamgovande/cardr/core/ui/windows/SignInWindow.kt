@@ -17,6 +17,8 @@ import me.sohamgovande.cardr.core.auth.CardrUser
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.encryption.EncryptionHelper
 import me.sohamgovande.cardr.data.urls.UrlHelper
+import me.sohamgovande.cardr.util.OS
+import me.sohamgovande.cardr.util.getOSType
 import org.apache.logging.log4j.LogManager
 import java.awt.Desktop
 import java.lang.Exception
@@ -119,6 +121,9 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         passwordTF.promptText = "Password"
         passwordTF.prefColumnCount = 60
 
+        if (getOSType() == OS.MAC) {
+            passwordTF.font = Font.font(8.0)
+        }
         passwordTF.setOnKeyPressed {
             if (it.code == KeyCode.ENTER) {
                 continueBtn.fire()
