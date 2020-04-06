@@ -91,14 +91,18 @@ private fun onFirstLaunchMacOS() {
 
     val getWordWindowsScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "getWordWindows.scpt")
     val selectWordWindowScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "selectWordWindow.scpt")
+    val pasteToWordScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "pasteToWord.scpt")
 
     downloadFileFromURL(UrlHelper.get("getWordWindows"), getWordWindowsScriptPath.toFile(), logger)
     downloadFileFromURL(UrlHelper.get("selectWordWindow"), selectWordWindowScriptPath.toFile(), logger)
+    downloadFileFromURL(UrlHelper.get("pasteToWord"), pasteToWordScriptPath.toFile(), logger)
 
     if (!selectWordWindowScriptPath.toFile().exists())
         throw FirstLaunchException("Unable to download AppleScript 'selectWordWindow'.")
     if (!getWordWindowsScriptPath.toFile().exists())
         throw FirstLaunchException("Unable to download AppleScript 'getWordWindows'.")
+    if (!pasteToWordScriptPath.toFile().exists())
+        throw FirstLaunchException("Unable to download AppleScript 'pasteToWord'.")
 }
 
 fun onFirstLaunch(): Exception? {
@@ -125,8 +129,10 @@ fun updateFrom(from: Int, to: Int): Exception? {
     }
     if (from < 3 && to >= 3) {
         logger.info("Updating CardrChromeApp")
+        val prefs = Prefs.get()
         if (getOSType() == OS.MAC) {
             downloadChromeDataMacOS()
+            prefs.cardFormat = prefs.cardFormat.replace("Helvetica", PrefsObject.MAC_CALIBRI_FONT)
         } else {
             downloadChromeDataWindows()
         }
