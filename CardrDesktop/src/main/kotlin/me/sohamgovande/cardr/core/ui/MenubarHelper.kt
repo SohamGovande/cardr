@@ -52,7 +52,8 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         val macApplicationMenu = MenuToolkit.toolkit().createDefaultApplicationMenu("cardr")
 
         val accountMenu = Menu("Account")
-        
+
+
         signInMI.setOnAction {
             Prefs.get().encryptedPassword = ""
             Prefs.get().emailAddress = ""
