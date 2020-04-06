@@ -24,16 +24,18 @@ import java.util.function.Consumer
 class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
     private val signInMI = MenuItem("Sign in...")
-    
+    private val ctrlKeyMask: KeyCombination.Modifier 
+        get() = if (getOSType() == OS.MAC) KeyCombination.META_DOWN else KeyCombination.CONTROL_DOWN
+
     fun onSuccessfulLogin() {
         Platform.runLater { signInMI.text = "Log out..." }
     }
 
-    fun applyBasicMenubar(panel: VBox) {
+    fun applyDefaultMenu(panel: VBox) {
         panel.children.add(VBox(generateMenuBar()))
     }
 
-    fun applyMacMenubar() {
+    fun applyMacMenu() {
         val tk = MenuToolkit.toolkit()
         val appMenu = Menu("cardr")
         val appMenuItem1 = MenuItem("Welcome to cardr!")
@@ -46,7 +48,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         val menuBar = MenuBar()
 
         val emptyMacMenu = Menu("cardr")
-        val testEmptyMI = Menu("Welcome to cardr!")
+        val testEmptyMI = MenuItem("Welcome to cardr!")
         emptyMacMenu.items.add(testEmptyMI)
 
         val accountMenu = Menu("Account")
@@ -61,7 +63,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             signInWindow.show()
         }
         val historyMI = MenuItem("Card History")
-        historyMI.accelerator = KeyCodeCombination(KeyCode.H, KeyCombination.CONTROL_DOWN)
+        historyMI.accelerator = KeyCodeCombination(KeyCode.H, ctrlKeyMask)
         historyMI.setOnAction {
             HistoryWindow().show()
         }
@@ -72,24 +74,24 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
         val toolsMenu = Menu("Tools")
         val copyMI = MenuItem("Copy card")
-        copyMI.accelerator = KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
+        copyMI.accelerator = KeyCodeCombination(KeyCode.C, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
         copyMI.setOnAction { cardrUI.copyCardToClipboard() }
 
 
         val refreshWordMI  = MenuItem("Refresh Word windows")
-        refreshWordMI.accelerator = KeyCodeCombination(KeyCode.R, KeyCombination.CONTROL_DOWN)
+        refreshWordMI.accelerator = KeyCodeCombination(KeyCode.R, ctrlKeyMask)
         refreshWordMI.setOnAction { cardrUI.refreshWordWindows() }
 
         val sendMI = MenuItem("Send to Word")
-        sendMI.accelerator = KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN)
+        sendMI.accelerator = KeyCodeCombination(KeyCode.S, ctrlKeyMask)
         sendMI.setOnAction { cardrUI.sendCardToVerbatim() }
 
         val removeSelectedMI = MenuItem("Remove Selected Text")
-        removeSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN, KeyCombination.SHIFT_DOWN)
+        removeSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
         removeSelectedMI.setOnAction { cardrUI.removeSelectedText() }
 
         val keepSelectedMI = MenuItem("Remove Except for Selected Text")
-        keepSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, KeyCombination.CONTROL_DOWN, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN)
+        keepSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, ctrlKeyMask, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN)
         keepSelectedMI.setOnAction { cardrUI.keepOnlySelectedText() }
 
         toolsMenu.items.add(copyMI)
