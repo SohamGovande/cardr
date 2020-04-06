@@ -12,11 +12,9 @@ import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.windows.*
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.urls.UrlHelper
-import me.sohamgovande.cardr.util.OS
-import me.sohamgovande.cardr.util.currentDate
-import me.sohamgovande.cardr.util.getOSType
-import me.sohamgovande.cardr.util.showInfoDialogBlocking
+import me.sohamgovande.cardr.util.*
 import java.awt.Desktop
+import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.function.Consumer
 
@@ -260,6 +258,11 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         helpMI.setOnAction { UrlHelper.browse("faq") }
         val logMI = MenuItem("Open Log File")
         logMI.setOnAction { Desktop.getDesktop().browse(Paths.get(System.getProperty("cardr.data.dir"), "CardrDesktopLog.txt").toFile().toURI()) }
+        val sendToDeveloperMI = MenuItem("Send Log to Developer")
+        sendToDeveloperMI.setOnAction {
+            val log = Files.readString(Paths.get(System.getProperty("cardr.data.dir"), "CardrDesktopLog.txt"))
+            sendToDeveloper(log, "Cardr Log")
+        }
 
         aboutMenu.items.add(donateMI)
 
@@ -273,6 +276,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         aboutMenu.items.add(helpMI)
         aboutMenu.items.add(versionMI)
         aboutMenu.items.add(logMI)
+        aboutMenu.items.add(sendToDeveloperMI)
 
         aboutMenu.items.add(SeparatorMenuItem())
         aboutMenu.items.add(creditsMI)

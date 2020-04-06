@@ -65,10 +65,10 @@ private fun urlEncode(str: String): String {
     }
 }
 
-private fun sendLog(msg: String) {
+fun sendToDeveloper(msg: String, emailSubject: String) {
     val desktop = Desktop.getDesktop()
     val message = "mailto:sohamthedeveloper@gmail.com?" +
-        "subject=${urlEncode("Cardr Error")}" +
+        "subject=${urlEncode(emailSubject)}" +
         "&body=${urlEncode(msg)}"
     val uri = URI.create(message)
     desktop.mail(uri)
@@ -90,7 +90,7 @@ fun showErrorDialog(e: Exception) {
         e.printStackTrace(writer)
         writer.close()
 
-        sendLog(baos.toString())
+        sendToDeveloper(baos.toString(), "Cardr Error")
     }
     if (result.isPresent && result.get() == continueBT) {
         forceClose = false
