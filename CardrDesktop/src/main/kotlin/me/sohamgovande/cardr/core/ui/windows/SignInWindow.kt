@@ -117,16 +117,20 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         gp.padding = Insets(10.0)
 
         emailTF.promptText = "Email"
-        emailTF.prefColumnCount = 60
+        emailTF.prefColumnCount = 20
         passwordTF.promptText = "Password"
-        passwordTF.prefColumnCount = 60
+        passwordTF.prefColumnCount = 20
 
-        if (getOSType() == OS.MAC) {
-            passwordTF.font = Font.font(8.0)
-        }
         passwordTF.setOnKeyPressed {
             if (it.code == KeyCode.ENTER) {
                 continueBtn.fire()
+            }
+            if (getOSType() == OS.MAC) {
+                if (passwordTF.text.isNotEmpty()) {
+                    passwordTF.font = Font.font(8.0)
+                } else {
+                    passwordTF.font = Font.getDefault()
+                }
             }
         }
 
@@ -174,6 +178,12 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         val scene = Scene(vbox, 300.0, 220.0)
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
+
+        Platform.runLater {
+            val height = passwordTF.height
+            passwordTF.prefHeight = height
+            passwordTF.minHeight = height
+        }
         return scene
     }
 
