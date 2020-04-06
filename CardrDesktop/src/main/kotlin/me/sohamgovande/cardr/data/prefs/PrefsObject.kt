@@ -27,6 +27,7 @@ data class PrefsObject(val unused: Nothing?) {
     var pasteShortcut = KeyEvent.VK_F2
 
     var hidePastePlainTextDialog = false
+    var hideCopyDialog = false
 
     var emailAddress = ""
     var accessToken = ""

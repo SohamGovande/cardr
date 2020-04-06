@@ -24,6 +24,9 @@ import java.util.function.Consumer
 class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
     private val signInMI = MenuItem("Sign in...")
+    val hidePlainPasteWarningMI = CheckMenuItem("Hide plaintext paste dialog")
+    val hideCopyPasteWarningMI = CheckMenuItem("Hide copy/paste dialog")
+
     private val ctrlKeyMask: KeyCombination.Modifier 
         get() = if (getOSType() == OS.MAC) KeyCombination.META_DOWN else KeyCombination.CONTROL_DOWN
 
@@ -195,12 +198,19 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             cardrUI.refreshHTML()
         }
 
-        val hidePlainPasteWarningMI = CheckMenuItem("Hide plaintext paste warning")
         hidePlainPasteWarningMI.isSelected = Prefs.get().hidePastePlainTextDialog
         hidePlainPasteWarningMI.setOnAction {
             Prefs.get().hidePastePlainTextDialog = hidePlainPasteWarningMI.isSelected
             Prefs.save()
         }
+        hideCopyPasteWarningMI.isSelected = Prefs.get().hideCopyDialog
+        hideCopyPasteWarningMI.setOnAction {
+            Prefs.get().hideCopyDialog = hideCopyPasteWarningMI.isSelected
+            Prefs.save()
+        }
+        val messagesMenu = Menu("Messages")
+        messagesMenu.items.add(hidePlainPasteWarningMI)
+        messagesMenu.items.add(hideCopyPasteWarningMI)
 
         settingsMenu.items.add(formatMI)
         settingsMenu.items.add(wordPasteMI)
@@ -216,7 +226,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
         settingsMenu.items.add(SeparatorMenuItem())
         settingsMenu.items.add(darkModeMI)
-        settingsMenu.items.add(hidePlainPasteWarningMI)
+        settingsMenu.items.add(messagesMenu)
 
         val aboutMenu = Menu("About")
 

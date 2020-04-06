@@ -909,6 +909,17 @@ class CardrUI(private val stage: Stage) {
                 ),
                 null
             )
+
+        if (!Prefs.get().hideCopyDialog) {
+            showInfoDialogBlocking("Copied card to clipboard.",
+                "To paste this into a Word document or a Google Doc, use the default Ctrl/Cmd + V. Do NOT use 'Paste without Formatting' (F2 on Verbatim).",
+                "Never show this message") {
+                Prefs.get().hideCopyDialog = true
+                menubarHelper.hideCopyPasteWarningMI.isSelected = true
+                Prefs.save()
+                showInfoDialogBlocking("Message will no longer be displayed.", "You can revert this setting under 'Settings > Messages > Hide copy/paste dialog'.")
+            }
+        }
     }
 
     private fun showSendToWordAlert() {
@@ -917,8 +928,9 @@ class CardrUI(private val stage: Stage) {
                 "You currently have the PASTE PLAIN TEXT setting enabled, so you can currently ONLY send cards to Verbatim-enabled Word windows (NOT regular Word windows). If you would like to send cards to ALL word windows, go to 'Settings > Send to Word settings' and change the selected paste option to HTML.",
                 "Never show this warning") {
                 Prefs.get().hidePastePlainTextDialog = true
+                menubarHelper.hidePlainPasteWarningMI.isSelected = true
                 Prefs.save()
-                showInfoDialogBlocking("Message will no longer be displayed.", "You can revert this setting under 'Settings > Hide plaintext paste warning'.")
+                showInfoDialogBlocking("Message will no longer be displayed.", "You can revert this setting under 'Settings > Messages > Hide plaintext paste dialog'.")
             }
         }
     }
