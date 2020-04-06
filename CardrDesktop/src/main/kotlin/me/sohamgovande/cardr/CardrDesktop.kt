@@ -76,7 +76,7 @@ class CardrDesktop: Application() {
 
             if (getOSType() == OS.WINDOWS) {
                 logger.info("Generating mac menu bar")
-                ui!!.menubarHelper.applyMacMenubar()
+                ui!!.menubarHelper.applyMacMenu()
             }
         } catch (e: Throwable) {
             logger.error("Error loading window", e)
