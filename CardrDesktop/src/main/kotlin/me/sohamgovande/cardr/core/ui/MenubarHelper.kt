@@ -49,9 +49,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
     fun generateMenuBar(): MenuBar {
         val menuBar = MenuBar()
 
-        val emptyMacMenu = Menu("cardr")
-        val testEmptyMI = MenuItem("Welcome to cardr!")
-        emptyMacMenu.items.add(testEmptyMI)
+        val macApplicationMenu = MenuToolkit.toolkit().createDefaultApplicationMenu("cardr")
 
         val accountMenu = Menu("Account")
         
@@ -281,7 +279,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         aboutMenu.items.add(SeparatorMenuItem())
         aboutMenu.items.add(creditsMI)
 
-        if (getOSType() == OS.MAC) { menuBar.menus.add(emptyMacMenu) }
+        if (getOSType() == OS.MAC) { menuBar.menus.add(macApplicationMenu) }
         menuBar.menus.add(accountMenu)
         menuBar.menus.add(toolsMenu)
         menuBar.menus.add(settingsMenu)
