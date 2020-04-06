@@ -129,7 +129,7 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
         vbox.children.add(btnHbox)
         vbox.children.add(applyBtn)
 
-        val scene = Scene(vbox, 600.0, 400.0)
+        val scene = Scene(vbox, 600.0, 500.0)
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
