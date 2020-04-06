@@ -10,7 +10,6 @@ class MacMSWordInteractor {
     private val getWordWindowsFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "getWordWindows.scpt").toFile()
     private val selectWordWindowFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "selectWordWindow.scpt").toFile()
     private val pasteToWordFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "pasteToWord.scpt").toFile()
-    private val pasteMatchToWordFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "pasteMatchToWord.scpt").toFile()
 
     /**
      * Use this API
@@ -26,12 +25,6 @@ class MacMSWordInteractor {
         val cmd = "osascript ${pasteToWordFile.canonicalPath}"
         executeCommandBlocking(cmd, logger, true)
     }
-
-    fun pasteMatchToWord() {
-        val cmd = "osascript ${pasteMatchToWordFile.canonicalPath}"
-        executeCommandBlocking(cmd, logger, true)
-    }
-
 
     /**
      * @see getValidWordWindows
