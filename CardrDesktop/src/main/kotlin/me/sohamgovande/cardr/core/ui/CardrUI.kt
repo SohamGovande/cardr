@@ -119,8 +119,8 @@ class CardrUI(private val stage: Stage) {
         stage.heightProperty().addListener { _, _, _ -> onWindowResized() }
 
         if (getOSType() == OS.WINDOWS) {
-            logger.info("Generating basic menu bar")
-            menubarHelper.applyBasicMenubar(panel)
+            logger.info("Generating default menu bar")
+            menubarHelper.applyDefaultMenu(panel)
         }
 
         logger.info("Creating UI components")
@@ -551,7 +551,7 @@ class CardrUI(private val stage: Stage) {
 
         for (font in fontElements) {
             var parent = font.parent()
-            while (!parent.tagName().equals("p") && !parent.tagName().equals("b") && !parent.tagName().matches(Regex("h."))) {
+            while (parent.tagName() != "p" && parent.tagName() != "b" && !parent.tagName().matches(Regex("h."))) {
                 parent = parent.parent()
             }
             var style = ""
@@ -561,7 +561,7 @@ class CardrUI(private val stage: Stage) {
                  font.attr("size", "3") // 12pt font
             style += "font-size:${fontMap[font.attr("size")]}pt;"
             font.tagName("span")
-            font.attr("style",style)
+            font.attr("style", style)
             font.removeAttr("face")
             font.removeAttr("size")
         }
@@ -587,12 +587,13 @@ class CardrUI(private val stage: Stage) {
             )
         }
 
-        doc.select("head")[0].html("""
+        if (!forCopy) {
+            doc.select("head")[0].html("""
             <style>
-                body { font-family: 'System'; font-size: 11pt;
+                body { font-family: 'Arial'; font-size: 11pt;
                 ${if (Prefs.get().darkMode && !forCopy) {
-                    "background-color: #373e43; color: #ffffff;"
-                } else "background-color: #f4f4f4;"}
+                "background-color: #373e43; color: #ffffff;"
+            } else "background-color: #f4f4f4;"}
             </style> 
             <script>
                 function getSelectionTextCustom() {
@@ -650,18 +651,20 @@ class CardrUI(private val stage: Stage) {
                 }
             </script>
         """.trimIndent())
+        }
 
         for (elem in doc.select("p")) {
             val oldStyle = elem.parent().attr("style")
             elem.attr("style", "$oldStyle${if (oldStyle.contains("font-size:11pt;")) { "line-height:20px;" } else { "" }}margin: 1px 0px 12px 0px; padding: 0px 0px 0px 0px;")
         }
         for (elem in doc.select("h4")) {
+            logger.info("h4 " + elem.attr("style"))
             elem.attr("style", "padding: 0px 0px 0px 0px; margin: 0px 0px 0px 0px;")
         }
 
         var docHtml = doc.html().replace(spacePlaceholder, "&nbsp;")
         if (switchFont && getOSType() == OS.MAC) {
-            docHtml = docHtml.replace("font-family:'${PrefsObject.MAC_CALIBRI_FONT}';", "")
+            docHtml = docHtml.replace("font-family:'${PrefsObject.MAC_CALIBRI_FONT}';", "font-family:'Calibri';")
         }
 
         if (Prefs.get().showParagraphBreaks && forCopy)
@@ -909,6 +912,12 @@ class CardrUI(private val stage: Stage) {
             )
     }
 
+    private fun showSendToWordAlert() {
+        if (Prefs.get().pastePlainText) {
+            showInfoDialogBlocking("Sent card to Verbatim.", "You currently have the PASTE PLAIN TEXT setting enabled, so you can currently ONLY send cards to Verbatim-enabled Word windows (NOT regular Word windows). If you would like to send cards to ALL word windows, go to 'Settings > Send to Word settings' and change the selected paste option to HTML.")
+        }
+    }
+
     fun sendCardToVerbatim() {
         if (reader == null)
             return
@@ -919,11 +928,13 @@ class CardrUI(private val stage: Stage) {
         if (getOSType() == OS.WINDOWS){
             val msWord = WinMSWordInteractor()
             if (wordWindowList.items.size > 0) {
+                showSendToWordAlert()
                 msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
             }
         } else if (getOSType() == OS.MAC){
             val msWord = MacMSWordInteractor()
             if (wordWindowList.items.size > 0) {
+                showSendToWordAlert()
                 msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
             }
         }
@@ -940,7 +951,6 @@ class CardrUI(private val stage: Stage) {
 
             pasteObject(beforeBody, KeyboardPasteMode.NORMAL)
             pasteObject(body, KeyboardPasteMode.PLAIN_TEXT)
-            println(body)
             if (afterBody != "</span></p>\n </body>\n</html>")
                 pasteObject(afterBody, KeyboardPasteMode.NORMAL)
         } else {
