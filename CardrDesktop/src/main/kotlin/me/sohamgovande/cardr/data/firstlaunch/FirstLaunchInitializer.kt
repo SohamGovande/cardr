@@ -37,6 +37,7 @@ private fun downloadChromeDataMacOS() {
     val jsonPath = Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Google", "Chrome", "NativeMessagingHosts", "me.sohamgovande.cardr.json")
     if (!jsonPath.parent.parent.toFile().exists())
         throw FirstLaunchException("No Google Chrome installation detected")
+    jsonPath.toFile().mkdirs()
 
     val executablePath = Paths.get(System.getProperty("cardr.data.dir"), "CardrChromeApp")
     val executableZipPath = Paths.get(System.getProperty("cardr.data.dir"), "CardrChromeApp.zip")
