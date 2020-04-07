@@ -13,6 +13,7 @@ class UpdateExecutor(private val version: CardrVersion) {
     var messageHandler = { _: String -> Unit }
     var onClose = { Unit }
 
+    @Throws(Exception::class)
     fun update() {
         val installerPath = getInstallerFilePath()
 

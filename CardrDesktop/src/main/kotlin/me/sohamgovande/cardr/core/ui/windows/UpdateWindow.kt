@@ -14,6 +14,7 @@ import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.data.updater.UpdateExecutor
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.updater.CardrVersion
+import me.sohamgovande.cardr.util.showErrorDialog
 
 
 class UpdateWindow(private val version: CardrVersion) : ModalWindow("Updater") {
@@ -24,7 +25,11 @@ class UpdateWindow(private val version: CardrVersion) : ModalWindow("Updater") {
     private val updateBtn = Button("Update Now")
     private val updater = UpdateExecutor(version)
     private val updaterThread = Thread {
-        updater.update()
+        try {
+            updater.update()
+        } catch (e: Exception) {
+            Platform.runLater { showErrorDialog(e) }
+        }
     }
 
     override fun close(event: WindowEvent?) {
