@@ -20,7 +20,7 @@ function openCardr(urlStr, selectedText, html) {
     function(response) {
       if (response == undefined) {
         alert("No cardr installation detected. Please visit http://cardr.x10.bz/get-started.html to download the desktop client and begin researching! It'll only take a minute :) Click 'OK' to download it.");
-        chrome.tabs.create({ 'url': "http://cardr.x10.bz/download.html" });
+        chrome.tabs.create({ 'url': "http://cardr.x10.bz/get-started.html" });
       } else {
         console.log("Received response " + JSON.stringify(response))
       }
