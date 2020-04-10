@@ -271,7 +271,7 @@ class CardrUI(private val stage: Stage) {
         return null
     }
 
-    private fun visitURL(url: String) {
+    fun visitURL(url: String) {
         Thread {
             currentUser.visitWebsite(url)
         }.start()
@@ -739,6 +739,7 @@ class CardrUI(private val stage: Stage) {
 
         Platform.runLater {
             this.urlTF.text = reader.getURL()
+            visitUrl(reader.getURL())
             this.authors = reader.getAuthors() ?: this.authors
             this.timestamp = reader.getDate()
             this.publisher = SimpleStringProperty(reader.getPublication())

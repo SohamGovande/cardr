@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "cardr: the next-gen debate evidence collector",
   "short_name": "cardr",
-  "version": "1.2.0",
+  "version": "1.2.1",
 
   "description": "An advanced, next-gen evidence collector for debate research.",
   "icons": {

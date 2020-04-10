@@ -32,7 +32,10 @@ chrome.browserAction.onClicked.addListener(function(tab) {
   chrome.tabs.executeScript( {
     code: "window.getSelection().toString();"
   }, function(selection) {
-    var selectedText = selection[0];
+    var selectedText = '';
+    if (selection != undefined) {
+      selectedText = selection[0];
+    }
 
     chrome.tabs.executeScript({code: "document.all[0].outerHTML;"}, function(dom) {
       var html = dom[0];
