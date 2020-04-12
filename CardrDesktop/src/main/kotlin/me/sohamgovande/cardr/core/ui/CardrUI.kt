@@ -739,7 +739,7 @@ class CardrUI(private val stage: Stage) {
 
         Platform.runLater {
             this.urlTF.text = reader.getURL()
-            visitUrl(reader.getURL())
+            visitURL(reader.getURL())
             this.authors = reader.getAuthors() ?: this.authors
             this.timestamp = reader.getDate()
             this.publisher = SimpleStringProperty(reader.getPublication())
