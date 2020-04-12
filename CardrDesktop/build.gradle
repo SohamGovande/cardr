@@ -16,15 +16,6 @@ repositories {
     mavenCentral()
 }
 
-task exportToRelease {
-    if (Os.isFamily(Os.FAMILY_WINDOWS)) {
-        copy {
-            from 'build/libs/Cardr-' + version + '.jar'
-            into "C:\\Users\\vgsoh\\Cardr"
-        }
-    }
-}
-
 idea {
     module { inheritOutputDirs = true }
 }
