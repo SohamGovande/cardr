@@ -251,8 +251,6 @@ class CardrUI(private val stage: Stage) {
 
         cardTag.addListener { _, _, title -> updateWindowTitle(title) }
 
-        logger.info("Initializing Word windows")
-        refreshWordWindows()
         return panel
     }
 
@@ -409,6 +407,8 @@ class CardrUI(private val stage: Stage) {
 
     private fun checkForUpdates() {
         UpdateChecker(this).checkForUpdates()
+        logger.info("Initializing Word windows")
+        refreshWordWindows()
     }
 
     private fun checkLoginStatus() {
