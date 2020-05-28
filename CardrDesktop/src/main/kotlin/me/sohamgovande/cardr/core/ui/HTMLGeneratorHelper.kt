@@ -41,7 +41,6 @@ class HTMLGeneratorHelper {
             style += "font-family:'${font.attr("face")}';"
 
         style += "font-size:$fontSize;"
-
         font.tagName("span")
         font.attr("style", style + font.attr("style"))
 
@@ -61,18 +60,23 @@ class HTMLGeneratorHelper {
 
         var fontSize = "3"
         var fontSizeIsInt = true
+        val largeFontSizeReplacements = mutableListOf<Element>()
 
         for (elem in elemTree) {
-            val style = elem.attr("style")
+            var style = elem.attr("style")
             if (style.contains("text-decoration: line-through")) {
-                elem.attr("style", style.replace("text-decoration: line-through", ""))
+                style = style.replace("text-decoration: line-through", "")
+                elem.attr("style", style)
                 useNormalMap = true
             }
-            if (elem.hasAttr("style") && elem.attr("style").contains("font-size")) {
+            if (elem.hasAttr("style") && style.contains("font-size")) {
                 val matchResult = Regex("font-size: ([a-zA-Z0-9]+);").find(elem.attr("style"))
                 if (matchResult != null) {
                     fontSize = matchResult.groups[1]!!.value
                     fontSizeIsInt = false
+                    if (fontSize == "large") {
+                        largeFontSizeReplacements.add(elem)
+                    }
                 }
             } else if (elem.hasAttr("size")) {
                 fontSize = elem.attr("size")
@@ -81,6 +85,10 @@ class HTMLGeneratorHelper {
         val fontMap = if (useNormalMap) fontMapNormal else fontMapPreferred
         if (fontSizeIsInt || fontSize == "large")
             fontSize = fontMap[fontSize] + "pt"
+
+        for (elem in largeFontSizeReplacements) {
+            elem.attr("style", elem.attr("style").replace("font-size: large;", "font-size: ${fontMap["large"]}pt;"))
+        }
         return Pair(fontSize, fontMap)
     }
 }
