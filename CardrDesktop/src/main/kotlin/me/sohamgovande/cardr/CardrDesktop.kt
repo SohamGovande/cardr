@@ -66,9 +66,8 @@ class CardrDesktop: Application() {
                 Prefs.get().windowDimensions = WindowDimensions(stage)
                 Prefs.save()
                 stage.sizeToScene()
-            } else {
-                ui!!.onWindowResized()
             }
+            ui!!.onWindowResized()
 
             if (IS_FIRST_LAUNCH && WAS_FIRST_LAUNCH_SUCCESSFUL) {
                 WelcomeWindow().show()
