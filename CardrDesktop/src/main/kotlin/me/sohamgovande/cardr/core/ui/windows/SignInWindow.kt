@@ -9,6 +9,7 @@ import javafx.scene.control.Alert.AlertType
 import javafx.scene.image.Image
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.GridPane
+import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
@@ -81,6 +82,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
                     super.window.close()
                 } else {
                     val alert = Alert(AlertType.ERROR)
+                    alert.dialogPane.minHeight = Region.USE_PREF_SIZE
                     alert.title = "Error"
                     alert.headerText = "Login error: ${result.reason}"
                     alert.contentText = "An error occurred while logging in. \n\n" +

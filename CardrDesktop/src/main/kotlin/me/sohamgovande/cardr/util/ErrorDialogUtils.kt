@@ -4,6 +4,7 @@ import javafx.application.Platform
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
+import javafx.scene.layout.Region
 import java.awt.Desktop
 import java.io.ByteArrayOutputStream
 import java.io.PrintWriter
@@ -18,6 +19,7 @@ fun showErrorDialog(brief: String, full: String) {
         alert.title = "Error"
         alert.headerText = brief
         alert.contentText = full
+        alert.dialogPane.minHeight = Region.USE_PREF_SIZE
         alert.showAndWait()
     }
 }
@@ -33,6 +35,7 @@ fun showInfoDialogBlocking(brief: String, full: String) {
     alert.title = "Message"
     alert.headerText = brief
     alert.contentText = full
+    alert.dialogPane.minHeight = Region.USE_PREF_SIZE
     alert.showAndWait()
 }
 
@@ -41,10 +44,10 @@ fun showInfoDialogBlocking(brief: String, full: String, primaryOption: String, a
     val exitBT = ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE)
 
     val alert = Alert(Alert.AlertType.INFORMATION, "", primaryBT, exitBT)
-
     alert.title = "Message"
     alert.headerText = brief
     alert.contentText = full
+    alert.dialogPane.minHeight = Region.USE_PREF_SIZE
     val result = alert.showAndWait()
     if (result.isPresent && result.get() == primaryBT) {
         action()
@@ -82,6 +85,7 @@ fun showErrorDialog(e: Exception) {
     val alert = Alert(Alert.AlertType.ERROR, "", sendBT, continueBT, exitBT)
     alert.headerText = "Uh-oh! There was an error."
     alert.contentText = "We encountered an unknown error of type ${e.javaClass.simpleName}: ${e.message}. We apologize for the inconvenience. Please kindly select \"Send Log File\" to share the error log with the developers so that they can fix the bug or help you out. We apologize for the inconvenience."
+    alert.dialogPane.minHeight = Region.USE_PREF_SIZE
     val result = alert.showAndWait()
     var forceClose = true
     if (result.isPresent && result.get() == sendBT) {

@@ -7,6 +7,8 @@ import javafx.application.Platform
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
+import javafx.scene.control.PopupControl.USE_PREF_SIZE
+import javafx.scene.layout.Region
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.windows.UpdateWindow
@@ -30,6 +32,7 @@ class UpdateChecker(private val ui: CardrUI) {
         alert.title = "Update cardr"
         alert.headerText = "A new version of cardr is available!"
         alert.contentText = "Version ${version.name} has new features, bug fixes, and security updates. Would you like to download it?"
+        alert.dialogPane.minHeight = Region.USE_PREF_SIZE
 
         val result = alert.showAndWait()
         if (result.isPresent && result.get() == updateBT) {
