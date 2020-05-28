@@ -63,7 +63,6 @@ class HTMLGeneratorHelper {
         var fontSizeIsInt = true
 
         for (elem in elemTree) {
-            println(elem.tagName())
             val style = elem.attr("style")
             if (style.contains("text-decoration: line-through")) {
                 elem.attr("style", style.replace("text-decoration: line-through", ""))
@@ -79,7 +78,6 @@ class HTMLGeneratorHelper {
                 fontSize = elem.attr("size")
             }
         }
-        println("---")
         val fontMap = if (useNormalMap) fontMapNormal else fontMapPreferred
         if (fontSizeIsInt || fontSize == "large")
             fontSize = fontMap[fontSize] + "pt"

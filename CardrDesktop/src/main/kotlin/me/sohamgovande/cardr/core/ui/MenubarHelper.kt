@@ -37,6 +37,10 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         panel.children.add(VBox(generateMenuBar()))
     }
 
+    private fun reopenMenu(settingsMenu: Menu) {
+        Thread { Platform.runLater { settingsMenu.show() } }.start()
+    }
+
     fun applyMacMenu() {
         val tk = MenuToolkit.toolkit()
         val appMenu = Menu("cardr")
@@ -129,6 +133,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             Prefs.get().condense = condenseMI.isSelected
             Prefs.save()
             cardrUI.refreshHTML()
+            reopenMenu(settingsMenu)
         }
 
         val useSmallDatesMI = CheckMenuItem("Use MM-DD for ${currentDate().year}")
@@ -137,6 +142,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             Prefs.get().onlyCardYear = !useSmallDatesMI.isSelected
             Prefs.save()
             cardrUI.refreshHTML()
+            reopenMenu(settingsMenu)
         }
 
         val useEtAlMI = CheckMenuItem("Use 'et al.' for >2 authors")
@@ -145,6 +151,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             Prefs.get().useEtAl = useEtAlMI.isSelected
             Prefs.save()
             cardrUI.refreshHTML()
+            reopenMenu(settingsMenu)
         }
 
         val capitalizeAuthorsMI = CheckMenuItem("Make authors' names ALL CAPS")
@@ -153,6 +160,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             Prefs.get().capitalizeAuthors = capitalizeAuthorsMI.isSelected
             Prefs.save()
             cardrUI.refreshHTML()
+            reopenMenu(settingsMenu)
         }
 
         val useSlashMI = CheckMenuItem("Use / instead of - as date separator")
@@ -162,6 +170,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             Prefs.save()
             cardrUI.loadDateSeparatorLabels()
             cardrUI.refreshHTML()
+            reopenMenu(settingsMenu)
         }
 
         val endQualsWithCommaMI = CheckMenuItem("Automatically add \", \" to last author qual")
@@ -170,6 +179,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             Prefs.get().endQualsWithComma = endQualsWithCommaMI.isSelected
             Prefs.save()
             cardrUI.refreshHTML()
+            reopenMenu(settingsMenu)
         }
 
         val darkModeMI = CheckMenuItem("Night mode")
@@ -190,6 +200,8 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
                 alert.headerText = "Please restart cardr for the changes to take effect."
                 alert.contentText = "Upon restart, your theme changes will be applied."
                 alert.showAndWait()
+            } else {
+                reopenMenu(settingsMenu)
             }
         }
 
@@ -199,24 +211,31 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             Prefs.get().showParagraphBreaks = showParagraphBreaksMI.isSelected
             Prefs.save()
             cardrUI.refreshHTML()
+            reopenMenu(settingsMenu)
         }
 
+        val messagesMenu = Menu("Messages")
         hidePlainPasteWarningMI.isSelected = Prefs.get().hidePastePlainTextDialog
         hidePlainPasteWarningMI.setOnAction {
             Prefs.get().hidePastePlainTextDialog = hidePlainPasteWarningMI.isSelected
             Prefs.save()
+            reopenMenu(settingsMenu)
+            reopenMenu(messagesMenu)
         }
         hideCopyPasteWarningMI.isSelected = Prefs.get().hideCopyDialog
         hideCopyPasteWarningMI.setOnAction {
             Prefs.get().hideCopyDialog = hideCopyPasteWarningMI.isSelected
             Prefs.save()
+            reopenMenu(settingsMenu)
+            reopenMenu(messagesMenu)
         }
         hideUpdateWarningMI.isSelected = Prefs.get().hideUpdateDialog
         hideUpdateWarningMI.setOnAction {
             Prefs.get().hideUpdateDialog = hideUpdateWarningMI.isSelected
             Prefs.save()
+            reopenMenu(settingsMenu)
+            reopenMenu(messagesMenu)
         }
-        val messagesMenu = Menu("Messages")
         messagesMenu.items.add(hidePlainPasteWarningMI)
         messagesMenu.items.add(hideCopyPasteWarningMI)
         messagesMenu.items.add(hideUpdateWarningMI)
