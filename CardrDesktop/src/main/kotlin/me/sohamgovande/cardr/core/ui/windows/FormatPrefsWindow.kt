@@ -46,7 +46,7 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
         val header = Label("Card and Cite Formatting Settings")
         header.font = Font.font(20.0)
 
-        val subheader = Label("NOTE: The 12 pt font translates to 11 pt in Word/Google Docs, and 14 pt translates to 13 pt. On macOS, Helvetica translates to Calibri in Word/Google Docs. All other font families and sizes work as expected.")
+        val subheader = Label("NOTE: The 12 pt font translates to 11 pt in Word/Google Docs, and 14 pt translates to 13 pt. On macOS, Arial translates to Calibri in Word/Google Docs. All other font families and sizes work as expected.")
         subheader.isWrapText = true
 
         val resetBtn = Button("Reset to Default")
