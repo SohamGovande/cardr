@@ -24,7 +24,8 @@ class SendToWordSettingsWindow : ModalWindow("Settings - Send to Word") {
     override fun close(event: WindowEvent?) {
         if (!forcedClose) {
             Prefs.get().pastePlainText = plainTextRB.isSelected
-            Prefs.get().pasteShortcut = pasteShortcutKeyCB.selectionModel.selectedIndex + KeyEvent.VK_F1
+            val offset = pasteShortcutKeyCB.selectionModel.selectedIndex
+            Prefs.get().pasteShortcut = if (offset == -1) KeyEvent.VK_F2 else offset + KeyEvent.VK_F1
             Prefs.save()
         }
         super.close(event)
@@ -102,8 +103,8 @@ class SendToWordSettingsWindow : ModalWindow("Settings - Send to Word") {
         vbox.children.add(header)
         vbox.children.add(subheader)
         vbox.children.add(details)
-        vbox.children.add(plainTextRB)
         vbox.children.add(htmlTextRB)
+        vbox.children.add(plainTextRB)
         vbox.children.add(keyHbox)
         vbox.children.add(saveBtn)
 

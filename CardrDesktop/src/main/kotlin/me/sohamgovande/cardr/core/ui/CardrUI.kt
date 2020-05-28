@@ -922,16 +922,15 @@ class CardrUI(private val stage: Stage) {
         if (wordWindowList.items.size == 0)
             refreshWordWindows()
 
+        showSendToWordAlert()
         if (getOSType() == OS.WINDOWS){
             val msWord = WinMSWordInteractor()
             if (wordWindowList.items.size > 0) {
-                showSendToWordAlert()
                 msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
             }
         } else if (getOSType() == OS.MAC){
             val msWord = MacMSWordInteractor()
             if (wordWindowList.items.size > 0) {
-                showSendToWordAlert()
                 msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
             }
         }
