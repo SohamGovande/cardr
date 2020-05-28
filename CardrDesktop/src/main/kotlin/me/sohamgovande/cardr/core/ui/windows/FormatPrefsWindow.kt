@@ -8,6 +8,8 @@ import javafx.scene.image.Image
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
+import javafx.scene.text.Text
+import javafx.scene.text.TextFlow
 import javafx.scene.web.HTMLEditor
 import javafx.stage.WindowEvent
 import me.sohamgovande.cardr.data.prefs.Prefs
@@ -38,6 +40,19 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
         editText.prefWidth = window.width
     }
 
+    private fun generateFontSizeNote(): TextFlow {
+        val text0 = Text("Font Size: ")
+        val text1 = Text("If you select font sizes 12pt or 14pt, they will be automatically converted into 11pt and 13pt, respectively, when the card is transferred to Word or Google Docs. To override this and continue using 12pt and 14pt font sizes, please ")
+        val text2 = Text("STRIKETHROUGH")
+        val text3 = Text(" all 12pt and 14pt text that you wish should keep its given font size.\n")
+        val text4 = Text("Font Family: ")
+        val text5 = Text("On macOS, in the editor window, please use Arial instead of Calibri. Arial will automatically convert to Calibri when pasting to Word or Google Docs.")
+        text0.style = "-fx-font-weight: bold;"
+        text2.isStrikethrough = true
+        text4.style = "-fx-font-weight: bold;"
+        return TextFlow(text0, text1, text2, text3, text4, text5)
+    }
+
     override fun generateUI(): Scene {
         val vbox = VBox()
         vbox.padding = Insets(10.0)
@@ -46,8 +61,10 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
         val header = Label("Card and Cite Formatting Settings")
         header.font = Font.font(20.0)
 
-        val subheader = Label("NOTE: The 12 pt font translates to 11 pt in Word/Google Docs, and 14 pt translates to 13 pt. On macOS, Arial translates to Calibri in Word/Google Docs. All other font families and sizes work as expected.")
-        subheader.isWrapText = true
+        val subheader = Label("A Quick Note on Fonts")
+        subheader.font = Font.font(15.0)
+        subheader.style = "-fx-font-weight: bold;"
+        val note = generateFontSizeNote()
 
         val resetBtn = Button("Reset to Default")
         val infoBtn = Button("Macro List")
@@ -125,11 +142,12 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
 
         vbox.children.add(header)
         vbox.children.add(subheader)
+        vbox.children.add(note)
         vbox.children.add(editHBox)
         vbox.children.add(btnHbox)
         vbox.children.add(applyBtn)
 
-        val scene = Scene(vbox, 600.0, 500.0)
+        val scene = Scene(vbox, 650.0, 500.0)
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene

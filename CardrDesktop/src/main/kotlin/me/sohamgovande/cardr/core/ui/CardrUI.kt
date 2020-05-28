@@ -533,41 +533,16 @@ class CardrUI(private val stage: Stage) {
 
         val now = currentDate()
         val fontElements = doc.select("font")
-        val fontMap = mapOf(
-            Pair("1","8"),
-            Pair("2","10"),
-            Pair("3","11"),
-            Pair("4","13"),
-            Pair("5","18"),
-            Pair("6","24"),
-            Pair("7","36")
-        )
+        val helper = HTMLGeneratorHelper()
 
-        for (elem in doc.select("span")) {
-            if (elem.hasAttr("style") && !elem.attr("style").contains("font-size")) {
-                elem.attr("style","${elem.attr("style")}font-size:${fontMap["3"]}pt;")
-            }
-        }
+        for (font in fontElements)
+            helper.applyFontSizeToFontElem(font)
 
-        for (font in fontElements) {
-            var parent = font.parent()
-            while (parent.tagName() != "p" && parent.tagName() != "b" && !parent.tagName().matches(Regex("h."))) {
-                parent = parent.parent()
-            }
-            var style = ""
-            if (font.hasAttr("face"))
-                style += "font-family:'${font.attr("face")}';"
-            if (!font.hasAttr("size"))
-                 font.attr("size", "3") // 12pt font
-            style += "font-size:${fontMap[font.attr("size")]}pt;"
-            font.tagName("span")
-            font.attr("style", style)
-            font.removeAttr("face")
-            font.removeAttr("size")
-        }
+        for (span in doc.select("span, b, i, u, li, ul, ol"))
+            helper.applyFontSizeToSpanElem(span)
 
         for (elem in doc.allElements) {
-            if (elem.children().size > 0 && elem.ownText().length == 0)
+            if (elem.children().size > 0 && elem.ownText().isEmpty())
                 continue
             val cardBody = cardBodyReplacement ?: getCardBodyHTML(cardBody.get(), true)
             elem.html(
