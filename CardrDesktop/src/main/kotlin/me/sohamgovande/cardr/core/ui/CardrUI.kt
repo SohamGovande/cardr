@@ -781,12 +781,12 @@ class CardrUI(private val stage: Stage) {
     fun refreshWordWindows() {
         val windows: List<String>
 
-        if (getOSType() == OS.WINDOWS){
-            windows = WinMSWordInteractor().getValidWordWindows()
+        windows = if (getOSType() == OS.WINDOWS){
+            WinMSWordInteractor().getValidWordWindows()
         } else if (getOSType() == OS.MAC){
-            windows = MacMSWordInteractor().getValidWordWindows()
+            MacMSWordInteractor().getValidWordWindows()
         } else {
-            windows = emptyList()
+            emptyList()
         }
         Platform.runLater {
             wordWindowList.items = FXCollections.observableList(windows)
