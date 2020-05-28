@@ -28,7 +28,7 @@ class CardrDesktop: Application() {
         this.stage = stage
         try {
             logger.info("Launched Cardr")
-            stage.title = "cardr ${CURRENT_VERSION}"
+            stage.title = "cardr $CURRENT_VERSION"
             stage.isResizable = true
             stage.width = WIDTH
             stage.height = HEIGHT
@@ -86,8 +86,8 @@ class CardrDesktop: Application() {
         const val WIDTH = 835.0
         const val HEIGHT = 600.0
 
-        const val CURRENT_VERSION = "v1.2.1"
-        const val CURRENT_VERSION_INT = 4
+        const val CURRENT_VERSION = "v1.3"
+        const val CURRENT_VERSION_INT = 5
         var IS_FIRST_LAUNCH = false
         var WAS_FIRST_LAUNCH_SUCCESSFUL = false
         val OVERRIDE_LOGIN_CHECK = false
