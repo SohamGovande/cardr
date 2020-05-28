@@ -14,6 +14,7 @@ import javafx.scene.input.KeyCode
 import javafx.scene.layout.*
 import javafx.scene.text.TextAlignment
 import javafx.scene.web.WebView
+import javafx.stage.FileChooser
 import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.auth.CardrUser
@@ -21,21 +22,24 @@ import me.sohamgovande.cardr.core.card.Author
 import me.sohamgovande.cardr.core.card.AuthorNameFormat
 import me.sohamgovande.cardr.core.card.Cite
 import me.sohamgovande.cardr.core.card.Timestamp
-import me.sohamgovande.cardr.platformspecific.WinMSWordInteractor
-import me.sohamgovande.cardr.platformspecific.MacMSWordInteractor
+import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
+import me.sohamgovande.cardr.core.ui.windows.SignInLauncherOptions
+import me.sohamgovande.cardr.core.ui.windows.SignInWindow
+import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.prefs.PrefsObject
-import me.sohamgovande.cardr.core.ui.windows.*
-import me.sohamgovande.cardr.util.*
-import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import me.sohamgovande.cardr.data.updater.UpdateChecker
+import me.sohamgovande.cardr.platformspecific.MacMSWordInteractor
+import me.sohamgovande.cardr.platformspecific.WinMSWordInteractor
+import me.sohamgovande.cardr.util.*
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import java.awt.Desktop
 import java.awt.Toolkit
 import java.io.InputStream
-import java.lang.NullPointerException
 import java.net.URL
+import java.nio.file.Paths
+
 
 class CardrUI(private val stage: Stage) {
 
@@ -208,6 +212,7 @@ class CardrUI(private val stage: Stage) {
         exportToWordHBox.add(refreshBtn, 0, 0)
         exportToWordHBox.add(wordWindowList, 1, 0)
         exportToWordSettings.children.add(exportToWordHBox)
+        wordWindowList.selectionModel.selectedIndexProperty().addListener(this::onSelectedWordWindowChanged)
 
         cardWV.prefWidth = CardrDesktop.WIDTH - 300
         cardWV.prefHeight = CardrDesktop.HEIGHT - 100
@@ -789,10 +794,57 @@ class CardrUI(private val stage: Stage) {
             emptyList()
         }
         Platform.runLater {
-            wordWindowList.items = FXCollections.observableList(windows)
-            if (!wordWindowList.items.isEmpty()) {
-                wordWindowList.selectionModel.select(0)
+            if (!windows.isEmpty()) {
+                wordWindowList.items = FXCollections.observableList(windows)
+                if (hasWordWindows())
+                    wordWindowList.selectionModel.select(0)
+            } else {
+                initNoWordWindows()
             }
+        }
+    }
+
+    fun hasWordWindows(): Boolean {
+        return !wordWindowList.items[0].equals("No windows open")
+    }
+
+    fun initNoWordWindows() {
+        wordWindowList.items = FXCollections.observableList(listOf(
+            "No windows open",
+            "Create new doc...",
+            "Open doc..."
+        ))
+        wordWindowList.selectionModel.select(0)
+    }
+
+    @Suppress("UNUSED_PARAMETER")
+    fun onSelectedWordWindowChanged(observable: ObservableValue<out Number>, oldValue: Number, newValue: Number) {
+        val option = wordWindowList.items[newValue.toInt()]
+        if (option == "Create new doc...") {
+            val file = Paths.get("C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\WINWORD.EXE").toFile()
+            if (!file.exists())
+                showErrorDialog("Unable to launch Word", "No file found at ${file.canonicalPath}")
+            else
+                Desktop.getDesktop().open(file)
+            wordWindowList.selectionModel.select(0)
+
+            Thread {
+                Thread.sleep(4000)
+                Platform.runLater { refreshWordWindows() }
+            }.start()
+        } else if (option == "Open doc...") {
+            val fileChooser = FileChooser()
+            fileChooser.title = "Open Word document..."
+            fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Word documents", "*.docx","*.docm","*.dotx","*.dotm","*.docb","*.doc","*.dot"))
+            val selectedFile = fileChooser.showOpenDialog(stage)
+            wordWindowList.selectionModel.select(0)
+            if (selectedFile != null)
+                Desktop.getDesktop().open(selectedFile)
+
+            Thread {
+                Thread.sleep(4000)
+                Platform.runLater { refreshWordWindows() }
+            }.start()
         }
     }
 
