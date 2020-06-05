@@ -1028,7 +1028,7 @@ class CardrUI(private val stage: Stage) {
                     Prefs.get().hidePastePlainTextDialog = true
                     menubarHelper.hidePlainPasteWarningMI.isSelected = true
                     Prefs.save()
-                    showInfoDialogBlocking("Message will no longer be displayed.", "You can revert this setting under 'Settings > Messages > Hide plaintext paste dialog'.")
+                    showInfoDialogBlocking("Message will no longer be displayed.", "You can revert this setting under 'Settings > Messages > Hide highlight/underline dialog'.")
                 }
             }
         }
