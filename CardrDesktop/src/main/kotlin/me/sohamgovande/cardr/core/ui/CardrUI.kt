@@ -819,6 +819,8 @@ class CardrUI(private val stage: Stage) {
 
     @Suppress("UNUSED_PARAMETER")
     fun onSelectedWordWindowChanged(observable: ObservableValue<out Number>, oldValue: Number, newValue: Number) {
+        if (newValue.toInt() < 0 || newValue.toInt() >= wordWindowList.items.size)
+            return
         val option = wordWindowList.items[newValue.toInt()]
         if (option == "Create new doc...") {
             // TODO fix for mac
