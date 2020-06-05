@@ -90,9 +90,10 @@ class CardrDesktop: Application() {
         const val CURRENT_VERSION_INT = 5
         var IS_FIRST_LAUNCH = false
         var WAS_FIRST_LAUNCH_SUCCESSFUL = false
-        val OVERRIDE_LOGIN_CHECK = false
+
+        const val OVERRIDE_LOGIN_CHECK = false
         const val RELEASE_MODE = true
-        const val FORCE_AUTOUPDATE = false
+        const val FORCE_AUTO_UPDATE = false
 
         var instance: CardrDesktop? = null
 

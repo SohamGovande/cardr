@@ -7,7 +7,6 @@ import javafx.application.Platform
 import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
-import javafx.scene.control.PopupControl.USE_PREF_SIZE
 import javafx.scene.layout.Region
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.CardrUI
@@ -63,7 +62,7 @@ class UpdateChecker(private val ui: CardrUI) {
                 return
             }
 
-            if (latestVersion.build > CardrDesktop.CURRENT_VERSION_INT || CardrDesktop.FORCE_AUTOUPDATE) {
+            if (latestVersion.build > CardrDesktop.CURRENT_VERSION_INT || CardrDesktop.FORCE_AUTO_UPDATE) {
                 logger.info("Latest version is ${latestVersion} - needs to update!")
 
                 Platform.runLater { showUpdateDialog(latestVersion) }
