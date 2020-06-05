@@ -23,6 +23,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
     private val signInMI = MenuItem("Sign in...")
     val hidePlainPasteWarningMI = CheckMenuItem("Hide plaintext paste dialog")
+    val hideFormattingWarningMI = CheckMenuItem("Hide highlight/underline dialog")
     val hideCopyPasteWarningMI = CheckMenuItem("Hide copy/paste dialog")
     val hideUpdateWarningMI = CheckMenuItem("Hide update dialog")
     val removeSelectedMI = MenuItem("Remove Selected Text")
@@ -125,6 +126,11 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         val wordPasteMI = MenuItem("Send to Word settings...")
         wordPasteMI.setOnAction {
             SendToWordSettingsWindow().show()
+        }
+
+        val highlightUnderlineMI = MenuItem("Highlight & underline settings...")
+        highlightUnderlineMI.setOnAction {
+            MarkupCardSettingsWindow().show()
         }
 
         val condenseMI = CheckMenuItem("Condense paragraphs")
@@ -236,12 +242,20 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             reopenMenu(settingsMenu)
             reopenMenu(messagesMenu)
         }
+        hideFormattingWarningMI.isSelected = Prefs.get().hideFormattingDialog
+        hideFormattingWarningMI.setOnAction {
+            Prefs.get().hideFormattingDialog = hideFormattingWarningMI.isSelected
+            Prefs.save()
+            reopenMenu(settingsMenu)
+            reopenMenu(messagesMenu)
+        }
         messagesMenu.items.add(hidePlainPasteWarningMI)
         messagesMenu.items.add(hideCopyPasteWarningMI)
         messagesMenu.items.add(hideUpdateWarningMI)
 
         settingsMenu.items.add(formatMI)
         settingsMenu.items.add(wordPasteMI)
+        settingsMenu.items.add(highlightUnderlineMI)
         settingsMenu.items.add(SeparatorMenuItem())
 
         settingsMenu.items.add(condenseMI)

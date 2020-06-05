@@ -1018,7 +1018,19 @@ class CardrUI(private val stage: Stage) {
 
             disableCardBodyEditOptions()
             overrideCardBody = innerBody.html()
+
             refreshHTML()
+
+            if (!Prefs.get().hideFormattingDialog) {
+                showInfoDialogBlocking("Applied highlighting & underlining changes.",
+                    "While using Cardr, highlighting/underlining will be the last step in your card editing. After highlighting/underlining a card, you can no longer add or remove text to the card BODY (you can still change the header). If you wish to reset this, use the \"Restore to Original\" tool.",
+                    "Never show this warning") {
+                    Prefs.get().hidePastePlainTextDialog = true
+                    menubarHelper.hidePlainPasteWarningMI.isSelected = true
+                    Prefs.save()
+                    showInfoDialogBlocking("Message will no longer be displayed.", "You can revert this setting under 'Settings > Messages > Hide plaintext paste dialog'.")
+                }
+            }
         }
         window.show()
     }

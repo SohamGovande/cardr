@@ -28,6 +28,7 @@ data class PrefsObject(
     var hidePastePlainTextDialog: Boolean = false,
     var hideCopyDialog: Boolean = false,
     var hideUpdateDialog: Boolean = false,
+    var hideFormattingDialog: Boolean = false,
 
     var emailAddress: String = "",
     var accessToken: String = "",
