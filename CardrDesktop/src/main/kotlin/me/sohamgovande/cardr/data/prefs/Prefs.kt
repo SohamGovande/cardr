@@ -21,7 +21,7 @@ object Prefs {
 
     private val path = Paths.get(System.getProperty("cardr.data.dir"), "CardrSettings.json")
     private val gson = GsonBuilder().setPrettyPrinting().setLenient().create()
-    private var prefs = PrefsObject(null)
+    private var prefs = PrefsObject()
     private val logger = LogManager.getLogger(Prefs::class.java)
 
     init {
