@@ -21,7 +21,7 @@ class MarkupCardSettingsWindow : ModalWindow("Highlight & Underline Settings") {
         vbox.padding = Insets(10.0)
         vbox.spacing = 10.0
 
-        val header = Label("Shortcuts & Colors")
+        val header = Label("Highlight & Underline")
         header.font = Font.font(20.0)
 
         val doneBtn = Button("Done")

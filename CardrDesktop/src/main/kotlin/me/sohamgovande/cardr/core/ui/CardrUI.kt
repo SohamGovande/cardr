@@ -12,6 +12,7 @@ import javafx.scene.image.Image
 import javafx.scene.image.ImageView
 import javafx.scene.input.KeyCode
 import javafx.scene.layout.*
+import javafx.scene.text.Font
 import javafx.scene.text.TextAlignment
 import javafx.scene.web.WebView
 import javafx.stage.FileChooser
@@ -69,6 +70,7 @@ class CardrUI(private val stage: Stage) {
     val urlTF = TextField()
 
     private val cardWV = WebView()
+    val statusBar = Label()
 
     private var lastUI: GridPane? = null
     private val pGrid = GridPane()
@@ -113,7 +115,7 @@ class CardrUI(private val stage: Stage) {
     private var reader: WebsiteCardCutter? = null
     val menubarHelper = MenubarHelper(this, stage)
 
-    private var overrideCardBody: String? = null
+    var overrideCardBody: String? = null
 
     init {
         currentUser.onSuccessfulLogin = menubarHelper::onSuccessfulLogin
@@ -225,6 +227,8 @@ class CardrUI(private val stage: Stage) {
         cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
         cardDisplayMenu.spacing = 5.0
 
+        statusBar.font = Font.font(10.0)
+
         loadMenuIcons()
         loadDateSeparatorLabels()
 
@@ -242,6 +246,7 @@ class CardrUI(private val stage: Stage) {
 
         cardDisplayArea.children.add(cardDisplayMenu)
         cardDisplayArea.children.add(cardWV)
+        cardDisplayArea.children.add(statusBar)
 
         pGridScrollPane = ScrollPane(pGrid)
         pGridScrollPane.prefViewportWidth = 300.0
@@ -292,6 +297,7 @@ class CardrUI(private val stage: Stage) {
                     enableCardBodyEditOptions()
                     removeWords.clear()
                     removeParagraphs.clear()
+                    statusBar.text = ""
 
                     this.authors = reader.getAuthors() ?: this.authors
                     this.timestamp = reader.getDate()
@@ -328,6 +334,7 @@ class CardrUI(private val stage: Stage) {
             removeParagraphs.clear()
             overrideCardBody = null
             enableCardBodyEditOptions()
+            statusBar.text = ""
 
             refreshHTML()
             val alert = Alert(Alert.AlertType.INFORMATION)
@@ -1031,6 +1038,10 @@ class CardrUI(private val stage: Stage) {
                     showInfoDialogBlocking("Message will no longer be displayed.", "You can revert this setting under 'Settings > Messages > Hide highlight/underline dialog'.")
                 }
             }
+
+            if (Prefs.get().pastePlainText) {
+                statusBar.text = "Because of highlighting/underlining, plaintext paste will be overridden with HTML paste for this card."
+            }
         }
         window.show()
     }
@@ -1069,7 +1080,7 @@ class CardrUI(private val stage: Stage) {
             }
         }
 
-        if (Prefs.get().pastePlainText) {
+        if (Prefs.get().pastePlainText && overrideCardBody == null) {
             val cardBodyReplacement = "safd7asdyfkjahnw3k5nsd"
             val cardHtml = generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = cardBodyReplacement)
             val cardBodyIndex = cardHtml.indexOf(cardBodyReplacement)

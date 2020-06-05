@@ -125,7 +125,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
         val wordPasteMI = MenuItem("Send to Word settings...")
         wordPasteMI.setOnAction {
-            SendToWordSettingsWindow().show()
+            SendToWordSettingsWindow(cardrUI).show()
         }
 
         val highlightUnderlineMI = MenuItem("Highlight & underline settings...")
