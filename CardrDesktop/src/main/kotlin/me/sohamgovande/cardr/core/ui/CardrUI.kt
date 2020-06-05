@@ -143,6 +143,7 @@ class CardrUI(private val stage: Stage) {
         pGrid.hgap = 10.0
         pGrid.vgap = 10.0
         pGrid.minWidth = 300.0
+        pGrid.maxWidth = 325.0
         pGrid.prefHeight = CardrDesktop.HEIGHT - 100 // Take up the rest remaining space
 
         bindToRefreshWebView(propertyUrlTextField)
@@ -245,8 +246,9 @@ class CardrUI(private val stage: Stage) {
         cardDisplayArea.children.add(cardWV)
 
         pGridScrollPane = ScrollPane(pGrid)
+        pGridScrollPane.prefViewportWidth = 300.0
         pGridScrollPane.vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
-        pGridScrollPane.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
+        pGridScrollPane.hbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
         pGridScrollPane.style = "-fx-background-color:transparent;"
         bodyAreaPanel.children.add(pGridScrollPane)
         bodyAreaPanel.children.add(cardDisplayArea)
