@@ -825,7 +825,6 @@ class CardrUI(private val stage: Stage) {
             return
         val option = wordWindowList.items[newValue.toInt()]
         if (option == "Create new doc...") {
-            // TODO fix for mac
             if (getOSType() == OS.WINDOWS) {
                 val file = Paths.get("C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\WINWORD.EXE").toFile()
                 if (!file.exists())
