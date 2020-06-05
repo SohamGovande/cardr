@@ -34,6 +34,8 @@ data class PrefsObject(val unused: Nothing?) {
     var accessToken = ""
     var encryptedPassword = ""
 
+    var openHistoryWithinCardr = true
+
     var windowDimensions = WindowDimensions(-1024.1024, 0.0, 0.0, 0.0, false)
 
     fun getStylesheet(): String {

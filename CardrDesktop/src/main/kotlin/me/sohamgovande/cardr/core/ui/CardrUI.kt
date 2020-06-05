@@ -65,7 +65,7 @@ class CardrUI(private val stage: Stage) {
 
     private val propertyTitleTextField = TextField()
     private val cardTagTextField = TextField()
-    private val urlTF = TextField()
+    val urlTF = TextField()
 
     private val cardWV = WebView()
 
@@ -77,7 +77,7 @@ class CardrUI(private val stage: Stage) {
 
     private val panel = VBox()
     private val searchBarPanel = HBox()
-    private val gotoUrlButton = Button("GO")
+    val gotoUrlButton = Button("GO")
     private val bodyAreaPanel = HBox()
 
     var slashLabelText = "  _  "

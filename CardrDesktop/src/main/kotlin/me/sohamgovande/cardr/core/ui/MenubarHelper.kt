@@ -75,7 +75,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         val historyMI = MenuItem("Card History")
         historyMI.accelerator = KeyCodeCombination(KeyCode.H, ctrlKeyMask)
         historyMI.setOnAction {
-            HistoryWindow().show()
+            HistoryWindow(cardrUI).show()
         }
 
         accountMenu.items.add(signInMI)
