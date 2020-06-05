@@ -4,43 +4,48 @@ import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.WindowDimensions
 import java.awt.event.KeyEvent
 
-data class PrefsObject(val unused: Nothing?) {
+data class PrefsObject(
+    var lastUsedVersion: String = CardrDesktop.CURRENT_VERSION,
+    var lastUsedVersionInt: Int = CardrDesktop.CURRENT_VERSION_INT,
 
-    var lastUsedVersion = CardrDesktop.CURRENT_VERSION
-    var lastUsedVersionInt = CardrDesktop.CURRENT_VERSION_INT
+    var lastFirstLaunchVersion: Int = -1,
 
-    var lastFirstLaunchVersion = -1
+    var cardFormat: String = DEFAULT_CARD_FORMAT,
+    var onlyCardYear: Boolean = true,
+    var condense: Boolean = false,
+    var useEtAl: Boolean = true,
+    var capitalizeAuthors: Boolean = false,
+    var endQualsWithComma: Boolean = true,
 
-    var cardFormat = DEFAULT_CARD_FORMAT
-    var onlyCardYear = true
-    var condense = false
-    var useEtAl = true
-    var capitalizeAuthors = false
-    var endQualsWithComma = true
+    var showParagraphBreaks: Boolean = false,
+    var darkMode: Boolean = false,
 
-    var showParagraphBreaks = false
-    var darkMode = false
+    var useSlashInsteadOfDash: Boolean = false,
 
-    var useSlashInsteadOfDash = false
+    var pastePlainText: Boolean = true,
+    var pasteShortcut: Int = KeyEvent.VK_F2,
 
-    var pastePlainText = true
-    var pasteShortcut = KeyEvent.VK_F2
+    var hidePastePlainTextDialog: Boolean = false,
+    var hideCopyDialog: Boolean = false,
+    var hideUpdateDialog: Boolean = false,
 
-    var hidePastePlainTextDialog = false
-    var hideCopyDialog = false
-    var hideUpdateDialog = false
+    var emailAddress: String = "",
+    var accessToken: String = "",
+    var encryptedPassword: String = "",
 
-    var emailAddress = ""
-    var accessToken = ""
-    var encryptedPassword = ""
+    var openHistoryWithinCardr: Boolean = true,
 
-    var openHistoryWithinCardr = true
+    var underlineShortcut: Int = KeyEvent.VK_F9,
+    var emphasizeShortcut: Int = KeyEvent.VK_F10,
+    var boldShortcut: Int = KeyEvent.VK_F8,
+    var highlightShortcut: Int = KeyEvent.VK_F11,
+    var unhighlightShortcut: Int = KeyEvent.VK_F12,
+    var highlightColor: String = "#ffff00",
 
-    var windowDimensions = WindowDimensions(-1024.1024, 0.0, 0.0, 0.0, false)
+    var windowDimensions: WindowDimensions = WindowDimensions(-1024.1024, 0.0, 0.0, 0.0, false)
+) {
 
-    fun getStylesheet(): String {
-        return if (darkMode) "/styles-dark.css" else "/styles.css"
-    }
+    fun getStylesheet(): String = if (darkMode) "/styles-dark.css" else "/styles.css"
 
     companion object {
         const val MAC_CALIBRI_FONT = "Arial"
