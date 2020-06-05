@@ -10,6 +10,7 @@ module CardrDesktop.main {
     requires java.scripting;
     requires org.jsoup;
     requires org.apache.commons.codec;
+    requires org.apache.commons.text;
     requires kotlin.stdlib;
     requires zip4j;
     requires commons.exec;

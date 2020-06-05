@@ -821,9 +821,10 @@ class CardrUI(private val stage: Stage) {
     fun onSelectedWordWindowChanged(observable: ObservableValue<out Number>, oldValue: Number, newValue: Number) {
         val option = wordWindowList.items[newValue.toInt()]
         if (option == "Create new doc...") {
+            // TODO fix for mac
             val file = Paths.get("C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\WINWORD.EXE").toFile()
             if (!file.exists())
-                showErrorDialog("Unable to launch Word", "No file found at ${file.canonicalPath}")
+                showErrorDialog("Unable to launch Word", "No file found at ${file.canonicalPath}.")
             else
                 Desktop.getDesktop().open(file)
             wordWindowList.selectionModel.select(0)

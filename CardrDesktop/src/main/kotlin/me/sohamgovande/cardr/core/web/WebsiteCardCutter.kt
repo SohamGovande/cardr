@@ -8,6 +8,7 @@ import me.sohamgovande.cardr.core.card.Author
 import me.sohamgovande.cardr.core.card.Timestamp
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.util.*
+import org.apache.commons.text.StringEscapeUtils
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -282,6 +283,16 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
     }
 
     fun getAuthors(): Array<Author>? {
+        val authors: Array<Author> = getRawAuthors() ?: return null
+        for (author in authors) {
+            unescapeHTML(author.firstName)
+            unescapeHTML(author.lastName)
+            unescapeHTML(author.qualifications)
+        }
+        return authors
+    }
+
+    fun getRawAuthors(): Array<Author>? {
         val publicationSpecificAuthor = getPublicationSpecificAuthors()
         if (publicationSpecificAuthor != null)
             return publicationSpecificAuthor
@@ -567,40 +578,39 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
 
             publisher = getHostName(url).capitalize()
         }
-        return publisher as String
-
+        return StringEscapeUtils.unescapeHtml4(publisher as String)
     }
 
     fun getTitle(): String? {
         if (titleString == null) {
             if (getPublication() == "Associated Press") {
-                return doc.select("h1").text()
+                return StringEscapeUtils.unescapeHtml4(doc.select("h1").text())
             } else if (getPublication() == "SAGE Journals") {
-                return doc.select("h1").text()
+                return StringEscapeUtils.unescapeHtml4(doc.select("h1").text())
             } else if (getPublication() == "World Politics Review") {
-                return doc.select("h1").text()
+                return StringEscapeUtils.unescapeHtml4(doc.select("h1").text())
             } else if (getHostName(url) == "sciencedirect") {
-                return doc.select(".title-text").text()
+                return StringEscapeUtils.unescapeHtml4(doc.select("h1").text())
             } else if (getHostName(url) == "thecrimereport") {
-                return doc.select("h1").text()
+                return StringEscapeUtils.unescapeHtml4(doc.select("h1").text())
             } else if (getHostName(url) == "e-flux") {
-                return doc.select("h1").text()
+                return StringEscapeUtils.unescapeHtml4(doc.select("h1").text())
             }
 
             if (metaJson.has("headline")) {
                 titleString = metaJson["headline"].asString
-                return titleString
+                return StringEscapeUtils.unescapeHtml4(titleString)
             }
 
             val headline: String? = findMeta("parsely-title", "og:title", "sailthru.title", "analyticsAttributes.title")
             if (headline != null) {
                 titleString = headline
-                return titleString
+                return StringEscapeUtils.unescapeHtml4(titleString)
             }
 
             titleString = doc.getElementsByTag("title").maxBy { it.text().length }?.text()
         }
-        return titleString
+        return StringEscapeUtils.unescapeHtml4(titleString)
     }
     fun getURL() = url
 
