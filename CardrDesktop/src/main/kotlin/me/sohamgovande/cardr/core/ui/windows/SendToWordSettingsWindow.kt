@@ -80,19 +80,7 @@ class SendToWordSettingsWindow : ModalWindow("Settings - Send to Word") {
             "F9",
             "F10",
             "F11",
-            "F12",
-            "F13",
-            "F14",
-            "F15",
-            "F16",
-            "F17",
-            "F18",
-            "F19",
-            "F20",
-            "F21",
-            "F22",
-            "F23",
-            "F24"
+            "F12"
         ))
         pasteShortcutKeyCB.selectionModel.select(
             Prefs.get().pasteShortcut - KeyEvent.VK_F1

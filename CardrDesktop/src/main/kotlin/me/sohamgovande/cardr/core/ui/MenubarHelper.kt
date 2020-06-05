@@ -25,6 +25,8 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
     val hidePlainPasteWarningMI = CheckMenuItem("Hide plaintext paste dialog")
     val hideCopyPasteWarningMI = CheckMenuItem("Hide copy/paste dialog")
     val hideUpdateWarningMI = CheckMenuItem("Hide update dialog")
+    val removeSelectedMI = MenuItem("Remove Selected Text")
+    val keepSelectedMI = MenuItem("Remove Except for Selected Text")
 
     private val ctrlKeyMask: KeyCombination.Modifier 
         get() = if (getOSType() == OS.MAC) KeyCombination.META_DOWN else KeyCombination.CONTROL_DOWN
@@ -96,11 +98,9 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         sendMI.accelerator = KeyCodeCombination(KeyCode.S, ctrlKeyMask)
         sendMI.setOnAction { cardrUI.sendCardToVerbatim() }
 
-        val removeSelectedMI = MenuItem("Remove Selected Text")
         removeSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
         removeSelectedMI.setOnAction { cardrUI.removeSelectedText() }
 
-        val keepSelectedMI = MenuItem("Remove Except for Selected Text")
         keepSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, ctrlKeyMask, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN)
         keepSelectedMI.setOnAction { cardrUI.keepOnlySelectedText() }
 
@@ -116,9 +116,9 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         val formatMI = MenuItem("Card and cite format settings...")
         formatMI.setOnAction {
             val window = FormatPrefsWindow()
-            window.addOnCloseListener(Consumer {
+            window.addOnCloseListener{
                 cardrUI.refreshHTML()
-            })
+            }
             window.show()
         }
 

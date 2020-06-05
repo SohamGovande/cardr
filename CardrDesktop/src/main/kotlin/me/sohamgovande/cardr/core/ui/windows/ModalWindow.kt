@@ -9,7 +9,7 @@ import java.util.function.Consumer
 abstract class ModalWindow(val title: String) {
 
     protected val window = Stage()
-    protected val onCloseListeners: ArrayList<Consumer<HashMap<String, Any>>> = arrayListOf()
+    protected val onCloseListeners: ArrayList<(HashMap<String, Any>) -> Unit> = arrayListOf()
 
     protected var onCloseData: HashMap<String, Any> = hashMapOf()
     var autoRemove = true
@@ -26,14 +26,14 @@ abstract class ModalWindow(val title: String) {
         window.setOnCloseRequest {
             close(it)
             for (listener in onCloseListeners) {
-                listener.accept(onCloseData)
+                listener(onCloseData)
             }
         }
 
         openWindows.add(this)
     }
 
-    fun addOnCloseListener(listener: Consumer<HashMap<String, Any>>) {
+    fun addOnCloseListener(listener: (HashMap<String, Any>) -> Unit) {
         onCloseListeners.add(listener)
     }
 

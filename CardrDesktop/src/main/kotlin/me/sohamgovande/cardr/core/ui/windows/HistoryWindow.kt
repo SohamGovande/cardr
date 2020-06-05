@@ -74,7 +74,7 @@ class HistoryWindow(private val cardrUI: CardrUI): ModalWindow("Card History") {
                 if (onClickCombo.selectionModel.selectedIndex == 0) {
                     close(null)
                     cardrUI.urlTF.text = loc
-                    cardrUI.gotoUrlButton.fire()
+                    cardrUI.gotoUrlBtn.fire()
                 } else {
                     Desktop.getDesktop().browse(URL(loc).toURI())
                     Platform.runLater { webView.engine.load(oldLoc) }

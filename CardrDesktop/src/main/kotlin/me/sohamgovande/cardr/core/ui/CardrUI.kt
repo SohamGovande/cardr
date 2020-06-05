@@ -23,6 +23,7 @@ import me.sohamgovande.cardr.core.card.AuthorNameFormat
 import me.sohamgovande.cardr.core.card.Cite
 import me.sohamgovande.cardr.core.card.Timestamp
 import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
+import me.sohamgovande.cardr.core.ui.windows.MarkupCardWindow
 import me.sohamgovande.cardr.core.ui.windows.SignInLauncherOptions
 import me.sohamgovande.cardr.core.ui.windows.SignInWindow
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
@@ -77,7 +78,7 @@ class CardrUI(private val stage: Stage) {
 
     private val panel = VBox()
     private val searchBarPanel = HBox()
-    val gotoUrlButton = Button("GO")
+    val gotoUrlBtn = Button("GO")
     private val bodyAreaPanel = HBox()
 
     var slashLabelText = "  _  "
@@ -93,12 +94,10 @@ class CardrUI(private val stage: Stage) {
     private val removeSelectedBtn = Button("Remove Selected Text")
     private val restoreRemovedBtn = Button("Restore to Original")
     private val keepOnlySelectedBtn = Button("Remove Except for Selected Text")
-    private val editCardFormat = Button("Edit Card Format")
-    private val exportBtn = Button("Send to Word")
+    private val editCardFormatBtn = Button("Edit Card Format")
+    private val markupBtn = Button("Highlight & Underline Card")
 
-    private val underlineBtn = Button()
-    private val emphasizeBtn = Button()
-    private val highlightBtn = Button()
+    private val exportBtn = Button("Send to Word")
 
     private val refreshBtn = Button()
 
@@ -113,6 +112,8 @@ class CardrUI(private val stage: Stage) {
 
     private var reader: WebsiteCardCutter? = null
     val menubarHelper = MenubarHelper(this, stage)
+
+    private var overrideCardBody: String? = null
 
     init {
         currentUser.onSuccessfulLogin = menubarHelper::onSuccessfulLogin
@@ -134,9 +135,9 @@ class CardrUI(private val stage: Stage) {
         urlTF.promptText = "Paste a URL to get started"
         urlTF.prefWidth = CardrDesktop.WIDTH - 50
 
-        gotoUrlButton.prefWidth = 50.0
+        gotoUrlBtn.prefWidth = 50.0
         searchBarPanel.children.add(urlTF)
-        searchBarPanel.children.add(gotoUrlButton)
+        searchBarPanel.children.add(gotoUrlBtn)
 
         bodyAreaPanel.padding = Insets(5.0)
 
@@ -227,10 +228,6 @@ class CardrUI(private val stage: Stage) {
         loadMenuIcons()
         loadDateSeparatorLabels()
 
-        highlightBtn.setOnAction { highlightSelectedText() }
-        underlineBtn.setOnAction { underlineSelectedText() }
-        emphasizeBtn.setOnAction { underlineSelectedText(); boldSelectedText() }
-
         val cdm1 = FlowPane()
         cdm1.hgap = 5.0
         cdm1.vgap = 5.0
@@ -238,7 +235,8 @@ class CardrUI(private val stage: Stage) {
         cdm1.children.add(keepOnlySelectedBtn)
         cdm1.children.add(restoreRemovedBtn)
         cdm1.children.add(copyBtn)
-        cdm1.children.add(editCardFormat)
+        cdm1.children.add(editCardFormatBtn)
+        cdm1.children.add(markupBtn)
 
         cardDisplayMenu.children.add(cdm1)
 
@@ -261,7 +259,7 @@ class CardrUI(private val stage: Stage) {
         return panel
     }
 
-    private fun loadMiniIcon(path: String): ImageView? {
+    fun loadMiniIcon(path: String): ImageView? {
         val copyResource: InputStream? = javaClass.getResourceAsStream(path)
         if (copyResource != null) {
             val image = Image(copyResource, 15.0, 15.0, true, true)
@@ -284,11 +282,14 @@ class CardrUI(private val stage: Stage) {
 
     fun doDeferredLoad() {
         // Button actions
-        gotoUrlButton.setOnAction {
+        gotoUrlBtn.setOnAction {
             Thread {
                 try {
                     val reader = WebsiteCardCutter(urlTF.text, null)
                     this.reader = reader
+
+                    overrideCardBody = null
+                    enableCardBodyEditOptions()
                     removeWords.clear()
                     removeParagraphs.clear()
 
@@ -325,6 +326,9 @@ class CardrUI(private val stage: Stage) {
         restoreRemovedBtn.setOnAction {
             removeWords.clear()
             removeParagraphs.clear()
+            overrideCardBody = null
+            enableCardBodyEditOptions()
+
             refreshHTML()
             val alert = Alert(Alert.AlertType.INFORMATION)
             alert.headerText = "Article content restored to original."
@@ -347,16 +351,14 @@ class CardrUI(private val stage: Stage) {
         }
 
         keepOnlySelectedBtn.setOnAction { keepOnlySelectedText() }
-
-        editCardFormat.setOnAction { FormatPrefsWindow().show() }
-
+        editCardFormatBtn.setOnAction { FormatPrefsWindow().show() }
         refreshBtn.setOnAction { refreshWordWindows() }
-
         exportBtn.setOnAction { sendCardToVerbatim() }
+        markupBtn.setOnAction { openMarkupWindow() }
 
         urlTF.setOnKeyPressed {
             if (((it.isControlDown || it.isMetaDown) && it.text == "v") || it.code == KeyCode.ENTER) {
-                Platform.runLater { gotoUrlButton.fire() }
+                Platform.runLater { gotoUrlBtn.fire() }
             }
         }
 
@@ -395,12 +397,9 @@ class CardrUI(private val stage: Stage) {
         removeSelectedBtn.graphic = loadMiniIcon("/remove.png")
         copyBtn.graphic = loadMiniIcon("/copy.png")
         refreshBtn.graphic = loadMiniIcon("/refresh.png")
-        editCardFormat.graphic = loadMiniIcon("/edit.png")
+        editCardFormatBtn.graphic = loadMiniIcon("/edit.png")
         keepOnlySelectedBtn.graphic = loadMiniIcon("/keep-text.png")
-
-//        highlightBtn.graphic = loadMiniIcon("/highlight.png")
-//        emphasizeBtn.graphic = loadMiniIcon("/emphasize.png")
-//        underlineBtn.graphic = loadMiniIcon("/underline.png")
+        markupBtn.graphic = loadMiniIcon("/markup.png")
 
         for (btn in deleteAuthorButtons) {
             btn.graphic = loadMiniIcon("/remove.png")
@@ -551,7 +550,7 @@ class CardrUI(private val stage: Stage) {
         for (elem in doc.allElements) {
             if (elem.children().size > 0 && elem.ownText().isEmpty())
                 continue
-            val cardBody = cardBodyReplacement ?: getCardBodyHTML(cardBody.get(), true)
+            val cardBody = cardBodyReplacement ?: generateCardBodyHTML(cardBody.get(), true)
             elem.html(
                 elem.html()
                     .replace("{AuthorLastName}", cite.getAuthorName(AuthorNameFormat.LAST_NAME))
@@ -587,50 +586,6 @@ class CardrUI(private val stage: Stage) {
                     }
                     return text;
                 }
-                
-                function highlightSelectedText(color) {
-                    var range, sel = window.getSelection();
-                    if (sel.rangeCount && sel.getRangeAt) {
-                        range = sel.getRangeAt(0);
-                    };
-                    document.designMode = "on";
-                    if (range) {
-                        sel.removeAllRanges();
-                        sel.addRange(range);
-                    };
-                    if (!document.execCommand("HiliteColor", false, color)) {
-                        document.execCommand("BackColor", false, color);
-                    };
-                    document.designMode = "off";
-                }
-                
-                function boldSelectedText() {
-                    var range, sel = window.getSelection();
-                    if (sel.rangeCount && sel.getRangeAt) {
-                        range = sel.getRangeAt(0);
-                    };
-                    document.designMode = "on";
-                    if (range) {
-                        sel.removeAllRanges();
-                        sel.addRange(range);
-                    };
-                    document.execCommand("bold", false);
-                    document.designMode = "off";
-                }
-                
-                function underlineSelectedText() {
-                    var range, sel = window.getSelection();
-                    if (sel.rangeCount && sel.getRangeAt) {
-                        range = sel.getRangeAt(0);
-                    };
-                    document.designMode = "on";
-                    if (range) {
-                        sel.removeAllRanges();
-                        sel.addRange(range);
-                    };
-                    document.execCommand("underline", false);
-                    document.designMode = "off";
-                }
             </script>
         """.trimIndent())
         }
@@ -654,7 +609,10 @@ class CardrUI(private val stage: Stage) {
         return docHtml
     }
 
-    private fun getCardBodyHTML(cardBody: String, cardBodyIsHTML: Boolean): String {
+    private fun generateCardBodyHTML(cardBody: String, cardBodyIsHTML: Boolean): String {
+        if (overrideCardBody != null)
+            return overrideCardBody!!
+
         var out = cardBody
 
         val paragraphSuffix = if (Prefs.get().showParagraphBreaks) "¶ " else ""
@@ -743,18 +701,6 @@ class CardrUI(private val stage: Stage) {
             generateAuthorGridBoxCallback(generateAuthorsGrid(generateAuthorGridBoxCallback))
         }
 
-    }
-
-    private fun highlightSelectedText() {
-        cardWV.engine.executeScript("highlightSelectedText('#ffff00')")
-    }
-
-    private fun boldSelectedText() {
-        cardWV.engine.executeScript("boldSelectedText()")
-    }
-
-    private fun underlineSelectedText() {
-        cardWV.engine.executeScript("underlineSelectedText()")
     }
 
     fun loadDateSeparatorLabels() {
@@ -980,6 +926,117 @@ class CardrUI(private val stage: Stage) {
         }
     }
 
+    private fun openMarkupWindow() {
+        val cardBody = generateCardBodyHTML(cardBody.get(), cardBodyIsHTML = true)
+        val html = """
+        <head>
+            <style>
+                body {
+                    font-family: 'Calibri', 'Arial', sans-serif;
+                    margin-right: 25px;
+                }
+            </style>
+            <script>
+                function highlightSelectedText(color) {
+                    var range, sel = window.getSelection();
+                    if (sel.rangeCount && sel.getRangeAt) {
+                        range = sel.getRangeAt(0);
+                    };
+                    document.designMode = "on";
+                    if (range) {
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    };
+                    if (!document.execCommand("HiliteColor", false, color)) {
+                        document.execCommand("BackColor", false, color);
+                    };
+                    document.designMode = "off";
+                }
+                
+                function boldSelectedText() {
+                    var range, sel = window.getSelection();
+                    if (sel.rangeCount && sel.getRangeAt) {
+                        range = sel.getRangeAt(0);
+                    };
+                    document.designMode = "on";
+                    if (range) {
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    };
+                    document.execCommand("bold", false);
+                    document.designMode = "off";
+                }
+                
+                function underlineSelectedText() {
+                    var range, sel = window.getSelection();
+                    if (sel.rangeCount && sel.getRangeAt) {
+                        range = sel.getRangeAt(0);
+                    };
+                    document.designMode = "on";
+                    if (range) {
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    };
+                    document.execCommand("underline", false);
+                    document.designMode = "off";
+                }
+                
+                function clearSelection() {
+                    var sel = window.getSelection ? window.getSelection() : document.selection;
+                    if (sel) {
+                        if (sel.removeAllRanges) {
+                            sel.removeAllRanges();
+                        } else if (sel.empty) {
+                            sel.empty();
+                        }
+                    }
+                }
+            </script>
+        </head>
+        <body>
+            $cardBody
+        </body>
+        """.trimIndent()
+        val window = MarkupCardWindow(this, html)
+        window.addOnCloseListener {
+            if (!window.applyChanges)
+                return@addOnCloseListener
+
+            val innerBody = Jsoup.parse(it["cardBody"] as String).body()
+
+            for (elem in innerBody.select("[style]")) {
+                var style = elem.attr("style")
+                if (style.contains("background-color")) {
+                    val matchResult = Regex("background-color: ([a-zA-Z0-9()., ]+)").find(style)
+                    if (matchResult != null) {
+                        val color = matchResult.groups[1]!!.value
+                        style += "mso-highlight: $color;"
+                        elem.attr("style", style)
+                    }
+                }
+            }
+
+            disableCardBodyEditOptions()
+            overrideCardBody = innerBody.html()
+            refreshHTML()
+        }
+        window.show()
+    }
+
+    private fun disableCardBodyEditOptions() {
+        keepOnlySelectedBtn.isDisable = true
+        removeSelectedBtn.isDisable = true
+        menubarHelper.keepSelectedMI.isDisable = true
+        menubarHelper.removeSelectedMI.isDisable = true
+    }
+
+    private fun enableCardBodyEditOptions() {
+        keepOnlySelectedBtn.isDisable = false
+        removeSelectedBtn.isDisable = false
+        menubarHelper.keepSelectedMI.isDisable = false
+        menubarHelper.removeSelectedMI.isDisable = false
+    }
+
     fun sendCardToVerbatim() {
         if (reader == null)
             return
@@ -1005,7 +1062,7 @@ class CardrUI(private val stage: Stage) {
             val cardHtml = generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = cardBodyReplacement)
             val cardBodyIndex = cardHtml.indexOf(cardBodyReplacement)
             val beforeBody = cardHtml.substring(0, cardBodyIndex)
-            var body = getCardBodyHTML(reader!!.getBodyParagraphText(false), false)
+            var body = generateCardBodyHTML(reader!!.getBodyParagraphText(false), false)
             if (body.endsWith("\n"))
                 body += "\n"
             val afterBody = cardHtml.substring(cardBodyIndex + cardBodyReplacement.length)

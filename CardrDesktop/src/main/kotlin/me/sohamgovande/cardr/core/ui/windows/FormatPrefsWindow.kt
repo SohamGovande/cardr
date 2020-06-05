@@ -137,7 +137,7 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
         val applyBtn = Button("Apply")
         applyBtn.requestFocus()
         applyBtn.setOnAction {
-            close(null)
+            window.onCloseRequest.handle(null)
         }
 
         vbox.children.add(header)
