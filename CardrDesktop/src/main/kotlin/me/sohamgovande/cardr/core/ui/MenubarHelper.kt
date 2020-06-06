@@ -303,7 +303,6 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         aboutMenu.items.add(SeparatorMenuItem())
         aboutMenu.items.add(websiteMI)
         aboutMenu.items.add(chromeMI)
-        aboutMenu.items.add(githubMI)
         aboutMenu.items.add(viewSupportedSites)
 
         aboutMenu.items.add(SeparatorMenuItem())
