@@ -191,11 +191,17 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
         val option = wordWindowList.items[newValue.toInt()]
         if (option == "Create new doc...") {
             if (getOSType() == OS.WINDOWS) {
-                val file = Paths.get("C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\WINWORD.EXE").toFile()
-                if (!file.exists())
-                    showErrorDialog("Unable to launch Word", "No file found at ${file.canonicalPath}.")
-                else
-                    Desktop.getDesktop().open(file)
+                val verbatimFile = Paths.get(System.getProperty("user.home"), "AppData", "Roaming", "Microsoft", "Templates", "Debate.dotm").toFile()
+                val exeFile = Paths.get("C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\WINWORD.EXE").toFile()
+                if (!exeFile.exists()) {
+                    showErrorDialog("Unable to launch Word", "No file found at ${exeFile.canonicalPath}.")
+                } else {
+                    if (verbatimFile.exists()) {
+                        executeCommandUnblocking("\"${exeFile.canonicalPath}\" \"/t${verbatimFile.canonicalPath}\"", logger)
+                    } else {
+                        Desktop.getDesktop().open(exeFile)
+                    }
+                }
             } else {
                 try {
                     executeCommandBlocking("open -a \"Microsoft Word\"", logger, false)
