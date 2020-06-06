@@ -72,7 +72,7 @@ class CardrUI(val stage: Stage) {
     private val cardTagTextField = TextField()
     val urlTF = TextField()
 
-    private val cardWV = WebView()
+    val cardWV = WebView()
     val statusBar = Label()
 
     private var lastUI: GridPane? = null
@@ -92,37 +92,24 @@ class CardrUI(val stage: Stage) {
     private val dateGrid = GridPane()
 
     private val cardDisplayArea = VBox()
-    private val cardDisplayMenu = VBox()
 
-    private val exportToWordSettings = VBox()
-    private val copyBtn = Button("Copy")
-    private val removeSelectedBtn = Button("Remove Selected Text")
-    private val restoreRemovedBtn = Button("Restore to Original")
-    private val keepOnlySelectedBtn = Button("Remove Except for Selected Text")
-    private val editCardFormatBtn = Button("Edit Card Format")
-    private val markupBtn = Button("Highlight & Underline Card")
-    private val ocrBtn = Button("OCR Tool")
-
-    private val exportBtn = Button("Send to Word")
-
-    private val refreshBtn = Button()
-
-    private val wordWindowList = ComboBox<String>()
-    private val removeWords = arrayListOf<String>()
-    private val removeParagraphs = arrayListOf<String>()
+    val removeWords = arrayListOf<String>()
+    val removeParagraphs = arrayListOf<String>()
 
     private val deleteAuthorButtons = arrayListOf<Button>()
     private val searchButtons = arrayListOf<Button>()
 
     var currentUser = CardrUser()
 
-    private var reader: WebsiteCardCutter? = null
+    var reader: WebsiteCardCutter? = null
     val menubarHelper = MenubarHelper(this, stage)
 
     var overrideBodyParagraphs: MutableList<String>? = null
     var overrideBodyHTML: String? = null
 
     var ocrCardBuilderWindow: OCRCardBuilderWindow? = null
+
+    lateinit var toolsUI: ToolsPaneUI
 
     init {
         currentUser.onSuccessfulLogin = menubarHelper::onSuccessfulLogin
@@ -136,6 +123,8 @@ class CardrUI(val stage: Stage) {
             logger.info("Generating default menu bar")
             menubarHelper.applyDefaultMenu(panel)
         }
+
+        toolsUI = ToolsPaneUI(this)
 
         logger.info("Creating UI components")
         searchBarPanel.spacing = 5.0
@@ -205,58 +194,35 @@ class CardrUI(val stage: Stage) {
         pGrid.columnConstraints.add(ColumnConstraints(60.0))
         pGrid.columnConstraints.add(ColumnConstraints(225.0))
 
-        pGrid.add(Label("Word"), 0, 6)
-
-        exportToWordSettings.spacing = 5.0
-
-        val header = Label("Send Card to Word")
-        header.style = "-fx-font-weight: bold;"
-        header.prefWidth = 225.0
-        header.textAlignment = TextAlignment.CENTER
-        exportToWordSettings.children.add(header)
-        exportToWordSettings.children.add(Label("Select Word window:"))
-
-        val exportToWordHBox = GridPane()
-        exportToWordHBox.hgap = 5.0
-
-        wordWindowList.padding = Insets(0.0, 0.0, 0.0, 10.0)
-        exportToWordHBox.add(refreshBtn, 0, 0)
-        exportToWordHBox.add(wordWindowList, 1, 0)
-        exportToWordSettings.children.add(exportToWordHBox)
-        wordWindowList.selectionModel.selectedIndexProperty().addListener(this::onSelectedWordWindowChanged)
-
-        cardWV.prefWidth = CardrDesktop.WIDTH - 300
-        cardWV.prefHeight = CardrDesktop.HEIGHT - 100
-
-        exportToWordSettings.children.add(exportBtn)
-        pGrid.add(exportToWordSettings, 1, 6)
-
-        cardDisplayMenu.padding = Insets(0.0, 5.0, 5.0, 5.0)
-        cardDisplayMenu.spacing = 5.0
-
         statusBar.font = Font.font(10.0)
 
         loadMenuIcons()
         loadDateSeparatorLabels()
 
-        val cdm1 = FlowPane()
-        cdm1.hgap = 5.0
-        cdm1.vgap = 5.0
-        cdm1.children.addAll(removeSelectedBtn, keepOnlySelectedBtn, restoreRemovedBtn, copyBtn, editCardFormatBtn, markupBtn, ocrBtn)
+        val previewHeader = Label("Card Preview")
+        previewHeader.font = Font.font(20.0)
 
-        cardDisplayMenu.children.add(cdm1)
-
-        cardDisplayArea.children.add(cardDisplayMenu)
+        cardDisplayArea.children.add(previewHeader)
         cardDisplayArea.children.add(cardWV)
         cardDisplayArea.children.add(statusBar)
 
-        pGridScrollPane = ScrollPane(pGrid)
+        val pGridVbox = VBox()
+        val pGridHeader = Label("Properties")
+        pGridHeader.font = Font.font(20.0)
+        pGridVbox.children.addAll(pGridHeader, pGrid)
+
+        pGridScrollPane = ScrollPane(pGridVbox)
+        pGridScrollPane.prefWidth = 375.0
         pGridScrollPane.prefViewportWidth = 300.0
         pGridScrollPane.vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
         pGridScrollPane.hbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
         pGridScrollPane.style = "-fx-background-color:transparent;"
+
+        toolsUI.generateUI()
+
         bodyAreaPanel.children.add(pGridScrollPane)
         bodyAreaPanel.children.add(cardDisplayArea)
+        bodyAreaPanel.children.add(toolsUI.root)
 
         panel.children.add(searchBarPanel)
         panel.children.add(bodyAreaPanel)
@@ -330,43 +296,6 @@ class CardrUI(val stage: Stage) {
             }.start()
         }
 
-        ocrBtn.setOnAction { openOCRTool() }
-        copyBtn.setOnAction { copyCardToClipboard() }
-        removeSelectedBtn.setOnAction { removeSelectedText() }
-        restoreRemovedBtn.setOnAction {
-            removeWords.clear()
-            removeParagraphs.clear()
-            overrideBodyHTML = null
-            enableCardBodyEditOptions()
-            statusBar.text = ""
-
-            refreshHTML()
-            val alert = Alert(Alert.AlertType.INFORMATION)
-            alert.headerText = "Article content restored to original."
-            alert.showAndWait()
-        }
-
-        if (getOSType() == OS.WINDOWS) {
-            val msWordInteractor = WinMSWordInteractor()
-            wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
-
-            if (!wordWindowList.items.isEmpty()) {
-                wordWindowList.selectionModel.select(0)
-            }
-        } else if (getOSType() == OS.MAC) {
-            val msWordInteractor = MacMSWordInteractor()
-            wordWindowList.items = FXCollections.observableList(msWordInteractor.getValidWordWindows())
-            if (!wordWindowList.items.isEmpty()) {
-                wordWindowList.selectionModel.select(0)
-            }
-        }
-
-        keepOnlySelectedBtn.setOnAction { keepOnlySelectedText() }
-        editCardFormatBtn.setOnAction { FormatPrefsWindow().show() }
-        refreshBtn.setOnAction { refreshWordWindows() }
-        exportBtn.setOnAction { sendCardToVerbatim() }
-        markupBtn.setOnAction { openMarkupWindow() }
-
         urlTF.setOnKeyPressed {
             if (((it.isControlDown || it.isMetaDown) && it.text == "v") || it.code == KeyCode.ENTER) {
                 Platform.runLater { gotoUrlBtn.fire() }
@@ -375,6 +304,9 @@ class CardrUI(val stage: Stage) {
 
         // Web view default content
         cardWV.engine.loadContent(generateDefaultHTML())
+        cardWV.prefWidth = CardrDesktop.WIDTH - 450
+        cardWV.minWidth = 200.0
+        cardWV.prefHeight = CardrDesktop.HEIGHT - 100
 
         // Generate author grid box callback
         generateAuthorGridBoxCallback = {
@@ -404,14 +336,15 @@ class CardrUI(val stage: Stage) {
     }
 
     fun loadMenuIcons() {
-        restoreRemovedBtn.graphic = loadMiniIcon("/restore.png", false, 1.0)
-        removeSelectedBtn.graphic = loadMiniIcon("/remove.png", false, 1.0)
-        copyBtn.graphic = loadMiniIcon("/copy.png", false, 1.0)
-        refreshBtn.graphic = loadMiniIcon("/refresh.png", false, 1.0)
-        editCardFormatBtn.graphic = loadMiniIcon("/edit.png", false, 1.0)
-        keepOnlySelectedBtn.graphic = loadMiniIcon("/keep-text.png", false, 1.0)
-        markupBtn.graphic = loadMiniIcon("/markup.png", false, 1.0)
-        ocrBtn.graphic = loadMiniIcon("/capture-ocr.png", false, 1.0)
+        toolsUI.restoreRemovedBtn.graphic = loadMiniIcon("/restore.png", false, 1.0)
+        toolsUI.removeSelectedBtn.graphic = loadMiniIcon("/remove.png", false, 1.0)
+        toolsUI.copyBtn.graphic = loadMiniIcon("/copy.png", false, 1.0)
+        toolsUI.refreshBtn.graphic = loadMiniIcon("/refresh.png", false, 1.0)
+        toolsUI.editCardFormatBtn.graphic = loadMiniIcon("/edit.png", false, 1.0)
+        toolsUI.keepOnlySelectedBtn.graphic = loadMiniIcon("/keep-text.png", false, 1.0)
+        toolsUI.markupBtn.graphic = loadMiniIcon("/markup.png", false, 1.0)
+        toolsUI.ocrBtn.graphic = loadMiniIcon("/capture-ocr.png", false, 1.0)
+        toolsUI.sendToWordBtn.graphic = loadMiniIcon("/word-grayscale.png", false, 1.0)
 
         for (btn in deleteAuthorButtons) {
             btn.graphic = loadMiniIcon("/remove.png", false, 1.0)
@@ -426,7 +359,7 @@ class CardrUI(val stage: Stage) {
     private fun checkForUpdates() {
         UpdateChecker(this).checkForUpdates()
         logger.info("Initializing Word windows")
-        refreshWordWindows()
+        toolsUI.refreshWordWindows()
     }
 
     private fun checkLoginStatus() {
@@ -544,7 +477,7 @@ class CardrUI(val stage: Stage) {
             |</style>""".trimMargin()
     }
 
-    private fun generateFullHTML(switchFont: Boolean, forCopy: Boolean, cardBodyReplacement: String?): String {
+    fun generateFullHTML(switchFont: Boolean, forCopy: Boolean, cardBodyReplacement: String?): String {
         val cite = createCite()
         val spacePlaceholder = "sas8d9f7aj523kj5h123jkhsaf"
         val doc = Jsoup.parse(Prefs.get().cardFormat.replace("&nbsp;",spacePlaceholder))
@@ -621,7 +554,7 @@ class CardrUI(val stage: Stage) {
         return docHtml
     }
 
-    private fun generateCardBodyHTML(cardBody: String, cardBodyIsHTML: Boolean): String {
+    fun generateCardBodyHTML(cardBody: String, cardBodyIsHTML: Boolean): String {
         if (overrideBodyHTML != null)
             return overrideBodyHTML!!
 
@@ -675,7 +608,7 @@ class CardrUI(val stage: Stage) {
 
     fun onWindowResized() {
         urlTF.prefWidth = stage.width - 50
-        cardWV.prefWidth = stage.width - 325
+        cardWV.prefWidth = stage.width - 475
         cardWV.prefHeight = stage.height - 150
         pGrid.prefHeight = stage.height - 150
     }
@@ -721,124 +654,6 @@ class CardrUI(val stage: Stage) {
         val newText = slashLabelText.replace("_", Timestamp.getSeparator())
         slashLabel.text = newText
         slashLabel2.text = newText
-    }
-
-
-    fun removeSelectedText() {
-        var success = false
-        try {
-            val selection = cardWV.engine.executeScript("getSelectionTextCustom()") as String
-            for (str in selection.split(Regex("[\\n\\t\\r]"))) {
-                if (str.isNotBlank()) {
-                    removeWords.add(str)
-                    success = true
-                }
-            }
-            refreshHTML()
-        } catch (e: Exception) {
-            success = false
-        }
-        if (!success) {
-            val alert = Alert(Alert.AlertType.INFORMATION, "Please highlight text in the preview pane before clicking remove.")
-            alert.headerText = "No text selected"
-            alert.showAndWait()
-        }
-    }
-
-    fun refreshWordWindows() {
-        val windows: List<String>
-
-        windows = if (getOSType() == OS.WINDOWS){
-            WinMSWordInteractor().getValidWordWindows()
-        } else if (getOSType() == OS.MAC){
-            MacMSWordInteractor().getValidWordWindows()
-        } else {
-            emptyList()
-        }
-        Platform.runLater {
-            if (!windows.isEmpty()) {
-                wordWindowList.items = FXCollections.observableList(windows)
-                if (hasWordWindows())
-                    wordWindowList.selectionModel.select(0)
-            } else {
-                initNoWordWindows()
-            }
-        }
-    }
-
-    fun hasWordWindows(): Boolean {
-        return !wordWindowList.items[0].equals("No windows open")
-    }
-
-    fun initNoWordWindows() {
-        wordWindowList.items = FXCollections.observableList(listOf(
-            "No windows open",
-            "Create new doc...",
-            "Open doc..."
-        ))
-        wordWindowList.selectionModel.select(0)
-    }
-
-    @Suppress("UNUSED_PARAMETER")
-    fun onSelectedWordWindowChanged(observable: ObservableValue<out Number>, oldValue: Number, newValue: Number) {
-        if (newValue.toInt() < 0 || newValue.toInt() >= wordWindowList.items.size)
-            return
-        val option = wordWindowList.items[newValue.toInt()]
-        if (option == "Create new doc...") {
-            if (getOSType() == OS.WINDOWS) {
-                val file = Paths.get("C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\WINWORD.EXE").toFile()
-                if (!file.exists())
-                    showErrorDialog("Unable to launch Word", "No file found at ${file.canonicalPath}.")
-                else
-                    Desktop.getDesktop().open(file)
-            } else {
-                try {
-                    executeCommandBlocking("open -a \"Microsoft Word\"", logger, false)
-                } catch (e: Exception) {
-                    logger.error("Unable to open Microsoft Word", e)
-                    showErrorDialog("Unable to launch Word", e.javaClass.simpleName + " - " + e.message)
-                }
-            }
-            wordWindowList.selectionModel.select(0)
-
-            Thread {
-                Thread.sleep(4000)
-                Platform.runLater { refreshWordWindows() }
-            }.start()
-        } else if (option == "Open doc...") {
-            val fileChooser = FileChooser()
-            fileChooser.title = "Open Word document..."
-            fileChooser.extensionFilters.add(FileChooser.ExtensionFilter("Word documents", "*.docx","*.docm","*.dotx","*.dotm","*.docb","*.doc","*.dot"))
-            val selectedFile = fileChooser.showOpenDialog(stage)
-            wordWindowList.selectionModel.select(0)
-            if (selectedFile != null)
-                Desktop.getDesktop().open(selectedFile)
-
-            Thread {
-                Thread.sleep(4000)
-                Platform.runLater { refreshWordWindows() }
-            }.start()
-        }
-    }
-
-    fun keepOnlySelectedText() {
-        var success = false
-        try {
-            if (reader == null) {
-                throw NullPointerException("No reader found")
-            }
-            keepOnlyText(cardWV.engine.executeScript("getSelectionTextCustom()") as String)
-            success = true
-        } catch (e: Exception) {
-            logger.error(e)
-            e.printStackTrace()
-        }
-
-        if (!success) {
-            val alert = Alert(Alert.AlertType.INFORMATION, "Please highlight at least one full paragraph in the preview pane in order to use this tool.")
-            alert.headerText = "Not enough text selected"
-            alert.showAndWait()
-        }
     }
 
     @Throws(Exception::class)
@@ -905,217 +720,18 @@ class CardrUI(val stage: Stage) {
         refreshHTML()
     }
 
-    fun openOCRTool() {
-        OCRSelectionWindow(this).show()
-    }
-
-    fun copyCardToClipboard() {
-        Toolkit.getDefaultToolkit()
-            .systemClipboard
-            .setContents(
-                HTMLSelection(
-                    generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = null)
-                ),
-                null
-            )
-
-        if (!Prefs.get().hideCopyDialog) {
-            showInfoDialogBlocking("Copied card to clipboard.",
-                "To paste this into a Word document or a Google Doc, use the default Ctrl/Cmd + V. Do NOT use 'Paste without Formatting' (F2 on Verbatim).",
-                "Never show this message") {
-                Prefs.get().hideCopyDialog = true
-                menubarHelper.hideCopyPasteWarningMI.isSelected = true
-                Prefs.save()
-                showInfoDialogBlocking("Message will no longer be displayed.", "You can revert this setting under 'Settings > Messages > Hide copy/paste dialog'.")
-            }
-        }
-    }
-
-    private fun showSendToWordAlert() {
-        if (Prefs.get().pastePlainText && !Prefs.get().hidePastePlainTextDialog) {
-            showInfoDialogBlocking("Sent card to Verbatim.",
-                "You currently have the PASTE PLAIN TEXT setting enabled, so you can currently ONLY send cards to Verbatim-enabled Word windows (NOT regular Word windows). If you would like to send cards to ALL word windows, go to 'Settings > Send to Word settings' and change the selected paste option to HTML.",
-                "Never show this warning") {
-                Prefs.get().hidePastePlainTextDialog = true
-                menubarHelper.hidePlainPasteWarningMI.isSelected = true
-                Prefs.save()
-                showInfoDialogBlocking("Message will no longer be displayed.", "You can revert this setting under 'Settings > Messages > Hide plaintext paste dialog'.")
-            }
-        }
-    }
-
-    private fun openMarkupWindow() {
-        val cardBody = generateCardBodyHTML(cardBody.get(), cardBodyIsHTML = true)
-        val html = """
-        <head>
-            <style>
-                body {
-                    font-family: 'Calibri', 'Arial', sans-serif;
-                    margin-right: 25px;
-                }
-            </style>
-            <script>
-                function highlightSelectedText(color) {
-                    var range, sel = window.getSelection();
-                    if (sel.rangeCount && sel.getRangeAt) {
-                        range = sel.getRangeAt(0);
-                    };
-                    document.designMode = "on";
-                    if (range) {
-                        sel.removeAllRanges();
-                        sel.addRange(range);
-                    };
-                    if (!document.execCommand("HiliteColor", false, color)) {
-                        document.execCommand("BackColor", false, color);
-                    };
-                    document.designMode = "off";
-                }
-                
-                function boldSelectedText() {
-                    var range, sel = window.getSelection();
-                    if (sel.rangeCount && sel.getRangeAt) {
-                        range = sel.getRangeAt(0);
-                    };
-                    document.designMode = "on";
-                    if (range) {
-                        sel.removeAllRanges();
-                        sel.addRange(range);
-                    };
-                    document.execCommand("bold", false);
-                    document.designMode = "off";
-                }
-                
-                function underlineSelectedText() {
-                    var range, sel = window.getSelection();
-                    if (sel.rangeCount && sel.getRangeAt) {
-                        range = sel.getRangeAt(0);
-                    };
-                    document.designMode = "on";
-                    if (range) {
-                        sel.removeAllRanges();
-                        sel.addRange(range);
-                    };
-                    document.execCommand("underline", false);
-                    document.designMode = "off";
-                }
-                
-                function clearSelection() {
-                    var sel = window.getSelection ? window.getSelection() : document.selection;
-                    if (sel) {
-                        if (sel.removeAllRanges) {
-                            sel.removeAllRanges();
-                        } else if (sel.empty) {
-                            sel.empty();
-                        }
-                    }
-                }
-            </script>
-        </head>
-        <body>
-            $cardBody
-        </body>
-        """.trimIndent()
-
-        val window = MarkupCardWindow(this, html)
-        val screenBounds = cardWV.localToScreen(cardWV.boundsInLocal)
-
-        window.addOnCloseListener {
-            if (!window.applyChanges)
-                return@addOnCloseListener
-
-            val innerBody = Jsoup.parse(it["cardBody"] as String).body()
-
-            for (elem in innerBody.select("[style]")) {
-                var style = elem.attr("style")
-                if (style.contains("background-color")) {
-                    val matchResult = Regex("background-color: ([a-zA-Z0-9()., ]+)").find(style)
-                    if (matchResult != null) {
-                        val color = matchResult.groups[1]!!.value
-                        style += "mso-highlight: $color;"
-                        elem.attr("style", style)
-                    }
-                }
-            }
-
-            disableCardBodyEditOptions()
-            overrideBodyHTML = innerBody.html()
-
-            refreshHTML()
-
-            if (!Prefs.get().hideFormattingDialog) {
-                showInfoDialogBlocking("Applied highlighting & underlining changes.",
-                    "While using Cardr, highlighting/underlining will be the last step in your card editing. After highlighting/underlining a card, you can no longer add or remove text to the card BODY (you can still change the header). If you wish to reset this, use the \"Restore to Original\" tool.",
-                    "Never show this warning") {
-                    Prefs.get().hidePastePlainTextDialog = true
-                    menubarHelper.hidePlainPasteWarningMI.isSelected = true
-                    Prefs.save()
-                    showInfoDialogBlocking("Message will no longer be displayed.", "You can revert this setting under 'Settings > Messages > Hide highlight/underline dialog'.")
-                }
-            }
-
-            if (Prefs.get().pastePlainText) {
-                statusBar.text = "Because of highlighting/underlining, plaintext paste will be overridden with HTML paste for this card."
-            }
-        }
-        window.show()
-
-        window.window.x = screenBounds.minX - 25
-        window.window.y = screenBounds.minY - 150
-        window.window.width = screenBounds.width + 25
-        window.window.height = screenBounds.height + 150
-    }
-
-    private fun disableCardBodyEditOptions() {
-        keepOnlySelectedBtn.isDisable = true
-        removeSelectedBtn.isDisable = true
+    fun disableCardBodyEditOptions() {
+        toolsUI.keepOnlySelectedBtn.isDisable = true
+        toolsUI.removeSelectedBtn.isDisable = true
         menubarHelper.keepSelectedMI.isDisable = true
         menubarHelper.removeSelectedMI.isDisable = true
     }
 
     fun enableCardBodyEditOptions() {
-        keepOnlySelectedBtn.isDisable = false
-        removeSelectedBtn.isDisable = false
+        toolsUI.keepOnlySelectedBtn.isDisable = false
+        toolsUI.removeSelectedBtn.isDisable = false
         menubarHelper.keepSelectedMI.isDisable = false
         menubarHelper.removeSelectedMI.isDisable = false
-    }
-
-    fun sendCardToVerbatim() {
-        if (reader == null)
-            return
-
-        if (wordWindowList.items.size == 0)
-            refreshWordWindows()
-
-        showSendToWordAlert()
-        if (getOSType() == OS.WINDOWS){
-            val msWord = WinMSWordInteractor()
-            if (wordWindowList.items.size > 0) {
-                msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
-            }
-        } else if (getOSType() == OS.MAC){
-            val msWord = MacMSWordInteractor()
-            if (wordWindowList.items.size > 0) {
-                msWord.selectWordWindowByDocName(wordWindowList.selectionModel.selectedItem)
-            }
-        }
-
-        if (Prefs.get().pastePlainText && overrideBodyHTML == null) {
-            val cardBodyReplacement = "safd7asdyfkjahnw3k5nsd"
-            val cardHtml = generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = cardBodyReplacement)
-            val cardBodyIndex = cardHtml.indexOf(cardBodyReplacement)
-            val beforeBody = cardHtml.substring(0, cardBodyIndex)
-            var body = generateCardBodyHTML(reader!!.getBodyParagraphText(false), false)
-            if (body.endsWith("\n"))
-                body += "\n"
-            val afterBody = cardHtml.substring(cardBodyIndex + cardBodyReplacement.length)
-
-            pasteObject(beforeBody, KeyboardPasteMode.NORMAL)
-            pasteObject(body, KeyboardPasteMode.PLAIN_TEXT)
-            if (afterBody != "</span></p>\n </body>\n</html>")
-                pasteObject(afterBody, KeyboardPasteMode.NORMAL)
-        } else {
-            pasteObject(generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = null), KeyboardPasteMode.NORMAL)
-        }
     }
 
     private fun updateWindowTitle(title: String) {

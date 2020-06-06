@@ -43,8 +43,11 @@ data class PrefsObject(
     var unhighlightShortcut: Int = KeyEvent.VK_F12,
     var highlightColor: String = "#ffff00",
 
+    val toolPanes: MutableMap<String, Boolean> = mutableMapOf(),
+
     var windowDimensions: WindowDimensions = WindowDimensions(-1024.1024, 0.0, 0.0, 0.0, false),
-    var ocrWindowDimensions: WindowDimensions = WindowDimensions(-1024.1024, 0.0, 0.0, 0.0, false)
+    var ocrWindowDimensions: WindowDimensions =
+        WindowDimensions(-1024.1024, 0.0, 0.0, 0.0, false)
 ) {
 
     fun getStylesheet(): String = if (darkMode) "/styles-dark.css" else "/styles.css"

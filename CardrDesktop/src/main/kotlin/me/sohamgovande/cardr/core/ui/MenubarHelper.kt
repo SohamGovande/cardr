@@ -88,22 +88,21 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         val toolsMenu = Menu("Tools")
         val copyMI = MenuItem("Copy card")
         copyMI.accelerator = KeyCodeCombination(KeyCode.C, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
-        copyMI.setOnAction { cardrUI.copyCardToClipboard() }
-
+        copyMI.setOnAction { cardrUI.toolsUI.copyCardToClipboard() }
 
         val refreshWordMI  = MenuItem("Refresh Word windows")
         refreshWordMI.accelerator = KeyCodeCombination(KeyCode.R, ctrlKeyMask)
-        refreshWordMI.setOnAction { cardrUI.refreshWordWindows() }
+        refreshWordMI.setOnAction { cardrUI.toolsUI.refreshWordWindows() }
 
         val sendMI = MenuItem("Send to Word")
         sendMI.accelerator = KeyCodeCombination(KeyCode.S, ctrlKeyMask)
-        sendMI.setOnAction { cardrUI.sendCardToVerbatim() }
+        sendMI.setOnAction { cardrUI.toolsUI.sendCardToWord() }
 
         removeSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
-        removeSelectedMI.setOnAction { cardrUI.removeSelectedText() }
+        removeSelectedMI.setOnAction { cardrUI.toolsUI.removeSelectedText() }
 
         keepSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, ctrlKeyMask, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN)
-        keepSelectedMI.setOnAction { cardrUI.keepOnlySelectedText() }
+        keepSelectedMI.setOnAction { cardrUI.toolsUI.keepOnlySelectedText() }
 
         toolsMenu.items.add(copyMI)
         toolsMenu.items.add(refreshWordMI)
