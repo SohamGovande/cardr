@@ -12,10 +12,13 @@ import javafx.scene.layout.BorderPane
 import javafx.scene.layout.HBox
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
+import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.auth.SecretData
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.WindowDimensions
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.ResizeListener.Companion.BORDER_SIZE
+import me.sohamgovande.cardr.data.prefs.Prefs
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpPost
@@ -60,9 +63,17 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
 
         addResizeListener(window)
         openWindows.add(this)
+
+        val windowDimensions = Prefs.get().ocrWindowDimensions
+        if (windowDimensions.x != -1024.1024) {
+            windowDimensions.apply(window)
+        }
     }
 
     private fun onCapture() {
+        Prefs.get().ocrWindowDimensions = WindowDimensions(window)
+        Prefs.save()
+
         window.hide()
         val robot = Robot()
         val image = robot.createScreenCapture(Rectangle(

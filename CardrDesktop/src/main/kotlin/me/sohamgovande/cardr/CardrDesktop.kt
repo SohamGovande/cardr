@@ -5,11 +5,10 @@ import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Stage
 import javafx.stage.WindowEvent
-import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.WindowDimensions
-import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.core.ui.windows.WelcomeWindow
+import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.util.OS
 import me.sohamgovande.cardr.util.getOSType
 import org.apache.logging.log4j.LogManager

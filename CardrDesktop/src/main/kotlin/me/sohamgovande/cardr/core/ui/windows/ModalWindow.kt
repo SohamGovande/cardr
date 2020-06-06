@@ -6,7 +6,7 @@ import javafx.stage.Stage
 import javafx.stage.WindowEvent
 import java.util.function.Consumer
 
-abstract class ModalWindow(val title: String) {
+abstract class ModalWindow(val title: String, private val isModal: Boolean = true) {
 
     val window = Stage()
     protected val onCloseListeners: ArrayList<(HashMap<String, Any>) -> Unit> = arrayListOf()
@@ -16,7 +16,8 @@ abstract class ModalWindow(val title: String) {
     var forcedClose = false
 
     open  fun show() {
-        window.initModality(Modality.APPLICATION_MODAL)
+        if (isModal)
+            window.initModality(Modality.APPLICATION_MODAL)
         window.title = title
         window.scene = generateUI()
         window.isResizable = true

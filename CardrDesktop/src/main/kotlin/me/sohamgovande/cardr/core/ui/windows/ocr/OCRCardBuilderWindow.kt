@@ -14,7 +14,7 @@ import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
 
-class OCRCardBuilderWindow(private val cardrUI: CardrUI) : ModalWindow("OCR Card Builder") {
+class OCRCardBuilderWindow(private val cardrUI: CardrUI) : ModalWindow("OCR Card Builder", isModal = false) {
 
     private val textArea = TextArea()
 
@@ -45,7 +45,7 @@ class OCRCardBuilderWindow(private val cardrUI: CardrUI) : ModalWindow("OCR Card
         val discardBtn = Button("Discard & Exit")
         discardBtn.setOnAction { close(null) }
 
-        val applyBtn = Button("Finish importing")
+        val applyBtn = Button("Finish OCR and set card body")
         applyBtn.setOnAction {
             onCloseData["ocrText"] = textArea.text
             window.onCloseRequest.handle(null)
