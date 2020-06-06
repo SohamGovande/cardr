@@ -13,6 +13,8 @@ import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import java.awt.Desktop
 import java.net.URL
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 class AuthorsCardProperty(cardrUI: CardrUI) : CardProperty("Authors", arrayOf("{AuthorFullName}", "{AuthorLastName}", "{AuthorFirstName}", "{Qualifications}"), cardrUI) {
 
@@ -92,7 +94,7 @@ class AuthorsCardProperty(cardrUI: CardrUI) : CardProperty("Authors", arrayOf("{
 
 
             searchQuals.setOnAction {
-                val name = "${authorGridFName.text} ${authorGridLName.text}".trim().replace(" ", "%20")
+                val name = URLEncoder.encode("${authorGridFName.text} ${authorGridLName.text}".trim(), StandardCharsets.UTF_8.toString())
                 if (name.isNotEmpty())
                     Desktop.getDesktop().browse(URL("https://www.google.com/search?q=$name").toURI())
             }
