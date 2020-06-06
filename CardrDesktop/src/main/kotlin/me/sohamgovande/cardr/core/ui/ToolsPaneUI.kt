@@ -423,9 +423,6 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
     }
 
     fun sendCardToWord() {
-        if (cardrUI.reader == null)
-            return
-
         if (wordWindowList.items.size == 0)
             refreshWordWindows()
 
