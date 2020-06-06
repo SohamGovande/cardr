@@ -5,6 +5,7 @@ import me.sohamgovande.cardr.platformspecific.MacMSWordInteractor
 import java.awt.Robot
 import java.awt.Toolkit
 import java.awt.event.KeyEvent
+import java.awt.event.KeyEvent.VK_F2
 
 enum class KeyboardPasteMode {
     NORMAL, PLAIN_TEXT
@@ -24,8 +25,9 @@ fun pasteObject(data: String, pasteMode: KeyboardPasteMode) {
             r.autoDelay = 0
 
             copy(data)
-            r.keyPress(Prefs.get().pasteShortcut)
-            r.keyRelease(Prefs.get().pasteShortcut)
+            val shortcut = if (Prefs.get().pasteShortcut == 0) VK_F2 else Prefs.get().pasteShortcut
+            r.keyPress(shortcut)
+            r.keyRelease(shortcut)
             r.delay(500)
         }
         return
