@@ -9,6 +9,7 @@ import javafx.scene.input.KeyCombination
 import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
+import me.sohamgovande.cardr.core.ui.property.DateCardProperty
 import me.sohamgovande.cardr.core.ui.windows.*
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.urls.UrlHelper
@@ -173,7 +174,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         useSlashMI.setOnAction {
             Prefs.get().useSlashInsteadOfDash = useSlashMI.isSelected
             Prefs.save()
-            cardrUI.loadDateSeparatorLabels()
+            cardrUI.propertyManager.getByName<DateCardProperty>("Date")?.loadDateSeparatorLabels()
             cardrUI.refreshHTML()
             reopenMenu(settingsMenu)
         }

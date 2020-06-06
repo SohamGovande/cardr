@@ -3,11 +3,7 @@ package me.sohamgovande.cardr.core.card
 import javafx.beans.property.StringProperty
 import me.sohamgovande.cardr.data.prefs.Prefs
 
-data class Cite(val authors: Array<Author>,
-                val date: Timestamp,
-                val title: String,
-                val publication: String,
-                val url: String) {
+class AuthorListManager(private val authors: Array<Author>) {
 
     fun getAuthorName(nameFormat: AuthorNameFormat): String {
         if (authors.size > 1) {
@@ -42,29 +38,5 @@ data class Cite(val authors: Array<Author>,
            ret += ", "
         }
         return ret
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (javaClass != other?.javaClass) return false
-
-        other as Cite
-
-        if (!authors.contentEquals(other.authors)) return false
-        if (date != other.date) return false
-        if (title != other.title) return false
-        if (publication != other.publication) return false
-        if (url != other.url) return false
-
-        return true
-    }
-
-    override fun hashCode(): Int {
-        var result = authors.contentHashCode()
-        result = 31 * result + date.hashCode()
-        result = 31 * result + title.hashCode()
-        result = 31 * result + publication.hashCode()
-        result = 31 * result + url.hashCode()
-        return result
     }
 }
