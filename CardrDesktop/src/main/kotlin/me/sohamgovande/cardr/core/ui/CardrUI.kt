@@ -52,31 +52,28 @@ class CardrUI(val stage: Stage) {
     var reader: WebsiteCardCutter? = null
     val cardBody: StringProperty = SimpleStringProperty("")
 
+    var overrideBodyParagraphs: MutableList<String>? = null
+    var overrideBodyHTML: String? = null
+
+    val removeWords = arrayListOf<String>()
+    val removeParagraphs = arrayListOf<String>()
+
     val cardWV = WebView()
     val statusBar = Label()
-
-    var loaded = false
 
     private val panel = VBox()
     private val searchBarPanel = HBox()
     val gotoUrlBtn = Button("GO")
     private val bodyAreaPanel = HBox()
-
     private val cardDisplayArea = VBox()
-
-    val removeWords = arrayListOf<String>()
-    val removeParagraphs = arrayListOf<String>()
-
-    var currentUser = CardrUser()
-
     val menubarHelper = MenubarHelper(this, stage)
-
-    var overrideBodyParagraphs: MutableList<String>? = null
-    var overrideBodyHTML: String? = null
+    var toolsUI = ToolsPaneUI(this)
 
     var ocrCardBuilderWindow: OCRCardBuilderWindow? = null
 
-    lateinit var toolsUI: ToolsPaneUI
+    var currentUser = CardrUser()
+
+    var loaded = false
 
     init {
         currentUser.onSuccessfulLogin = menubarHelper::onSuccessfulLogin
@@ -266,10 +263,6 @@ class CardrUI(val stage: Stage) {
                 logger.info("Successfully renewed login token")
             }
         }
-    }
-
-    private fun bindToRefreshWebView(component: TextField) {
-        component.textProperty().addListener(changeListenerUpdateHTML)
     }
 
     private fun generateDefaultHTML(): String {
