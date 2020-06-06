@@ -120,7 +120,7 @@ class CardrUI(val stage: Stage) {
         pGridScrollPane = ScrollPane(pGridVbox)
         pGridScrollPane.minWidth = 305.0
         pGridScrollPane.vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
-        pGridScrollPane.hbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
+        pGridScrollPane.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
         pGridScrollPane.style = "-fx-background-color:transparent;"
 
         bodyAreaPanel.children.add(pGridScrollPane)
