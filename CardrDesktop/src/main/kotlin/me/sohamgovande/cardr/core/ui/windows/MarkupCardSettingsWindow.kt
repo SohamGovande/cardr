@@ -26,7 +26,7 @@ class MarkupCardSettingsWindow : ModalWindow("Highlight & Underline Settings") {
 
         val doneBtn = Button("Done")
         doneBtn.prefWidth = WIDTH - 20.0
-        doneBtn.setOnAction { close(null) }
+        doneBtn.setOnAction { window.onCloseRequest.handle(null) }
 
         vbox.children.addAll(listOf(
             header,
@@ -83,20 +83,7 @@ class MarkupCardSettingsWindow : ModalWindow("Highlight & Underline Settings") {
         val lbl = Label(name)
         lbl.minWidth = 100.0
 
-        val shortcutCB = ComboBox(FXCollections.observableList(listOf(
-            "F1",
-            "F2",
-            "F3",
-            "F4",
-            "F5",
-            "F6",
-            "F7",
-            "F8",
-            "F9",
-            "F10",
-            "F11",
-            "F12"
-        )))
+        val shortcutCB = ComboBox(FXCollections.observableList(FUNCTION_KEYS))
         shortcutCB.selectionModel.select(initialSelection - KeyEvent.VK_F1)
         shortcutCB.selectionModel.selectedIndexProperty().addListener { _, _, value ->
             val offset = shortcutCB.selectionModel.selectedIndex
@@ -112,5 +99,19 @@ class MarkupCardSettingsWindow : ModalWindow("Highlight & Underline Settings") {
     companion object {
         const val WIDTH = 225.0
         const val HEIGHT = 300.0
+        val FUNCTION_KEYS = listOf(
+            "F1",
+            "F2",
+            "F3",
+            "F4",
+            "F5",
+            "F6",
+            "F7",
+            "F8",
+            "F9",
+            "F10",
+            "F11",
+            "F12"
+        )
     }
 }

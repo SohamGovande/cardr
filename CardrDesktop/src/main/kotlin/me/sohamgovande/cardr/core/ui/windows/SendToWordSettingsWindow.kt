@@ -63,7 +63,7 @@ class SendToWordSettingsWindow(private val cardrUI: CardrUI) : ModalWindow("Sett
         val saveBtn = Button("Save")
         saveBtn.requestFocus()
         saveBtn.setOnAction {
-            if (plainTextRB.isSelected && cardrUI.overrideCardBody != null) {
+            if (plainTextRB.isSelected && cardrUI.overrideBodyHTML != null) {
                 cardrUI.statusBar.text = "Because of highlighting/underlining, plaintext paste will be overridden with HTML paste for this card."
             } else {
                 cardrUI.statusBar.text = ""

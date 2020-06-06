@@ -8,14 +8,14 @@ import java.util.function.Consumer
 
 abstract class ModalWindow(val title: String) {
 
-    protected val window = Stage()
+    val window = Stage()
     protected val onCloseListeners: ArrayList<(HashMap<String, Any>) -> Unit> = arrayListOf()
 
     protected var onCloseData: HashMap<String, Any> = hashMapOf()
     var autoRemove = true
     var forcedClose = false
 
-    fun show() {
+    open  fun show() {
         window.initModality(Modality.APPLICATION_MODAL)
         window.title = title
         window.scene = generateUI()

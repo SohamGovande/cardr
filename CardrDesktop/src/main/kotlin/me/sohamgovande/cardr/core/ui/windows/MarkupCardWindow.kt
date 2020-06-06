@@ -3,27 +3,29 @@ package me.sohamgovande.cardr.core.ui.windows
 import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.control.Button
+import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.input.KeyEvent
 import javafx.scene.layout.FlowPane
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
+import javafx.scene.text.Font
 import javafx.scene.web.WebView
-import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.data.prefs.Prefs
+import java.awt.event.KeyEvent.VK_F1
 
 class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: String): ModalWindow("Highlight & Underline Card") {
 
     private val optionsPane = FlowPane()
 
-    private val clearBtn = Button("Reset All")
-    private val boldBtn = Button("Bold")
-    private val underlineBtn = Button("Underline")
-    private val emphasizeBtn = Button("Emphasize")
-    private val highlightBtn = Button("Highlight")
-    private val eraserBtn = Button("Unhighlight")
-    private val settingsBtn = Button()
+    private val resetAllBtn = Button("Reset All")
+    private val boldBtn = Button()
+    private val underlineBtn = Button()
+    private val emphasizeBtn = Button()
+    private val highlightBtn = Button()
+    private val unhighlightBtn = Button()
+    private val settingsBtn = Button("Settings")
 
     private val cardWV = WebView()
 
@@ -36,10 +38,13 @@ class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: S
         vbox.padding = Insets(10.0)
         vbox.spacing = 10.0
 
+        val header = Label("Highlight & Underline Card")
+        header.font = Font.font(20.0)
+
         optionsPane.hgap = 5.0
         optionsPane.vgap = 5.0
 
-        optionsPane.children.addAll(clearBtn, boldBtn, underlineBtn, emphasizeBtn, highlightBtn, eraserBtn, settingsBtn)
+        optionsPane.children.addAll(resetAllBtn, boldBtn, underlineBtn, emphasizeBtn, highlightBtn, unhighlightBtn)
 
         discardChangesBtn.setOnAction {
             close(null)
@@ -51,35 +56,55 @@ class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: S
             window.onCloseRequest.handle(null)
         }
 
-        val exitHBox = HBox()
-        exitHBox.spacing = 10.0
-        exitHBox.children.addAll(
+        val bottomOptions = HBox()
+        bottomOptions.spacing = 10.0
+        bottomOptions.children.addAll(
+            settingsBtn,
             discardChangesBtn,
             applyChangesBtn
         )
 
         cardWV.setOnKeyPressed(this::onKeyPressed)
         cardWV.prefWidth = WIDTH - 50
-        cardWV.prefHeight = CardrDesktop.HEIGHT - 100
+        cardWV.prefHeight = 1000.0
         cardWV.engine.loadContent(cardBodyHTML)
 
-        clearBtn.setOnAction { cardWV.engine.loadContent(cardBodyHTML) }
+        resetAllBtn.setOnAction { cardWV.engine.loadContent(cardBodyHTML) }
         boldBtn.setOnAction { boldSelectedText(); clearSelection() }
         underlineBtn.setOnAction { underlineSelectedText(); clearSelection() }
         highlightBtn.setOnAction { highlightSelectedText(); clearSelection() }
-        eraserBtn.setOnAction { unhighlightSelectedText(); clearSelection() }
+        unhighlightBtn.setOnAction { unhighlightSelectedText(); clearSelection() }
         emphasizeBtn.setOnAction { underlineSelectedText(); boldSelectedText(); clearSelection() }
-        settingsBtn.setOnAction { MarkupCardSettingsWindow().show() }
+        settingsBtn.setOnAction {
+            val settings = MarkupCardSettingsWindow()
+            settings.addOnCloseListener { refreshShortcutTips() }
+            settings.show()
+        }
 
+        refreshShortcutTips()
+
+        vbox.children.add(header)
         vbox.children.add(optionsPane)
         vbox.children.add(cardWV)
-        vbox.children.add(exitHBox)
+        vbox.children.add(bottomOptions)
         loadMenuIcons()
 
         val scene = Scene(vbox, WIDTH, HEIGHT)
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
+    }
+
+    private fun refreshShortcutTips() {
+        boldBtn.text = "Bold" + getShortcutName(Prefs.get().boldShortcut)
+        underlineBtn.text = "Underline" + getShortcutName(Prefs.get().underlineShortcut)
+        emphasizeBtn.text = "Emphasize" + getShortcutName(Prefs.get().emphasizeShortcut)
+        highlightBtn.text = "Highlight" + getShortcutName(Prefs.get().highlightShortcut)
+        unhighlightBtn.text = "Unhighlight" + getShortcutName(Prefs.get().unhighlightShortcut)
+    }
+
+    private fun getShortcutName(code: Int): String {
+        return " (" + MarkupCardSettingsWindow.FUNCTION_KEYS[code - VK_F1] + ")"
     }
 
     private fun onKeyPressed(event: KeyEvent) {
@@ -116,13 +141,15 @@ class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: S
     }
 
     fun loadMenuIcons() {
-        highlightBtn.graphic = cardrUI.loadMiniIcon("/highlight.png")
-        emphasizeBtn.graphic = cardrUI.loadMiniIcon("/emphasize.png")
-        underlineBtn.graphic = cardrUI.loadMiniIcon("/underline.png")
-        boldBtn.graphic = cardrUI.loadMiniIcon("/bold.png")
-        eraserBtn.graphic = cardrUI.loadMiniIcon("/eraser.png")
-        clearBtn.graphic = cardrUI.loadMiniIcon("/reset-all.png")
-        settingsBtn.graphic = cardrUI.loadMiniIcon("/settings.png")
+        highlightBtn.graphic = cardrUI.loadMiniIcon("/highlight.png", false, 1.0)
+        emphasizeBtn.graphic = cardrUI.loadMiniIcon("/emphasize.png", false, 1.0)
+        underlineBtn.graphic = cardrUI.loadMiniIcon("/underline.png", false, 1.0)
+        boldBtn.graphic = cardrUI.loadMiniIcon("/bold.png", false, 1.0)
+        unhighlightBtn.graphic = cardrUI.loadMiniIcon("/eraser.png", false, 1.0)
+        resetAllBtn.graphic = cardrUI.loadMiniIcon("/reset-all.png", false, 1.0)
+        settingsBtn.graphic = cardrUI.loadMiniIcon("/settings.png", false, 1.0)
+        applyChangesBtn.graphic = cardrUI.loadMiniIcon("/checkmark.png", false, 1.0)
+        discardChangesBtn.graphic = cardrUI.loadMiniIcon("/close.png", false, 1.0)
     }
 
     companion object {

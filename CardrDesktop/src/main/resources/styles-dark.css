@@ -38,7 +38,7 @@
 }
 
 .button:default {
-    -fx-base: -fx-accent ;
+    -fx-base: -fx-accent;
 }
 
 .table-view{
@@ -67,4 +67,8 @@
 .table-row-cell{
     -fx-border-color: transparent;
     -fx-table-cell-border-color: transparent;
+}
+.text-area {
+    -fx-font-family: Calibri, Arial;
+    -fx-font-size: 12pt;
 }

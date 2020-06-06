@@ -41,14 +41,14 @@ fun main(args: Array<String>) {
                 synchronized(uiLock) {
                     try {
                         if (args.size == 1) {
-                            val reader = WebsiteCardCutter(args[0], null)
+                            val reader = WebsiteCardCutter(null, args[0], null)
                             uiLock.wait()
                             ui!!.loadFromReader(reader)
                         } else if (args.size == 2) {
                             val cardID = args[1]
                             CardrDesktop.logger.info("Loaded card ID $cardID")
 
-                            val reader = WebsiteCardCutter(args[0], cardID)
+                            val reader = WebsiteCardCutter(null, args[0], cardID)
                             uiLock.wait()
                             ui!!.loadFromReader(reader)
 

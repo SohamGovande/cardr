@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.card.Author
 import me.sohamgovande.cardr.core.card.Timestamp
+import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.util.*
 import org.apache.commons.text.StringEscapeUtils
@@ -17,14 +18,10 @@ import java.io.BufferedReader
 import java.net.URI
 import java.nio.file.Paths
 import java.security.SecureRandom
-import java.security.cert.X509Certificate
-import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
 
 
-class WebsiteCardCutter(private val url: String, private val cardID: String?) {
+class WebsiteCardCutter(var cardrUI: CardrUI?, private val url: String, private val cardID: String?) {
 
     private val logger = LogManager.getLogger(javaClass)
     private lateinit var doc: Document
@@ -614,21 +611,23 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
     }
     fun getURL() = url
 
-    fun getBodyParagraphs(): Elements {
+    fun getBodyParagraphsText(): MutableList<String> {
+        if (cardrUI?.overrideBodyParagraphs != null)
+            return cardrUI!!.overrideBodyParagraphs!!
         if (bodyParagraphElements == null) {
             val reader = CardBodyReader(getHostName(url).toLowerCase(), doc)
             bodyParagraphElements = reader.getBodyParagraphs(cardID != null)
         }
-        return bodyParagraphElements as Elements
+        return (bodyParagraphElements as Elements).map { it.text() }.toMutableList()
     }
 
     fun getBodyParagraphText(html: Boolean): String {
         if (html) {
             val sb = StringBuilder()
-            getBodyParagraphs().forEach {
+            getBodyParagraphsText().forEach {
                 sb.append("<p>")
 
-                sb.append(it.text())
+                sb.append(it)
                 sb.append(' ')
 
                 sb.append("</p>")
@@ -636,8 +635,8 @@ class WebsiteCardCutter(private val url: String, private val cardID: String?) {
             return sb.toString()
         } else {
             val sb = StringBuilder()
-            getBodyParagraphs().forEach {
-                sb.append(it.text())
+            getBodyParagraphsText().forEach {
+                sb.append(it)
                 sb.append(' ')
                 if (!Prefs.get().condense)
                     sb.append('\n')

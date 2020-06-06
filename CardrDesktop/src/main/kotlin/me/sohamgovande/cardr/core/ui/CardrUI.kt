@@ -5,6 +5,7 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.beans.property.StringProperty
 import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
+import javafx.geometry.Bounds
 import javafx.geometry.Insets
 import javafx.scene.control.*
 import javafx.scene.effect.ColorAdjust
@@ -27,6 +28,8 @@ import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
 import me.sohamgovande.cardr.core.ui.windows.MarkupCardWindow
 import me.sohamgovande.cardr.core.ui.windows.SignInLauncherOptions
 import me.sohamgovande.cardr.core.ui.windows.SignInWindow
+import me.sohamgovande.cardr.core.ui.windows.ocr.OCRCardBuilderWindow
+import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.prefs.PrefsObject
@@ -43,7 +46,7 @@ import java.net.URL
 import java.nio.file.Paths
 
 
-class CardrUI(private val stage: Stage) {
+class CardrUI(val stage: Stage) {
 
     private var authors: Array<Author> = arrayOf(Author(SimpleStringProperty(""), SimpleStringProperty("")))
     private var title: StringProperty = SimpleStringProperty("")
@@ -56,7 +59,7 @@ class CardrUI(private val stage: Stage) {
         // Sufficiently delay it to occur after the event goes through
         refreshHTML()
     }
-    private val cardBody: StringProperty = SimpleStringProperty("")
+    val cardBody: StringProperty = SimpleStringProperty("")
 
     private val propertyUrlTextField = TextField()
     private val propertyPubTextField = TextField()
@@ -98,6 +101,7 @@ class CardrUI(private val stage: Stage) {
     private val keepOnlySelectedBtn = Button("Remove Except for Selected Text")
     private val editCardFormatBtn = Button("Edit Card Format")
     private val markupBtn = Button("Highlight & Underline Card")
+    private val ocrBtn = Button("OCR Tool")
 
     private val exportBtn = Button("Send to Word")
 
@@ -115,7 +119,10 @@ class CardrUI(private val stage: Stage) {
     private var reader: WebsiteCardCutter? = null
     val menubarHelper = MenubarHelper(this, stage)
 
-    var overrideCardBody: String? = null
+    var overrideBodyParagraphs: MutableList<String>? = null
+    var overrideBodyHTML: String? = null
+
+    var ocrCardBuilderWindow: OCRCardBuilderWindow? = null
 
     init {
         currentUser.onSuccessfulLogin = menubarHelper::onSuccessfulLogin
@@ -235,12 +242,7 @@ class CardrUI(private val stage: Stage) {
         val cdm1 = FlowPane()
         cdm1.hgap = 5.0
         cdm1.vgap = 5.0
-        cdm1.children.add(removeSelectedBtn)
-        cdm1.children.add(keepOnlySelectedBtn)
-        cdm1.children.add(restoreRemovedBtn)
-        cdm1.children.add(copyBtn)
-        cdm1.children.add(editCardFormatBtn)
-        cdm1.children.add(markupBtn)
+        cdm1.children.addAll(removeSelectedBtn, keepOnlySelectedBtn, restoreRemovedBtn, copyBtn, editCardFormatBtn, markupBtn, ocrBtn)
 
         cardDisplayMenu.children.add(cdm1)
 
@@ -264,12 +266,12 @@ class CardrUI(private val stage: Stage) {
         return panel
     }
 
-    fun loadMiniIcon(path: String): ImageView? {
+    fun loadMiniIcon(path: String, overrideDarkMode: Boolean, scale: Double): ImageView? {
         val copyResource: InputStream? = javaClass.getResourceAsStream(path)
         if (copyResource != null) {
-            val image = Image(copyResource, 15.0, 15.0, true, true)
+            val image = Image(copyResource, 15.0 * scale, 15.0 * scale, true, true)
             val imageView = ImageView(image)
-            if (Prefs.get().darkMode) {
+            if (Prefs.get().darkMode || overrideDarkMode) {
                 val effect = ColorAdjust()
                 effect.brightness = 1.0
                 imageView.effect = effect
@@ -290,10 +292,10 @@ class CardrUI(private val stage: Stage) {
         gotoUrlBtn.setOnAction {
             Thread {
                 try {
-                    val reader = WebsiteCardCutter(urlTF.text, null)
+                    val reader = WebsiteCardCutter(this, urlTF.text, null)
                     this.reader = reader
 
-                    overrideCardBody = null
+                    overrideBodyHTML = null
                     enableCardBodyEditOptions()
                     removeWords.clear()
                     removeParagraphs.clear()
@@ -307,6 +309,7 @@ class CardrUI(private val stage: Stage) {
                     updateWindowTitle(reader.getTitle() ?: "")
                     this.cardTag.set(title.get())
                     this.cardBody.set(reader.getBodyParagraphText(true))
+                    overrideBodyParagraphs = null
 
                     Platform.runLater {
                         visitURL(urlTF.text)
@@ -327,12 +330,13 @@ class CardrUI(private val stage: Stage) {
             }.start()
         }
 
+        ocrBtn.setOnAction { openOCRTool() }
         copyBtn.setOnAction { copyCardToClipboard() }
         removeSelectedBtn.setOnAction { removeSelectedText() }
         restoreRemovedBtn.setOnAction {
             removeWords.clear()
             removeParagraphs.clear()
-            overrideCardBody = null
+            overrideBodyHTML = null
             enableCardBodyEditOptions()
             statusBar.text = ""
 
@@ -400,20 +404,21 @@ class CardrUI(private val stage: Stage) {
     }
 
     fun loadMenuIcons() {
-        restoreRemovedBtn.graphic = loadMiniIcon("/restore.png")
-        removeSelectedBtn.graphic = loadMiniIcon("/remove.png")
-        copyBtn.graphic = loadMiniIcon("/copy.png")
-        refreshBtn.graphic = loadMiniIcon("/refresh.png")
-        editCardFormatBtn.graphic = loadMiniIcon("/edit.png")
-        keepOnlySelectedBtn.graphic = loadMiniIcon("/keep-text.png")
-        markupBtn.graphic = loadMiniIcon("/markup.png")
+        restoreRemovedBtn.graphic = loadMiniIcon("/restore.png", false, 1.0)
+        removeSelectedBtn.graphic = loadMiniIcon("/remove.png", false, 1.0)
+        copyBtn.graphic = loadMiniIcon("/copy.png", false, 1.0)
+        refreshBtn.graphic = loadMiniIcon("/refresh.png", false, 1.0)
+        editCardFormatBtn.graphic = loadMiniIcon("/edit.png", false, 1.0)
+        keepOnlySelectedBtn.graphic = loadMiniIcon("/keep-text.png", false, 1.0)
+        markupBtn.graphic = loadMiniIcon("/markup.png", false, 1.0)
+        ocrBtn.graphic = loadMiniIcon("/capture-ocr.png", false, 1.0)
 
         for (btn in deleteAuthorButtons) {
-            btn.graphic = loadMiniIcon("/remove.png")
+            btn.graphic = loadMiniIcon("/remove.png", false, 1.0)
         }
 
         for (btn in searchButtons) {
-            btn.graphic = loadMiniIcon("/search.png")
+            btn.graphic = loadMiniIcon("/search.png", false, 1.0)
         }
 
     }
@@ -473,7 +478,7 @@ class CardrUI(private val stage: Stage) {
             bindToRefreshWebView(authorGridLName)
 
             val deleteAuthor = Button()
-            deleteAuthor.graphic = loadMiniIcon("/remove.png")
+            deleteAuthor.graphic = loadMiniIcon("/remove.png", false, 1.0)
             deleteAuthorButtons.add(deleteAuthor)
             deleteAuthor.prefWidth = 25.0
 
@@ -483,7 +488,7 @@ class CardrUI(private val stage: Stage) {
             bindToRefreshWebView(authorGridQuals)
 
             val searchQuals = Button()
-            searchQuals.graphic = loadMiniIcon("/search.png")
+            searchQuals.graphic = loadMiniIcon("/search.png", false, 1.0)
             searchButtons.add(deleteAuthor)
             searchQuals.prefWidth = 25.0
 
@@ -617,8 +622,8 @@ class CardrUI(private val stage: Stage) {
     }
 
     private fun generateCardBodyHTML(cardBody: String, cardBodyIsHTML: Boolean): String {
-        if (overrideCardBody != null)
-            return overrideCardBody!!
+        if (overrideBodyHTML != null)
+            return overrideBodyHTML!!
 
         var out = cardBody
 
@@ -683,6 +688,7 @@ class CardrUI(private val stage: Stage) {
 
     fun loadFromReader(reader: WebsiteCardCutter) {
         this.reader = reader
+        reader.cardrUI = this
 
         Platform.runLater {
             this.urlTF.text = reader.getURL()
@@ -696,6 +702,7 @@ class CardrUI(private val stage: Stage) {
 
             this.cardTag.set(title.get())
             this.cardBody.set(reader.getBodyParagraphText(true))
+            overrideBodyParagraphs = null
 
             propertyTitleTextField.textProperty().bindBidirectional(this.title)
             propertyPubTextField.textProperty().bindBidirectional(this.publisher)
@@ -845,7 +852,7 @@ class CardrUI(private val stage: Stage) {
         while (selection.contains("  "))
             selection = selection.replace("  ", " ")
 
-        val paragraphs = reader!!.getBodyParagraphs().map { it.text() }.toMutableList()
+        val paragraphs = reader!!.getBodyParagraphsText()
         var firstIndex = -1
         var lastIndex = -1
 
@@ -896,6 +903,10 @@ class CardrUI(private val stage: Stage) {
             removeParagraphs.add(paragraphs[i])
         }
         refreshHTML()
+    }
+
+    fun openOCRTool() {
+        OCRSelectionWindow(this).show()
     }
 
     fun copyCardToClipboard() {
@@ -1004,7 +1015,10 @@ class CardrUI(private val stage: Stage) {
             $cardBody
         </body>
         """.trimIndent()
+
         val window = MarkupCardWindow(this, html)
+        val screenBounds = cardWV.localToScreen(cardWV.boundsInLocal)
+
         window.addOnCloseListener {
             if (!window.applyChanges)
                 return@addOnCloseListener
@@ -1024,7 +1038,7 @@ class CardrUI(private val stage: Stage) {
             }
 
             disableCardBodyEditOptions()
-            overrideCardBody = innerBody.html()
+            overrideBodyHTML = innerBody.html()
 
             refreshHTML()
 
@@ -1044,6 +1058,11 @@ class CardrUI(private val stage: Stage) {
             }
         }
         window.show()
+
+        window.window.x = screenBounds.minX - 25
+        window.window.y = screenBounds.minY - 150
+        window.window.width = screenBounds.width + 25
+        window.window.height = screenBounds.height + 150
     }
 
     private fun disableCardBodyEditOptions() {
@@ -1053,7 +1072,7 @@ class CardrUI(private val stage: Stage) {
         menubarHelper.removeSelectedMI.isDisable = true
     }
 
-    private fun enableCardBodyEditOptions() {
+    fun enableCardBodyEditOptions() {
         keepOnlySelectedBtn.isDisable = false
         removeSelectedBtn.isDisable = false
         menubarHelper.keepSelectedMI.isDisable = false
@@ -1080,7 +1099,7 @@ class CardrUI(private val stage: Stage) {
             }
         }
 
-        if (Prefs.get().pastePlainText && overrideCardBody == null) {
+        if (Prefs.get().pastePlainText && overrideBodyHTML == null) {
             val cardBodyReplacement = "safd7asdyfkjahnw3k5nsd"
             val cardHtml = generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = cardBodyReplacement)
             val cardBodyIndex = cardHtml.indexOf(cardBodyReplacement)

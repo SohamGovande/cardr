@@ -1,0 +1,23 @@
+.button:hover {
+    -fx-text-fill: white;
+}
+
+.button {
+    -fx-font-size: 150%;
+}
+
+.custom-dashed-border {
+    -fx-border-color: red;
+    -fx-border-width: 3;
+    -fx-border-style: segments(10, 15, 15, 15)  line-cap round;
+}
+
+.root {
+    -fx-background-color: transparent;
+
+    -fx-accent: #606978;
+    -fx-focus-color: -fx-accent;
+    -fx-base: #6f6f6f;
+    -fx-control-inner-background: derive(-fx-base, 35%);
+    -fx-control-inner-background-alt: -fx-control-inner-background;
+}
