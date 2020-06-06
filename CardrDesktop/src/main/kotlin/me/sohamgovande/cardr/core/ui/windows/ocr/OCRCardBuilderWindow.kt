@@ -72,7 +72,7 @@ class OCRCardBuilderWindow(private val cardrUI: CardrUI) : ModalWindow("OCR Card
     }
 
     fun importText(text: String) {
-        var formatted = text.replace("\n"," ").replace("\r"," ") + "\n\n"
+        var formatted = text.replace(Regex("[\\n\\r](?![\\n\\r])"), "").replace("\n","\n\n")
         while (formatted.contains("  "))
             formatted = formatted.replace("  ", " ")
         val caretPosition = textArea.caretPosition

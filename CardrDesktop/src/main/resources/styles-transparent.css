@@ -2,7 +2,7 @@
     -fx-text-fill: white;
 }
 
-.button {
+.button, .label {
     -fx-font-size: 150%;
 }
 
@@ -15,7 +15,7 @@
 .root {
     -fx-background-color: transparent;
 
-    -fx-accent: #606978;
+    -fx-accent: #7d5555;
     -fx-focus-color: -fx-accent;
     -fx-base: #6f6f6f;
     -fx-control-inner-background: derive(-fx-base, 35%);

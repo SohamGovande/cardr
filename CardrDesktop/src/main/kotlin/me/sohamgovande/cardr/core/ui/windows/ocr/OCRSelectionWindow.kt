@@ -6,6 +6,7 @@ import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Scene
 import javafx.scene.control.Button
+import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.HBox
@@ -33,8 +34,13 @@ import kotlin.math.abs
 
 class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"){
 
+    private val menuBox = HBox()
+    private val captureBtn = Button("Capture")
+
     private var xOffset = 0.0
     private var yOffset = 0.0
+
+    private var thread: Thread? = null
 
     override fun show() {
         hideAllWindows()
@@ -57,18 +63,24 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
     }
 
     private fun onCapture() {
-        close(null)
+        window.hide()
         val robot = Robot()
         val image = robot.createScreenCapture(Rectangle(
             window.x.toInt(), window.y.toInt(), window.width.toInt(), window.height.toInt()
         ))
         val imageFile = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "ocr-region.png").toFile()
         ImageIO.write(image, "png", imageFile)
-        showAllWindows()
+        window.show()
+        captureBtn.graphic = null
+        captureBtn.text = "Loading..."
+        captureBtn.isDisable = true
 
-        Thread {
+        thread = Thread {
             val text = getOCRFromAPI()
             Platform.runLater {
+                close(null)
+                showAllWindows()
+
                 val builder = if (cardrUI.ocrCardBuilderWindow == null) OCRCardBuilderWindow(cardrUI) else cardrUI.ocrCardBuilderWindow!!
                 if (cardrUI.ocrCardBuilderWindow == null) {
                     cardrUI.ocrCardBuilderWindow = builder
@@ -79,7 +91,8 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
                 builder.addOnCloseListener(this::loadOCRText)
                 builder.importText(text)
             }
-        }.start()
+        }
+        thread!!.start()
     }
 
     private fun getOCRFromAPI(): String {
@@ -147,18 +160,20 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
     }
 
     override fun generateUI(): Scene {
-        val menuBox = HBox()
-
         menuBox.spacing = 10.0
         menuBox.padding = Insets(10.0)
 
-        val captureBtn = Button("Capture")
         captureBtn.graphic = cardrUI.loadMiniIcon("/capture-ocr.png", true, 1.5)
         captureBtn.setOnAction { onCapture() }
 
         val closeBtn = Button("Close")
         closeBtn.graphic = cardrUI.loadMiniIcon("/close.png", true, 1.5)
-        closeBtn.setOnAction { close(null); showAllWindows() }
+        closeBtn.setOnAction {
+            if (thread != null && thread!!.isAlive)
+                thread!!.interrupt()
+            close(null)
+            showAllWindows()
+        }
 
         menuBox.alignment = Pos.CENTER
         menuBox.children.addAll(captureBtn, closeBtn)
