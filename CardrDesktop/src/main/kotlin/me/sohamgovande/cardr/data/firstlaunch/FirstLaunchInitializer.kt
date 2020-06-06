@@ -1,4 +1,5 @@
 package me.sohamgovande.cardr.data.firstlaunch
+import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.prefs.PrefsObject
 import me.sohamgovande.cardr.data.urls.UrlHelper
@@ -7,9 +8,7 @@ import net.lingala.zip4j.ZipFile
 import org.apache.commons.io.IOUtils
 import org.apache.logging.log4j.LogManager
 import java.io.File
-import java.nio.file.FileAlreadyExistsException
-import java.nio.file.Files
-import java.nio.file.Paths
+import java.nio.file.*
 
 private val logger = LogManager.getLogger(Prefs::class.java)
 
@@ -70,6 +69,24 @@ private fun downloadChromeDataMacOS() {
 }
 
 @Throws(FirstLaunchException::class, Exception::class)
+private fun downloadOCRData() {
+    logger.info("Initializing OCR...")
+    val input = CardrDesktop::class.java.getResourceAsStream("/ocr-data.txt")
+    logger.info("Transferring OCR file")
+    Files.copy(
+        input,
+        Paths.get(System.getProperty("cardr.data.dir"), "OCRData.zip"),
+        StandardCopyOption.REPLACE_EXISTING
+    )
+    logger.info("Extracting ZIP data")
+    val zipFileRaw = Paths.get(System.getProperty("cardr.data.dir"), "OCRData.zip").toFile()
+    val zipFile = ZipFile(zipFileRaw)
+    zipFile.extractAll(System.getProperty("cardr.data.dir"))
+    zipFileRaw.deleteOnExit()
+    logger.info("Finished OCR")
+}
+
+@Throws(FirstLaunchException::class, Exception::class)
 private fun onFirstLaunchWindows() {
     val jsonFile = downloadChromeDataWindows()
 
@@ -81,6 +98,8 @@ private fun onFirstLaunchWindows() {
     for (cmd in commands) {
         executeCommandBlocking(cmd, logger, true)
     }
+
+    downloadOCRData()
 }
 
 @Throws(FirstLaunchException::class, Exception::class)
@@ -104,6 +123,8 @@ private fun onFirstLaunchMacOS() {
         throw FirstLaunchException("Unable to download AppleScript 'getWordWindows'.")
     if (!pasteToWordScriptPath.toFile().exists())
         throw FirstLaunchException("Unable to download AppleScript 'pasteToWord'.")
+
+    downloadOCRData()
 }
 
 fun onFirstLaunch(): Exception? {
@@ -136,6 +157,11 @@ fun updateFrom(from: Int, to: Int): Exception? {
         } else {
             downloadChromeDataWindows()
         }
+    }
+
+    if (from < 5 && to >= 5) {
+        logger.info("Updating OCR data...")
+        downloadOCRData()
     }
 
     prefs.hideUpdateDialog = false

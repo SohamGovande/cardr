@@ -109,3 +109,6 @@ DerivedData/
 
 ## Secret Keys
 SecretData.kt
+
+## Large files
+ocr-data.txt
