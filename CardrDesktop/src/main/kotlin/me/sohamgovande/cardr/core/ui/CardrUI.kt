@@ -516,7 +516,7 @@ class CardrUI(val stage: Stage) {
         if (!forCopy) {
             doc.select("head")[0].html("""
             <style>
-                body { font-family: 'Arial'; font-size: 11pt;
+                body { font-family: 'Arial'; font-size: 11pt; margin-right: 20px;
                 ${if (Prefs.get().darkMode && !forCopy) {
                 "background-color: #373e43; color: #ffffff;"
             } else "background-color: #f4f4f4;"}
