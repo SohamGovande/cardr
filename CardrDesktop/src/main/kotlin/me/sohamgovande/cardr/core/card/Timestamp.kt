@@ -23,7 +23,7 @@ class Timestamp {
     fun toString(fullDate: Boolean): String {
         val yearIntOrNull = yearAsInt()
         if (yearIntOrNull == null) {
-            return "No Date"
+            return if (fullDate) "No Date" else "N.D."
         } else {
             if (fullDate) {
                 // Either we don't know the month or neither the month and the day
