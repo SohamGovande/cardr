@@ -11,6 +11,7 @@ import javafx.scene.layout.BorderPane
 import javafx.scene.layout.HBox
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
+import me.sohamgovande.cardr.core.auth.SecretData
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.ResizeListener.Companion.BORDER_SIZE
@@ -22,7 +23,11 @@ import org.apache.http.impl.client.HttpClientBuilder
 import java.awt.Rectangle
 import java.awt.Robot
 import java.io.BufferedReader
+import java.io.File
+import java.net.URLClassLoader
+import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.jar.JarFile
 import javax.imageio.ImageIO
 import kotlin.math.abs
 
@@ -57,22 +62,12 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
         val image = robot.createScreenCapture(Rectangle(
             window.x.toInt(), window.y.toInt(), window.width.toInt(), window.height.toInt()
         ))
-        val imageFile = Paths.get(System.getProperty("cardr.data.dir"), "ocr-region.jpg").toFile()
-        ImageIO.write(image, "jpg", imageFile)
+        val imageFile = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "ocr-region.png").toFile()
+        ImageIO.write(image, "png", imageFile)
         showAllWindows()
 
         Thread {
-            val client = HttpClientBuilder.create().build()
-            val request = HttpPost("https://api.ocr.space/parse/image")
-            request.setHeader("apikey", "b2aa18f7f488957")
-            request.entity = MultipartEntityBuilder.create()
-                .addBinaryBody("file", imageFile)
-                .build()
-
-            val response: CloseableHttpResponse = client.execute(request)
-            val data = response.entity.content.bufferedReader().use(BufferedReader::readText)
-            val jsonData = JsonParser().parse(data).asJsonObject
-            val text = StringEscapeUtils.unescapeJson(jsonData["ParsedResults"].asJsonArray[0].asJsonObject["ParsedText"].asString)
+            val text = getOCRFromAPI()
             Platform.runLater {
                 val builder = if (cardrUI.ocrCardBuilderWindow == null) OCRCardBuilderWindow(cardrUI) else cardrUI.ocrCardBuilderWindow!!
                 if (cardrUI.ocrCardBuilderWindow == null) {
@@ -85,6 +80,30 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
                 builder.importText(text)
             }
         }.start()
+    }
+
+    private fun getOCRFromAPI(): String {
+        val classLoader = URLClassLoader(arrayOf(Paths.get(System.getProperty("cardr.data.dir"), "ocr", "CardrOCR.jar").toFile().toURL()), ClassLoader.getSystemClassLoader())
+        val ocrClass = classLoader.loadClass("me.sohamgovande.cardr.ocr.CardrOCR")
+        ocrClass.getMethod("doOCR").invoke(
+            ocrClass.getConstructor(Array<String>::class.java)
+                .newInstance(arrayOf(System.getProperty("cardr.data.dir")))
+        )
+        return Files.readString(Paths.get(System.getProperty("cardr.data.dir"), "ocr", "ocr-result.txt"))
+    }
+
+    private fun getOCRFromREST(imageFile: File): String {
+        val client = HttpClientBuilder.create().build()
+        val request = HttpPost("https://api.ocr.space/parse/image")
+        request.setHeader("apikey", SecretData.OCRSPACE_APIKEY)
+        request.entity = MultipartEntityBuilder.create()
+            .addBinaryBody("file", imageFile)
+            .build()
+
+        val response: CloseableHttpResponse = client.execute(request)
+        val data = response.entity.content.bufferedReader().use(BufferedReader::readText)
+        val jsonData = JsonParser().parse(data).asJsonObject
+        return StringEscapeUtils.unescapeJson(jsonData["ParsedResults"].asJsonArray[0].asJsonObject["ParsedText"].asString)
     }
 
     private fun loadOCRText(data: HashMap<String, Any>) {
