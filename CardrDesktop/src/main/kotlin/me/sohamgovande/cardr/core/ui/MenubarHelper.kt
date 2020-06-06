@@ -280,8 +280,6 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         websiteMI.setOnAction { UrlHelper.browse("homepage") }
         val chromeMI = MenuItem("Get Chrome Extension")
         chromeMI.setOnAction { UrlHelper.browse("extension") }
-        val githubMI = MenuItem("Contribute on GitHub")
-        githubMI.setOnAction { UrlHelper.browse("github") }
         val viewSupportedSites = MenuItem("View supported websites")
         viewSupportedSites.setOnAction {
             showInfoDialogBlocking("Supported websites", "Once you click OK, cardr will display a list of supported websites. These are NOT the only websites you can use cardr on, but are the ones that cardr offers 100% integration for. For other websites that aren't on this list, cardr will still work most of the time.")
