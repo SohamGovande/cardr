@@ -29,7 +29,6 @@ class CardPropertyManager(private val cardrUI: CardrUI) {
         pGrid.hgap = 10.0
         pGrid.vgap = 10.0
         pGrid.minWidth = 300.0
-        pGrid.maxWidth = 325.0
         pGrid.prefHeight = CardrDesktop.HEIGHT - 100 // Take up the rest remaining space
         pGrid.columnConstraints.add(ColumnConstraints(60.0))
         pGrid.columnConstraints.add(ColumnConstraints(225.0))

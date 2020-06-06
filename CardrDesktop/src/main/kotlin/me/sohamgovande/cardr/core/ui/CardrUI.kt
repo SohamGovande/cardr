@@ -88,8 +88,6 @@ class CardrUI(val stage: Stage) {
             menubarHelper.applyDefaultMenu(panel)
         }
 
-        toolsUI = ToolsPaneUI(this)
-
         logger.info("Creating UI components")
         searchBarPanel.spacing = 5.0
         searchBarPanel.padding = Insets(5.0)
@@ -102,8 +100,6 @@ class CardrUI(val stage: Stage) {
         searchBarPanel.children.add(gotoUrlBtn)
 
         bodyAreaPanel.padding = Insets(5.0)
-
-        val pGrid = propertyManager.generatePropertyGrid()
 
         statusBar.font = Font.font(10.0)
 
@@ -119,20 +115,17 @@ class CardrUI(val stage: Stage) {
         val pGridVbox = VBox()
         val pGridHeader = Label("Properties")
         pGridHeader.font = Font.font(20.0)
-        pGridVbox.children.addAll(pGridHeader, pGrid)
+        pGridVbox.children.addAll(pGridHeader, propertyManager.generatePropertyGrid())
 
         pGridScrollPane = ScrollPane(pGridVbox)
-        pGridScrollPane.prefWidth = 375.0
-        pGridScrollPane.prefViewportWidth = 300.0
+        pGridScrollPane.minWidth = 305.0
         pGridScrollPane.vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
         pGridScrollPane.hbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
         pGridScrollPane.style = "-fx-background-color:transparent;"
 
-        toolsUI.generateUI()
-
         bodyAreaPanel.children.add(pGridScrollPane)
         bodyAreaPanel.children.add(cardDisplayArea)
-        bodyAreaPanel.children.add(toolsUI.root)
+        bodyAreaPanel.children.add(toolsUI.generateUI())
 
         panel.children.add(searchBarPanel)
         panel.children.add(bodyAreaPanel)

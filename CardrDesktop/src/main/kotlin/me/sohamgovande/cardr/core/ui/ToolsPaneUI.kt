@@ -4,6 +4,7 @@ import javafx.application.Platform
 import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.geometry.Insets
+import javafx.scene.Node
 import javafx.scene.control.*
 import javafx.scene.layout.GridPane
 import javafx.scene.layout.VBox
@@ -85,7 +86,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
         sendToWordUI.children.add(copyBtn)
     }
 
-    fun generateUI() {
+    fun generateUI(): Node {
         generateSendToWordUI()
 
         val header = Label("Tools")
@@ -155,7 +156,15 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
             }
         }
 
-        root.minWidth = 220.0
+        root.maxWidth = 220.0
+
+        val scrollPane = ScrollPane(root)
+        scrollPane.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
+        scrollPane.vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
+        scrollPane.minWidth = 230.0
+        scrollPane.style = "-fx-background-color:transparent;"
+
+        return scrollPane
     }
 
     fun initButtonWidths(buttons: Array<Button>) {
