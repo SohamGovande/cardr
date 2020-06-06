@@ -116,7 +116,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
         val formatMI = MenuItem("Card and cite format settings...")
         formatMI.setOnAction {
-            val window = FormatPrefsWindow()
+            val window = FormatPrefsWindow(cardrUI)
             window.addOnCloseListener{
                 cardrUI.refreshHTML()
             }

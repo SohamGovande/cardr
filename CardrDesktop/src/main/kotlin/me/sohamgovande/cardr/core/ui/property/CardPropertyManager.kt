@@ -10,7 +10,7 @@ import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 
 class CardPropertyManager(private val cardrUI: CardrUI) {
 
-    private var cardProperties = mutableListOf(
+    var cardProperties = mutableListOf(
         UrlCardProperty(cardrUI),
         DateCardProperty(cardrUI),
         PublicationCardProperty(cardrUI),

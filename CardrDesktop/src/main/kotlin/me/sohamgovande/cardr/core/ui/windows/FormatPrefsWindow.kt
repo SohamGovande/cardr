@@ -12,6 +12,7 @@ import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
 import javafx.scene.web.HTMLEditor
 import javafx.stage.WindowEvent
+import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.prefs.PrefsObject
 import me.sohamgovande.cardr.util.OS
@@ -19,7 +20,7 @@ import me.sohamgovande.cardr.util.getOSType
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
-class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
+class FormatPrefsWindow(private val cardrUI: CardrUI): ModalWindow("Settings - Card Format") {
 
     private val editText = HTMLEditor()
 
@@ -100,18 +101,14 @@ class FormatPrefsWindow: ModalWindow("Settings - Card Format") {
             alert.headerText = "Available Macros"
             alert.buttonTypes.add(ButtonType.CLOSE)
 
-            val list = ListView(FXCollections.observableArrayList(
-                "{AuthorFirstName}",
-                "{AuthorLastName}",
-                "{AuthorFullName}",
-                "{DateFull}",
-                "{DateShortened}",
-                "{Qualifications}",
-                "{CurrentDate}",
-                "{Publication}",
-                "{Title}",
-                "{Url}"
-            ))
+            val macroList = arrayListOf("{CardBody}")
+            for (property in cardrUI.propertyManager.cardProperties)
+                for (macro in property.macros)
+                    macroList.add(macro)
+
+            macroList.sort()
+
+            val list = ListView(FXCollections.observableList(macroList))
 
             val copyBtn = Button("Copy")
             copyBtn.prefWidth = 250.0

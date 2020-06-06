@@ -41,7 +41,6 @@ class CardrUI(val stage: Stage) {
     private var authors: Array<Author> = arrayOf(Author(SimpleStringProperty(""), SimpleStringProperty("")))
     val changeListenerUpdateHTML = { _: ObservableValue<out String>, _: String, _: String ->
         Unit
-        // Sufficiently delay it to occur after the event goes through
         refreshHTML()
     }
 

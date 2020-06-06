@@ -107,7 +107,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
             alert.showAndWait()
         }
         keepOnlySelectedBtn.setOnAction { keepOnlySelectedText() }
-        editCardFormatBtn.setOnAction { FormatPrefsWindow().show() }
+        editCardFormatBtn.setOnAction { FormatPrefsWindow(cardrUI).show() }
         refreshBtn.setOnAction { refreshWordWindows() }
         markupBtn.setOnAction { openMarkupWindow() }
 
