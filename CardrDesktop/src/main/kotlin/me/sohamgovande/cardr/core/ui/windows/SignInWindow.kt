@@ -1,5 +1,6 @@
 package me.sohamgovande.cardr.core.ui.windows
 
+import com.google.gson.JsonParser
 import javafx.application.Platform
 import javafx.event.ActionEvent
 import javafx.geometry.Insets
@@ -84,13 +85,22 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
                     val alert = Alert(AlertType.ERROR)
                     alert.dialogPane.minHeight = Region.USE_PREF_SIZE
                     alert.title = "Error"
-                    alert.headerText = "Login error: ${result.reason}"
-                    alert.contentText = "An error occurred while logging in. \n\n" +
-                        "Here's what we know—\n" +
-                        "Performing action: ${result.func}\n" +
-                        "Status: ${result.status}\n" +
-                        "Reason: ${result.reason}\n" +
-                        "Additional info: ${result.additional_info}"
+                    if (result.reason == "That username and password combination is invalid.") {
+                        alert.headerText = "Invalid email and password combination."
+                        alert.contentText = "To reset your password, please visit https://cardrdebate.com/forgot-password-instructions.html."
+                    } else if (result.additional_info.contains("custom_dialog")) {
+                        val jsonData = JsonParser().parse(result.reason).asJsonObject
+                        alert.headerText = if (jsonData.has("header")) jsonData["header"].asString else "No message header"
+                        alert.contentText = if (jsonData.has("header")) jsonData["body"].asString else "No message body"
+                    } else {
+                        alert.headerText = "Login error: ${result.reason}"
+                        alert.contentText = "An error occurred while logging in. \n\n" +
+                            "Here's what we know—\n" +
+                            "Performing action: ${result.func}\n" +
+                            "Status: ${result.status}\n" +
+                            "Reason: ${result.reason}\n" +
+                            "Additional info: ${result.additional_info}"
+                    }
 
                     alert.showAndWait()
                 }
@@ -133,6 +143,11 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
                 } else {
                     passwordTF.font = Font.getDefault()
                 }
+            }
+        }
+        emailTF.setOnKeyPressed {
+            if (it.code == KeyCode.ENTER) {
+                continueBtn.fire()
             }
         }
 
