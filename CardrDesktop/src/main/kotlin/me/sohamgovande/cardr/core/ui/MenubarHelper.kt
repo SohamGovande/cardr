@@ -17,7 +17,6 @@ import me.sohamgovande.cardr.util.*
 import java.awt.Desktop
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.function.Consumer
 
 
 class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
@@ -87,6 +86,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         accountMenu.items.add(historyMI)
 
         val toolsMenu = Menu("Tools")
+        val exportMenu = Menu("Export")
         val copyMI = MenuItem("Copy card")
         copyMI.accelerator = KeyCodeCombination(KeyCode.C, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
         copyMI.setOnAction { cardrUI.toolsUI.copyCardToClipboard() }
@@ -99,18 +99,40 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         sendMI.accelerator = KeyCodeCombination(KeyCode.S, ctrlKeyMask)
         sendMI.setOnAction { cardrUI.toolsUI.sendCardToWord() }
 
+        exportMenu.items.add(copyMI)
+        exportMenu.items.add(refreshWordMI)
+        exportMenu.items.add(sendMI)
+
+        val addRemoveMenu = Menu("Add & Remove Text")
         removeSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
         removeSelectedMI.setOnAction { cardrUI.toolsUI.removeSelectedText() }
 
         keepSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, ctrlKeyMask, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN)
         keepSelectedMI.setOnAction { cardrUI.toolsUI.keepOnlySelectedText() }
 
-        toolsMenu.items.add(copyMI)
-        toolsMenu.items.add(refreshWordMI)
-        toolsMenu.items.add(sendMI)
-        toolsMenu.items.add(SeparatorMenuItem())
-        toolsMenu.items.add(removeSelectedMI)
-        toolsMenu.items.add(keepSelectedMI)
+        val ocrMI = MenuItem("OCR tool")
+        ocrMI.accelerator = KeyCodeCombination(KeyCode.O, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
+        ocrMI.setOnAction { cardrUI.toolsUI.openOCRTool() }
+
+        val restoreToOriginalMI = MenuItem("Restore to Original")
+        restoreToOriginalMI.accelerator = KeyCodeCombination(KeyCode.R, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
+        restoreToOriginalMI.setOnAction { cardrUI.toolsUI.restoreRemovedBtn.fire() }
+
+        addRemoveMenu.items.add(restoreToOriginalMI)
+        addRemoveMenu.items.add(removeSelectedMI)
+        addRemoveMenu.items.add(keepSelectedMI)
+        addRemoveMenu.items.add(ocrMI)
+
+        val manipTextMenu = Menu("Edit Card")
+        val highlightUnderlineMI = MenuItem("Highlight & Underline Card")
+        highlightUnderlineMI.accelerator = KeyCodeCombination(KeyCode.H, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
+        highlightUnderlineMI.setOnAction { cardrUI.toolsUI.markupBtn.fire() }
+
+        manipTextMenu.items.add(highlightUnderlineMI)
+
+        toolsMenu.items.add(exportMenu)
+        toolsMenu.items.add(addRemoveMenu)
+        toolsMenu.items.add(manipTextMenu)
 
         val settingsMenu = Menu("Settings")
 
@@ -128,8 +150,8 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             SendToWordSettingsWindow(cardrUI).show()
         }
 
-        val highlightUnderlineMI = MenuItem("Highlight & underline settings...")
-        highlightUnderlineMI.setOnAction {
+        val highlightUnderlineSettingsMI = MenuItem("Highlight & underline settings...")
+        highlightUnderlineSettingsMI.setOnAction {
             MarkupCardSettingsWindow().show()
         }
 
@@ -269,7 +291,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
         settingsMenu.items.add(formatMI)
         settingsMenu.items.add(wordPasteMI)
-        settingsMenu.items.add(highlightUnderlineMI)
+        settingsMenu.items.add(highlightUnderlineSettingsMI)
         settingsMenu.items.add(customizePropertiesListMI)
         settingsMenu.items.add(SeparatorMenuItem())
 
