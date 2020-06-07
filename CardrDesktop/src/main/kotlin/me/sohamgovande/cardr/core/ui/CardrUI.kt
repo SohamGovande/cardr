@@ -17,10 +17,8 @@ import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.auth.CardrUser
 import me.sohamgovande.cardr.core.card.Author
-import me.sohamgovande.cardr.core.card.AuthorNameFormat
-import me.sohamgovande.cardr.core.card.AuthorListManager
-import me.sohamgovande.cardr.core.card.Timestamp
 import me.sohamgovande.cardr.core.ui.property.*
+import me.sohamgovande.cardr.core.ui.windows.EditPropertiesWindow
 import me.sohamgovande.cardr.core.ui.windows.SignInLauncherOptions
 import me.sohamgovande.cardr.core.ui.windows.SignInWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRCardBuilderWindow
@@ -31,9 +29,7 @@ import me.sohamgovande.cardr.data.updater.UpdateChecker
 import me.sohamgovande.cardr.util.*
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
-import java.awt.Desktop
 import java.io.InputStream
-import java.net.URL
 
 
 class CardrUI(val stage: Stage) {
@@ -48,6 +44,9 @@ class CardrUI(val stage: Stage) {
 
     var propertyManager = CardPropertyManager(this)
     private lateinit var pGridScrollPane: ScrollPane
+    private var pGridVbox = VBox()
+    private val editPropertiesBtn = Button("Customize List...")
+
     var reader: WebsiteCardCutter? = null
     val cardBody: StringProperty = SimpleStringProperty("")
 
@@ -111,13 +110,9 @@ class CardrUI(val stage: Stage) {
         cardDisplayArea.children.add(cardWV)
         cardDisplayArea.children.add(statusBar)
 
-        val pGridVbox = VBox()
-        val pGridHeader = Label("Properties")
-        pGridHeader.font = Font.font(20.0)
-        pGridVbox.children.addAll(pGridHeader, propertyManager.generatePropertyGrid())
-
         pGridScrollPane = ScrollPane(pGridVbox)
         pGridScrollPane.minWidth = 305.0
+        pGridScrollPane.maxWidth = 305.0
         pGridScrollPane.vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
         pGridScrollPane.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
         pGridScrollPane.style = "-fx-background-color:transparent;"
@@ -126,6 +121,8 @@ class CardrUI(val stage: Stage) {
         bodyAreaPanel.children.add(cardDisplayArea)
         bodyAreaPanel.children.add(toolsUI.generateUI())
 
+        refreshPropertiesGrid()
+
         panel.children.add(searchBarPanel)
         panel.children.add(bodyAreaPanel)
 
@@ -133,6 +130,18 @@ class CardrUI(val stage: Stage) {
         propertyManager.getByName<DateCardProperty>("Date")?.loadDateSeparatorLabels()
 
         return panel
+    }
+
+    fun refreshPropertiesGrid() {
+        pGridVbox.children.clear()
+        val pGridHeader = Label("Properties Editor")
+        pGridHeader.font = Font.font(20.0)
+        editPropertiesBtn.setOnAction { EditPropertiesWindow(this).show() }
+
+        val spacer = VBox()
+        spacer.minHeight = 15.0
+
+        pGridVbox.children.addAll(pGridHeader, propertyManager.generatePropertyGrid(), spacer, editPropertiesBtn)
     }
 
     fun loadMiniIcon(path: String, overrideDarkMode: Boolean, scale: Double): ImageView? {
@@ -219,6 +228,8 @@ class CardrUI(val stage: Stage) {
         toolsUI.ocrBtn.graphic = loadMiniIcon("/capture-ocr.png", false, 1.0)
         toolsUI.sendToWordBtn.graphic = loadMiniIcon("/word-grayscale.png", false, 1.0)
 
+        editPropertiesBtn.graphic = loadMiniIcon("/settings.png", false, 1.0)
+
         val authorsProperty = propertyManager.getByName<AuthorsCardProperty>("Authors")
         if (authorsProperty != null) {
             for (btn in authorsProperty.deleteAuthorButtons) {
@@ -260,7 +271,7 @@ class CardrUI(val stage: Stage) {
     private fun generateDefaultHTML(): String {
         return """
             |<style>
-            |    body { background-color: #${if (Prefs.get().darkMode) "373e43" else "f4f4f4"}; font-family: 'Calibri', 'Arial', sans-serif;}
+            |    body { background-color: #${if (Prefs.get().darkMode) "373e43" else "f4f4f4"}; font-family: 'Calibri','Arial', sans-serif;}
             |</style>
             |<body> 
             |   Paste a URL above to get started!

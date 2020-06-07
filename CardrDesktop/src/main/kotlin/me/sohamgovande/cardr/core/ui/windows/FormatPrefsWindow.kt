@@ -86,7 +86,6 @@ class FormatPrefsWindow(private val cardrUI: CardrUI): ModalWindow("Settings - C
 
         val editHBox = HBox()
         editHBox.children.add(editText)
-
         editHBox.prefWidth = 600.0
 
         resetBtn.setOnAction {

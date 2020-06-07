@@ -91,3 +91,15 @@ class CardTagCardProperty(cardrUI: CardrUI) : StringCardProperty("Card Tag", "Ta
         )
     }
 }
+
+class VolumeCardProperty(cardrUI: CardrUI) : StringCardProperty("Volume", "Volume", cardrUI) {
+    override fun loadFromReader(reader: WebsiteCardCutter) {}
+}
+
+class IssueCardProperty(cardrUI: CardrUI) : StringCardProperty("Issue", "Issue", cardrUI) {
+    override fun loadFromReader(reader: WebsiteCardCutter) {}
+}
+
+class PagesCardProperty(cardrUI: CardrUI) : StringCardProperty("Pages", "Pages", cardrUI) {
+    override fun loadFromReader(reader: WebsiteCardCutter) {}
+}

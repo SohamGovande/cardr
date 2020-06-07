@@ -44,6 +44,8 @@ class DateCardProperty(cardrUI: CardrUI) : CardProperty("Date", arrayOf("{DateSh
     }
 
     override fun generateEditUI(): Node {
+        dateGrid.children.clear()
+
         propertyDayTF.prefColumnCount = 2
         propertyDayTF.promptText = "31"
 

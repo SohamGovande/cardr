@@ -43,6 +43,8 @@ data class PrefsObject(
     var unhighlightShortcut: Int = KeyEvent.VK_F12,
     var highlightColor: String = "#ffff00",
 
+    var activeProperties: MutableList<Int> = mutableListOf(0, 1, 2, 3, 4, 5),
+
     val toolPanes: MutableMap<String, Boolean> = mutableMapOf(),
 
     var windowDimensions: WindowDimensions = WindowDimensions(-1024.1024, 0.0, 0.0, 0.0, false),
