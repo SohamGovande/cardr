@@ -48,6 +48,7 @@ class WebsiteCardCutter(var cardrUI: CardrUI?, private val url: String, private 
                     doc = Jsoup.parse(htmlData)
                     if (CardrDesktop.RELEASE_MODE)
                         htmlDataFile.deleteOnExit()
+                    cardrUI?.visitURL(url)
                 } catch (e: Exception) {
                     logger.error("Unable to load card ID $cardID", e)
                     loadURL(url)
@@ -132,6 +133,7 @@ class WebsiteCardCutter(var cardrUI: CardrUI?, private val url: String, private 
         try {
             doc = Jsoup.connect(url).get()
             logger.info("Successfully loaded URL $url")
+            cardrUI?.visitURL(url)
         } catch (e: Exception) {
             logger.info("Unable to load URL $url normally - trying to fall back on TLS v1.2")
             try {

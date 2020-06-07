@@ -159,7 +159,9 @@ class CardrUI(val stage: Stage) {
         return null
     }
 
-    private fun visitURL(url: String) {
+    fun visitURL(url: String) {
+        if (url == "ocr")
+            return
         Thread {
             currentUser.visitWebsite(url)
         }.start()
@@ -183,10 +185,7 @@ class CardrUI(val stage: Stage) {
                     this.cardBody.set(reader.getBodyParagraphText(true))
                     overrideBodyParagraphs = null
 
-                    Platform.runLater {
-                        visitURL(urlTF.text)
-                        propertyManager.loadFromReader(reader)
-                    }
+                    Platform.runLater { propertyManager.loadFromReader(reader) }
                 } catch (e: Exception) {
                     val url = propertyManager.getByName<UrlCardProperty>("Url")?.getValue() ?: ""
                     showErrorDialogUnblocking("Error reading page: ${e.message}", "A ${e.javaClass.simpleName} exception occurred while loading $url")
@@ -413,7 +412,6 @@ class CardrUI(val stage: Stage) {
 
         Platform.runLater {
             this.urlTF.text = reader.getURL()
-            visitURL(reader.getURL())
             this.authors = reader.getAuthors() ?: this.authors
             propertyManager.loadFromReader(reader)
 
