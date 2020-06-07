@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "cardr: the next-gen debate evidence collector",
   "short_name": "cardr",
-  "version": "1.2.1",
+  "version": "1.3.0",
 
   "description": "An advanced, next-gen evidence collector for debate research.",
   "icons": {
@@ -23,7 +23,6 @@
     "scripts": ["background.js"],
     "persistent": false
   },
-  "update_url": "https://cardrdebate.com/changelog.html",
   "permissions": [
     "activeTab",
     "tabs",

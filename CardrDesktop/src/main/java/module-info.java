@@ -3,7 +3,6 @@ module CardrDesktop.main {
     requires javafx.controls;
     requires javafx.base;
     requires javafx.fxml;
-    requires javafx.swing;
     requires java.desktop;
     requires java.base;
     requires java.sql;
