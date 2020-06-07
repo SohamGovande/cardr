@@ -2,6 +2,7 @@ package me.sohamgovande.cardr.data.updater
 
 import javafx.application.Platform
 import me.sohamgovande.cardr.util.*
+import net.lingala.zip4j.ZipFile
 import org.apache.logging.log4j.LogManager
 import java.awt.Desktop
 import java.nio.file.Path
@@ -15,14 +16,15 @@ class UpdateExecutor(private val version: CardrVersion) {
 
     @Throws(Exception::class)
     fun update() {
-        val installerPath = getInstallerFilePath()
+        val downloadPath = getInstallerFilePath()
 
         logger.info("Downloading new installer file...")
         messageHandler("Downloading the new cardr installer. This may take several minutes.")
-        downloadFileFromURL(version.getURL(), installerPath.toFile(), logger)
+        downloadFileFromURL(version.getURL(), downloadPath.toFile(), logger)
 
+        initInstallerFile(downloadPath)
         messageHandler("Finished installer download.")
-        initInstallerFile(installerPath)
+
         if (getOSType() == OS.MAC) {
             Platform.runLater {
                 onClose()
@@ -31,20 +33,24 @@ class UpdateExecutor(private val version: CardrVersion) {
                 exitProcess(0)
             }
         } else {
-            Desktop.getDesktop().open(installerPath.toFile())
+            Desktop.getDesktop().open(Paths.get(System.getProperty("cardr.data.dir"), "Cardr Updates", version.getFinalFilename()).toFile())
             exitProcess(0)
         }
     }
 
     private fun getInstallerFilePath(): Path {
-        val path = Paths.get(System.getProperty("cardr.data.dir"), "Cardr Updates", version.getInstallerName())
+        val path = Paths.get(System.getProperty("cardr.data.dir"), "Cardr Updates", version.getDownloadFilename())
         path.parent.toFile().mkdir()
         return path
     }
 
-    private fun initInstallerFile(installerPath: Path) {
-        if (getOSType() == OS.MAC) {
-            makeFileExecutableViaChmod(installerPath.toFile().absolutePath, logger)
+    private fun initInstallerFile(download: Path) {
+        if (version.shouldExtract()) {
+            messageHandler("Extracting zipped file...")
+            val downloadFile = download.toFile()
+            val zipFile = ZipFile(downloadFile)
+            zipFile.extractAll(Paths.get(System.getProperty("cardr.data.dir"), "Cardr Updates").toFile().canonicalPath)
+            downloadFile.deleteOnExit()
         }
     }
 
