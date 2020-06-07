@@ -23,7 +23,6 @@ import me.sohamgovande.cardr.data.prefs.Prefs
 import org.apache.commons.text.StringEscapeUtils
 import org.apache.http.client.methods.CloseableHttpResponse
 import org.apache.http.client.methods.HttpPost
-import org.apache.http.entity.mime.MultipartEntityBuilder
 import org.apache.http.impl.client.HttpClientBuilder
 import java.awt.Rectangle
 import java.awt.Robot
@@ -119,19 +118,19 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
         return Files.readString(Paths.get(System.getProperty("cardr.data.dir"), "ocr", "ocr-result.txt"))
     }
 
-    private fun getOCRFromREST(imageFile: File): String {
-        val client = HttpClientBuilder.create().build()
-        val request = HttpPost("https://api.ocr.space/parse/image")
-        request.setHeader("apikey", SecretData.OCRSPACE_APIKEY)
-        request.entity = MultipartEntityBuilder.create()
-            .addBinaryBody("file", imageFile)
-            .build()
-
-        val response: CloseableHttpResponse = client.execute(request)
-        val data = response.entity.content.bufferedReader().use(BufferedReader::readText)
-        val jsonData = JsonParser().parse(data).asJsonObject
-        return StringEscapeUtils.unescapeJson(jsonData["ParsedResults"].asJsonArray[0].asJsonObject["ParsedText"].asString)
-    }
+//    private fun getOCRFromREST(imageFile: File): String {
+//        val client = HttpClientBuilder.create().build()
+//        val request = HttpPost("https://api.ocr.space/parse/image")
+//        request.setHeader("apikey", SecretData.OCRSPACE_APIKEY)
+//        request.entity = MultipartEntityBuilder.create()
+//            .addBinaryBody("file", imageFile)
+//            .build()
+//
+//        val response: CloseableHttpResponse = client.execute(request)
+//        val data = response.entity.content.bufferedReader().use(BufferedReader::readText)
+//        val jsonData = JsonParser().parse(data).asJsonObject
+//        return StringEscapeUtils.unescapeJson(jsonData["ParsedResults"].asJsonArray[0].asJsonObject["ParsedText"].asString)
+//    }
 
     private fun loadOCRText(data: HashMap<String, Any>) {
         if (!data.containsKey("ocrText"))
