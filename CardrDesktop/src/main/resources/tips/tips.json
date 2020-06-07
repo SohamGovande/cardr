@@ -1,0 +1,46 @@
+[
+    {
+        "image": "customizePropertiesWindow.png",
+        "information": "You can customize the types of properties you use to cut cards (e.g. URL, publication, title, etc.) using Settings > Customize Properties List."
+    },
+    {
+        "image": "editCardFormat.png",
+        "information": "Want to add your initials to your cites? Not a fan of the current cite style?\n\nCheck out Settings > Card And Cite Format Settings! You can tweak every aspect of the card generation process to your heart's desire."
+    },
+    {
+        "image": "sendToWord.png",
+        "information": "You can send your cards directly to Microsoft Word/Verbatim using the Send to Word feature. Check it out in the Tools > Export Card panel."
+    },
+    {
+        "image": "highlightUnderline.png",
+        "information": "You can highlight and underline your card within Cardr, without having to export it to Word first. Check this out in the Tools > Edit Card panel."
+    },
+    {
+        "image": "ocr.png",
+        "information": "Scanning text from a book or a PDF? You can use Cardr's handy OCR tool to scan multiple regions of text into a single card."
+    },
+    {
+        "image": "nightMode.png",
+        "information": "Up doing some late-night research? Check out Night Mode (Settings > Night Mode) to give your eyes a break."
+    },
+    {
+        "image": "chromeHighlight.png",
+        "information": "If you highlight the section of the article you want to use in Google Chrome before selecting Cardr, only that section will be used to create the card. A similar effect can be achieved through Tools > Keep Only Selected Text."
+    },
+    {
+        "image": "addRemoveText.png",
+        "information": "Want to get rid of certain sections of an article, or only keep a certain paragraph? Use the Tools > Add & Remove Text panel to modify a card's content."
+    },
+    {
+        "image": "highlightUnderlineSettings.png",
+        "information": "You can customize the highlight color and highlight/underline shortcuts in Settings > Highlight & underline settings."
+    },
+    {
+        "image": "copy.png",
+        "information": "Need to copy a card to a Google Doc or an email? Simply use Tools > Export > Copy to copy the card to your clipboard."
+    },
+    {
+        "image": "settings.png",
+        "information": "You can customize and tweak many features of the card display using the Settings menu and even change the formatting of the card & cite."
+    }
+]

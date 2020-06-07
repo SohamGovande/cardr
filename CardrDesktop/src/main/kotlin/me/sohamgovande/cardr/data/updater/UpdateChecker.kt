@@ -10,12 +10,15 @@ import javafx.scene.control.ButtonType
 import javafx.scene.layout.Region
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.motd.showMOTD
 import me.sohamgovande.cardr.core.ui.windows.UpdateWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.urls.UrlHelper
+import me.sohamgovande.cardr.util.currentDate
 import me.sohamgovande.cardr.util.makeRequest
 import me.sohamgovande.cardr.util.showInfoDialogBlocking
 import org.apache.logging.log4j.LogManager
+import java.time.format.DateTimeFormatter
 
 class UpdateChecker(private val ui: CardrUI) {
     private fun showUpdateDialog(version: CardrVersion) {
@@ -63,12 +66,20 @@ class UpdateChecker(private val ui: CardrUI) {
             }
 
             if (latestVersion.build > CardrDesktop.CURRENT_VERSION_INT || CardrDesktop.FORCE_AUTO_UPDATE) {
-                logger.info("Latest version is ${latestVersion} - needs to update!")
+                logger.info("Latest version is $latestVersion - needs to update!")
 
                 Platform.runLater { showUpdateDialog(latestVersion) }
             } else {
-                logger.info("Latest version is ${latestVersion} - no need to update.")
+                logger.info("Latest version is $latestVersion - no need to update.")
                 // Already updated
+                if (Prefs.get().showTips) {
+                    val today = currentDate().format(DateTimeFormatter.ISO_DATE)
+                    if (Prefs.get().lastMOTD != today) {
+                        Platform.runLater { showMOTD() }
+                        Prefs.get().lastMOTD = today
+                        Prefs.save()
+                    }
+                }
             }
         } catch (e: Exception) {
             logger.error("Error checking for updates", e)

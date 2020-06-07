@@ -3,6 +3,7 @@ package me.sohamgovande.cardr.data.prefs
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.WindowDimensions
 import java.awt.event.KeyEvent
+import java.util.*
 
 data class PrefsObject(
     var lastUsedVersion: String = CardrDesktop.CURRENT_VERSION,
@@ -42,6 +43,9 @@ data class PrefsObject(
     var highlightShortcut: Int = KeyEvent.VK_F11,
     var unhighlightShortcut: Int = KeyEvent.VK_F12,
     var highlightColor: String = "#ffff00",
+
+    var lastMOTD: String = "",
+    var showTips: Boolean = true,
 
     var activeProperties: MutableList<Int> = mutableListOf(0, 1, 2, 3, 4, 5),
 

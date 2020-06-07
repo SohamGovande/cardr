@@ -28,7 +28,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
     val hideCopyPasteWarningMI = CheckMenuItem("Hide copy/paste dialog")
     val hideUpdateWarningMI = CheckMenuItem("Hide update dialog")
     val removeSelectedMI = MenuItem("Remove Selected Text")
-    val keepSelectedMI = MenuItem("Remove Except for Selected Text")
+    val keepSelectedMI = MenuItem("Keep Only Selected Text")
 
     private val ctrlKeyMask: KeyCombination.Modifier 
         get() = if (getOSType() == OS.MAC) KeyCombination.META_DOWN else KeyCombination.CONTROL_DOWN
@@ -133,6 +133,11 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             MarkupCardSettingsWindow().show()
         }
 
+        val customizePropertiesListMI = MenuItem("Customize properties list...")
+        customizePropertiesListMI.setOnAction {
+            EditPropertiesWindow(cardrUI).show()
+        }
+
         val condenseMI = CheckMenuItem("Condense paragraphs")
         condenseMI.isSelected = Prefs.get().condense
         condenseMI.setOnAction {
@@ -211,6 +216,14 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             }
         }
 
+        val showTipsMI = CheckMenuItem("Show daily tips on startup")
+        showTipsMI.isSelected = Prefs.get().showTips
+        showTipsMI.setOnAction {
+            Prefs.get().showTips = showTipsMI.isSelected
+            Prefs.save()
+            reopenMenu(settingsMenu)
+        }
+
         val showParagraphBreaksMI = CheckMenuItem("Show paragraph breaks")
         showParagraphBreaksMI.isSelected = Prefs.get().showParagraphBreaks
         showParagraphBreaksMI.setOnAction {
@@ -252,10 +265,12 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         messagesMenu.items.add(hidePlainPasteWarningMI)
         messagesMenu.items.add(hideCopyPasteWarningMI)
         messagesMenu.items.add(hideUpdateWarningMI)
+        messagesMenu.items.add(hideFormattingWarningMI)
 
         settingsMenu.items.add(formatMI)
         settingsMenu.items.add(wordPasteMI)
         settingsMenu.items.add(highlightUnderlineMI)
+        settingsMenu.items.add(customizePropertiesListMI)
         settingsMenu.items.add(SeparatorMenuItem())
 
         settingsMenu.items.add(condenseMI)
@@ -268,6 +283,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
         settingsMenu.items.add(SeparatorMenuItem())
         settingsMenu.items.add(darkModeMI)
+        settingsMenu.items.add(showTipsMI)
         settingsMenu.items.add(messagesMenu)
 
         val aboutMenu = Menu("About")
