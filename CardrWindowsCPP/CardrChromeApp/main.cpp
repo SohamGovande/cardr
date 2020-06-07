@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 			fflush(stdout);
 
 			std::ofstream out("CardrChromeAppLog.txt");
-			out << "Cardr Chrome App - Last Updated v1.2.0" << std::endl;
+			out << "Cardr Chrome App - Last Updated v1.3.0" << std::endl;
 
 			std::string jsonString(jsonMsg, iSize);
 			out << "Received data '" << jsonString << "'" << std::endl;
@@ -107,43 +107,54 @@ int main(int argc, char** argv)
 			fwrite(dumped.c_str(), 1, dumpedSize.u32, stdout);
 			fflush(stdout);
 
-
 			out << "Parsed json." << std::endl;
 			std::string url = parsed["url"].get<std::string>();
-			out << "Extracted url." << std::endl; 
-			std::string selection = parsed["selection"].get<std::string>();
-			out << "Extracted selection." << std::endl; 
-			std::string html = parsed["html"].get<std::string>();
-			out << "Extracted HTML." << std::endl;
+			std::string id;
+			bool ocrMode = false;
 
-			out << "Creating ID..." << std::endl;
-			std::string id = std::to_string(rand() % 1000);
-			out << "Created ID " << id << std::endl;
-			std::string selectionFilepath = "CardrSelection-" + id + ".txt";
-			out << "Created selection path " << selectionFilepath << std::endl;
-			std::string htmlFilepath = "CardrPage-" + id + ".html";
-			out << "Created html path " << htmlFilepath << std::endl;
+			if (url == "ocr") {
+				ocrMode = true;
+				out << "Entering OCR mode." << std::endl;
+			} else {
+				out << "Extracted url." << std::endl; 
+				std::string selection = parsed["selection"].get<std::string>();
+				out << "Extracted selection." << std::endl; 
+				std::string html = parsed["html"].get<std::string>();
+				out << "Extracted HTML." << std::endl;
 
-			out << "Writing selection data to file " << selectionFilepath << std::endl;
-			out << "Writing html data to file " << htmlFilepath << std::endl;
+				out << "Creating ID..." << std::endl;
+				id = std::to_string(rand() % 1000);
+				out << "Created ID " << id << std::endl;
+				std::string selectionFilepath = "CardrSelection-" + id + ".txt";
+				out << "Created selection path " << selectionFilepath << std::endl;
+				std::string htmlFilepath = "CardrPage-" + id + ".html";
+				out << "Created html path " << htmlFilepath << std::endl;
 
-			std::ofstream selectionFile;
-			selectionFile.open(selectionFilepath);
-			selectionFile << selection;
-			selectionFile.close();
+				out << "Writing selection data to file " << selectionFilepath << std::endl;
+				out << "Writing html data to file " << htmlFilepath << std::endl;
 
-			std::ofstream htmlFile;
-			htmlFile.open(htmlFilepath);
-			htmlFile << html;
-			htmlFile.close();
+				std::ofstream selectionFile;
+				selectionFile.open(selectionFilepath);
+				selectionFile << selection;
+				selectionFile.close();
 
+				std::ofstream htmlFile;
+				htmlFile.open(htmlFilepath);
+				htmlFile << html;
+				htmlFile.close();
+			}
 			TCHAR userHome[MAX_PATH];
 			if (SUCCEEDED(SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, userHome))) {
 				out << "Detected user home " << userHome << std::endl;
 
 				std::string currentDir = userHome + std::string("\\AppData\\Local\\cardr\\");
 				std::string appName = currentDir + "cardr.exe";
-				std::string cmdLine = appName + " \"" + url + "\" " + id;
+				std::string cmdLine;
+				if (ocrMode) {
+					cmdLine = appName + " ocr";
+				} else {
+					cmdLine = appName + " \"" + url + "\" " + id;
+				} 
 
 				out << "Current dir: " << currentDir << std::endl;
 				out << "Application path: " << appName << std::endl;

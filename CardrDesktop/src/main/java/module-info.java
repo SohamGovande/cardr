@@ -23,6 +23,7 @@ module CardrDesktop.main {
     requires org.apache.logging.log4j;
     requires org.apache.logging.log4j.core;
     requires centerdevice.nsmenufx;
+    requires jdk.crypto.ec;
 
     exports me.sohamgovande.cardr;
 }
