@@ -3,7 +3,7 @@ package me.sohamgovande.cardr.core.ui
 import javafx.stage.Screen
 import javafx.stage.Stage
 
-data class WindowDimensions(val x: Double, val y: Double, val w: Double, val h: Double, val maximized: Boolean) {
+data class WindowDimensions(var x: Double, var y: Double, var w: Double, var h: Double, var maximized: Boolean) {
 
     constructor(stage: Stage) : this(stage.x, stage.y, stage.width, stage.height, stage.isMaximized)
 

@@ -160,6 +160,9 @@ fun updateFrom(from: Int, to: Int): Exception? {
     }
 
     if (from < 5 && to >= 5) {
+        if (!Prefs.get().windowDimensions.maximized)
+            Prefs.get().windowDimensions.w += 250
+        Prefs.save()
         logger.info("Updating OCR data...")
         downloadOCRData()
     }
