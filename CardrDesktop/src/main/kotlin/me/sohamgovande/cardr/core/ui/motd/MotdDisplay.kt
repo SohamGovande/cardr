@@ -11,6 +11,7 @@ import javafx.scene.control.CheckBox
 import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.image.ImageView
+import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.stage.Modality
@@ -26,7 +27,8 @@ fun showMOTD() {
     @Suppress("DEPRECATION") val jsonStr = IOUtils.toString(stream)
     IOUtils.closeQuietly(stream)
     val data = JsonParser().parse(jsonStr) as JsonArray
-    val tip = data[(Math.random() * data.size()).toInt()] as JsonObject
+    var tipIndex = (Math.random() * data.size()).toInt()
+    var tip = data[tipIndex] as JsonObject
 
     val vbox = VBox()
     vbox.padding = Insets(10.0)
@@ -47,22 +49,43 @@ fun showMOTD() {
         Prefs.save()
     }
 
-
     vbox.children.addAll(header, information)
 
     val tipImg = tip["image"]
     if (tip.has("image") && !tipImg.isJsonNull) {
         val imageView = ImageView(CardrDesktop::class.java.getResource("/tips/${tipImg.asString}").toExternalForm())
         vbox.children.add(imageView)
+    } else {
+        vbox.children.add(ImageView())
     }
 
     val closeBtn = Button("Close")
-    closeBtn.isDefaultButton = true
     closeBtn.setOnAction {
         stage.close()
     }
 
-    vbox.children.addAll(checkbox, closeBtn)
+    val nextTipBtn = Button("Next Tip")
+    nextTipBtn.setOnAction {
+        tipIndex++
+        tipIndex %= data.size()
+        tip = data[tipIndex] as JsonObject
+
+        information.text = tip["information"].asString
+        val tipImg = tip["image"]
+        if (tip.has("image") && !tipImg.isJsonNull) {
+            val imageView = ImageView(CardrDesktop::class.java.getResource("/tips/${tipImg.asString}").toExternalForm())
+            vbox.children[2] = imageView
+        } else {
+            vbox.children[2] = ImageView()
+        }
+        stage.sizeToScene()
+    }
+
+    val optionsHbox = HBox()
+    optionsHbox.spacing = 10.0
+    optionsHbox.children.addAll(nextTipBtn, closeBtn)
+
+    vbox.children.addAll(checkbox, optionsHbox)
 
     val scene = Scene(vbox)
     scene.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
