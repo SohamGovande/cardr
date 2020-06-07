@@ -4,7 +4,7 @@ import javafx.application.Application
 import javafx.application.Platform
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow
-import me.sohamgovande.cardr.util.showErrorDialog
+import me.sohamgovande.cardr.util.showErrorDialogUnblocking
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
@@ -76,7 +76,7 @@ fun main(args: Array<String>) {
                         }
                     } catch (e: Exception) {
                         CardrDesktop.logger.error("Error loading selected text", e)
-                        showErrorDialog("Error loading selected text: ${e.message}", "Please see the log file for additional details.")
+                        showErrorDialogUnblocking("Error loading selected text: ${e.message}", "Please see the log file for additional details.")
                     }   
                 }
             } catch (e: Exception) {

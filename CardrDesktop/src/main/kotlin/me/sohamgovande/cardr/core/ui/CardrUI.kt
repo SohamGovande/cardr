@@ -189,7 +189,7 @@ class CardrUI(val stage: Stage) {
                     }
                 } catch (e: Exception) {
                     val url = propertyManager.getByName<UrlCardProperty>("Url")?.getValue() ?: ""
-                    showErrorDialog("Error reading page: ${e.message}", "A ${e.javaClass.simpleName} exception occurred while loading $url")
+                    showErrorDialogUnblocking("Error reading page: ${e.message}", "A ${e.javaClass.simpleName} exception occurred while loading $url")
                     logger.error("Error scraping page", e)
                 }
             }.start()

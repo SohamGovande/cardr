@@ -56,7 +56,7 @@ class WebsiteCardCutter(var cardrUI: CardrUI?, private val url: String, private 
         } catch (e: Exception) {
             doc = Jsoup.parse("<html></html>")
             logger.error("Unable to load URL: $url", e)
-            showErrorDialog("Error loading URL: ${e.message}", "A ${e.javaClass.simpleName} exception occurred while loading $url")
+            showErrorDialogUnblocking("Error loading URL: ${e.message}", "A ${e.javaClass.simpleName} exception occurred while loading $url")
         }
         meta = doc.getElementsByTag("meta")
         try {

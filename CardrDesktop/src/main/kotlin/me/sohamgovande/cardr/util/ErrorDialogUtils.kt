@@ -13,15 +13,19 @@ import java.net.URI
 import java.net.URLEncoder
 import kotlin.system.exitProcess
 
-fun showErrorDialog(brief: String, full: String) {
+fun showErrorDialogUnblocking(brief: String, full: String) {
     Platform.runLater {
-        val alert = Alert(Alert.AlertType.ERROR)
-        alert.title = "Error"
-        alert.headerText = brief
-        alert.contentText = full
-        alert.dialogPane.minHeight = Region.USE_PREF_SIZE
-        alert.showAndWait()
+        showErrorDialogBlocking(brief, full)
     }
+}
+
+fun showErrorDialogBlocking(brief: String, full: String) {
+    val alert = Alert(Alert.AlertType.ERROR)
+    alert.title = "Error"
+    alert.headerText = brief
+    alert.contentText = full
+    alert.dialogPane.minHeight = Region.USE_PREF_SIZE
+    alert.showAndWait()
 }
 
 fun showInfoDialogUnblocking(brief: String, full: String) {

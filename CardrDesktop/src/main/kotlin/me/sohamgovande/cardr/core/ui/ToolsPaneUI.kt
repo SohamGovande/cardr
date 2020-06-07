@@ -203,7 +203,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
                 val verbatimFile = Paths.get(System.getProperty("user.home"), "AppData", "Roaming", "Microsoft", "Templates", "Debate.dotm").toFile()
                 val exeFile = Paths.get("C:\\Program Files (x86)\\Microsoft Office\\root\\Office16\\WINWORD.EXE").toFile()
                 if (!exeFile.exists()) {
-                    showErrorDialog("Unable to launch Word", "No file found at ${exeFile.canonicalPath}.")
+                    showErrorDialogUnblocking("Unable to launch Word", "No file found at ${exeFile.canonicalPath}.")
                 } else {
                     if (verbatimFile.exists()) {
                         executeCommandUnblocking("\"${exeFile.canonicalPath}\" \"/t${verbatimFile.canonicalPath}\"", logger)
@@ -216,7 +216,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
                     executeCommandBlocking("open -a \"Microsoft Word\"", logger, false)
                 } catch (e: Exception) {
                     logger.error("Unable to open Microsoft Word", e)
-                    showErrorDialog("Unable to launch Word", e.javaClass.simpleName + " - " + e.message)
+                    showErrorDialogUnblocking("Unable to launch Word", e.javaClass.simpleName + " - " + e.message)
                 }
             }
             wordWindowList.selectionModel.select(0)
