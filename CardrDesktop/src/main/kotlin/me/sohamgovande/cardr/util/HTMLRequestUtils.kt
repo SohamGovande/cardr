@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager
 import java.io.BufferedReader
 import java.io.IOException
 
+
 private val logger = LogManager.getLogger("me.sohamgovande.cardr.util.HTMLRequestUtils")
 
 @Suppress("FoldInitializerAndIfToElvis")

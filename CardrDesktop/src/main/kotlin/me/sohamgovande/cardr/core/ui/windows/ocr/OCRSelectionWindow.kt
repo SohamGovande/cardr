@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
 import me.sohamgovande.cardr.CardrDesktop
+import me.sohamgovande.cardr.DONT_SHOW_WINDOW
 import me.sohamgovande.cardr.core.auth.SecretData
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.WindowDimensions
@@ -34,6 +35,7 @@ import java.nio.file.Paths
 import java.util.jar.JarFile
 import javax.imageio.ImageIO
 import kotlin.math.abs
+import kotlin.system.exitProcess
 
 class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"){
 
@@ -71,6 +73,7 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
     }
 
     private fun onCapture() {
+        DONT_SHOW_WINDOW = false
         Prefs.get().ocrWindowDimensions = WindowDimensions(window)
         Prefs.save()
 
@@ -107,7 +110,7 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
     }
 
     private fun getOCRFromAPI(): String {
-        val classLoader = URLClassLoader(arrayOf(Paths.get(System.getProperty("cardr.data.dir"), "ocr", "CardrOCR.jar").toFile().toURL()), ClassLoader.getSystemClassLoader())
+        @Suppress("DEPRECATION") val classLoader = URLClassLoader(arrayOf(Paths.get(System.getProperty("cardr.data.dir"), "ocr", "CardrOCR.jar").toFile().toURL()), ClassLoader.getSystemClassLoader())
         val ocrClass = classLoader.loadClass("me.sohamgovande.cardr.ocr.CardrOCR")
         ocrClass.getMethod("doOCR").invoke(
             ocrClass.getConstructor(Array<String>::class.java)
@@ -165,8 +168,12 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
 
     private fun showAllWindows() {
         cardrUI.stage.isIconified = false
+        if (!cardrUI.stage.isShowing)
+            cardrUI.stage.show()
         for (window in openWindows) {
             window.window.isIconified = false
+            if (!window.window.isShowing)
+                window.window.show()
         }
     }
 
@@ -183,11 +190,29 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
             if (thread != null && thread!!.isAlive)
                 thread!!.interrupt()
             close(null)
+            if (DONT_SHOW_WINDOW) {
+                exitProcess(0)
+            } else {
+                DONT_SHOW_WINDOW = false
+                showAllWindows()
+            }
+        }
+
+        val openFull = Button("Full Cardr")
+        openFull.graphic = cardrUI.loadMiniIcon("/window.png", true, 1.5)
+        openFull.setOnAction {
+            if (thread != null && thread!!.isAlive)
+                thread!!.interrupt()
+            close(null)
+            DONT_SHOW_WINDOW = false
             showAllWindows()
         }
 
         menuBox.alignment = Pos.CENTER
-        menuBox.children.addAll(captureBtn, closeBtn)
+        menuBox.children.add(captureBtn)
+        if (DONT_SHOW_WINDOW)
+            menuBox.children.add(openFull)
+        menuBox.children.add(closeBtn)
 
         val root = BorderPane()
         root.styleClass.add("custom-dashed-border")

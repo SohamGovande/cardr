@@ -92,7 +92,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
         val header = Label("Tools")
         header.font = Font.font(20.0)
 
-        ocrBtn.setOnAction { openOCRTool() }
+        ocrBtn.setOnAction { OCRSelectionWindow(cardrUI).show() }
         removeSelectedBtn.setOnAction { removeSelectedText() }
         restoreRemovedBtn.setOnAction {
             cardrUI.removeWords.clear()
@@ -396,10 +396,6 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
         window.window.y = screenBounds.minY - 150
         window.window.width = screenBounds.width + 25
         window.window.height = screenBounds.height + 150
-    }
-
-    fun openOCRTool() {
-        OCRSelectionWindow(cardrUI).show()
     }
 
     fun copyCardToClipboard() {

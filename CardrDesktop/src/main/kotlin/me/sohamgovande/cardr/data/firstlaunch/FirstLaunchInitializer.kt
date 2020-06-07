@@ -142,6 +142,7 @@ fun onFirstLaunch(): Exception? {
 
 fun updateFrom(from: Int, to: Int): Exception? {
     val prefs = Prefs.get()
+    var hasUpdatedChrome = false
     if (from == 1 && to >= 2) {
         logger.info("Resetting card format...")
         prefs.cardFormat = PrefsObject.DEFAULT_CARD_FORMAT
@@ -151,6 +152,7 @@ fun updateFrom(from: Int, to: Int): Exception? {
     }
     if (from < 3 && to >= 3) {
         logger.info("Updating CardrChromeApp")
+        hasUpdatedChrome = true
         if (getOSType() == OS.MAC) {
             downloadChromeDataMacOS()
             prefs.cardFormat = prefs.cardFormat.replace("Helvetica", PrefsObject.MAC_CALIBRI_FONT)
@@ -165,6 +167,14 @@ fun updateFrom(from: Int, to: Int): Exception? {
         Prefs.save()
         logger.info("Updating OCR data...")
         downloadOCRData()
+        if (!hasUpdatedChrome) {
+            logger.info("Updating CardrChromeApp")
+            if (getOSType() == OS.MAC) {
+                downloadChromeDataMacOS()
+            } else {
+                downloadChromeDataWindows()
+            }
+        }
     }
 
     prefs.hideUpdateDialog = false

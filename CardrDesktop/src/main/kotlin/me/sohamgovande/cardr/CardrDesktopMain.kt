@@ -3,6 +3,7 @@ package me.sohamgovande.cardr
 import javafx.application.Application
 import javafx.application.Platform
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow
 import me.sohamgovande.cardr.util.showErrorDialog
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import org.apache.logging.log4j.LogManager
@@ -16,6 +17,8 @@ import java.util.*
 
 var ui: CardrUI? = null
 val uiLock = Object()
+val uiLock2 = Object()
+var DONT_SHOW_WINDOW = false
 
 private fun setLoggerDir() {
     val dataDir: String
@@ -41,9 +44,18 @@ fun main(args: Array<String>) {
                 synchronized(uiLock) {
                     try {
                         if (args.size == 1) {
-                            val reader = WebsiteCardCutter(null, args[0], null)
-                            uiLock.wait()
-                            ui!!.loadFromReader(reader)
+                            if (args[0] == "ocr") {
+                                DONT_SHOW_WINDOW = true
+
+                                synchronized(uiLock2) {
+                                    uiLock2.wait()
+                                    Platform.runLater { OCRSelectionWindow(ui!!).show() }
+                                }
+                            } else {
+                                uiLock.wait()
+                                val reader = WebsiteCardCutter(null, args[0], null)
+                                ui!!.loadFromReader(reader)
+                            }
                         } else if (args.size == 2) {
                             val cardID = args[1]
                             CardrDesktop.logger.info("Loaded card ID $cardID")
@@ -63,9 +75,9 @@ fun main(args: Array<String>) {
                                 selectionDataFile.deleteOnExit()
                         }
                     } catch (e: Exception) {
-                        showErrorDialog("Error loading selected text: ${e.message}", "Please see the log file for additional details.")
                         CardrDesktop.logger.error("Error loading selected text", e)
-                    }
+                        showErrorDialog("Error loading selected text: ${e.message}", "Please see the log file for additional details.")
+                    }   
                 }
             } catch (e: Exception) {
                 CardrDesktop.logger.error("Error preloading page", e)

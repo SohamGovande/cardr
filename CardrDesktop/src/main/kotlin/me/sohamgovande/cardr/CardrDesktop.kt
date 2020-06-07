@@ -43,12 +43,16 @@ class CardrDesktop: Application() {
                 windowDimensions.apply(stage)
             }
 
-            stage.show()
+            if (!DONT_SHOW_WINDOW)
+                stage.show()
             logger.info("Window shown")
 
             logger.info("Loading window components...")
 
             ui = CardrUI(stage)
+            synchronized(uiLock2) {
+                uiLock2.notifyAll()
+            }
             stage.scene = Scene(ui!!.initialize())
 
             stage.scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())

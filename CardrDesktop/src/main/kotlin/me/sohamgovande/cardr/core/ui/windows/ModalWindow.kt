@@ -4,6 +4,7 @@ import javafx.scene.Scene
 import javafx.stage.Modality
 import javafx.stage.Stage
 import javafx.stage.WindowEvent
+import me.sohamgovande.cardr.DONT_SHOW_WINDOW
 import java.util.function.Consumer
 
 abstract class ModalWindow(val title: String, private val isModal: Boolean = true) {
@@ -22,7 +23,8 @@ abstract class ModalWindow(val title: String, private val isModal: Boolean = tru
         window.scene = generateUI()
         window.isResizable = true
         window.sizeToScene()
-        window.show()
+        if (!DONT_SHOW_WINDOW)
+            window.show()
 
         window.setOnCloseRequest {
             close(it)

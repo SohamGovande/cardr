@@ -112,7 +112,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
         val ocrMI = MenuItem("OCR tool")
         ocrMI.accelerator = KeyCodeCombination(KeyCode.O, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
-        ocrMI.setOnAction { cardrUI.toolsUI.openOCRTool() }
+        ocrMI.setOnAction { cardrUI.toolsUI.ocrBtn.fire() }
 
         val restoreToOriginalMI = MenuItem("Restore to Original")
         restoreToOriginalMI.accelerator = KeyCodeCombination(KeyCode.R, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
