@@ -18,7 +18,6 @@ module CardrDesktop.main {
     requires commons.io;
     requires org.apache.httpcomponents.httpcore;
     requires org.apache.httpcomponents.httpclient;
-    requires org.apache.httpcomponents.httpmime;
     requires gson;
     requires org.apache.logging.log4j;
     requires org.apache.logging.log4j.core;
