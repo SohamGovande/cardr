@@ -15,10 +15,14 @@ class MacMSWordInteractor {
      * Use this API
      * @return A list of all the titles of usable MS Word windows
      */
-    fun getValidWordWindows() =
-        getWordWindows()
-            .filter { !it.contains("missing value") }
-            .toList()
+    fun getValidWordWindows(): List<String> {
+        val list = getWordWindows()
+                .filter { !it.contains("missing value") }
+                .toList()
+        if (list.size == 1 && list[0] == "")
+            return emptyList()
+        return list
+    }
 
 
     fun pasteToWord() {
