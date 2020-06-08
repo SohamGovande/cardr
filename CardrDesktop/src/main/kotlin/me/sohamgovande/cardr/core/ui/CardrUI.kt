@@ -270,7 +270,7 @@ class CardrUI(val stage: Stage) {
     private fun generateDefaultHTML(): String {
         return """
             |<style>
-            |    body { background-color: #${if (Prefs.get().darkMode) "373e43" else "f4f4f4"}; font-family: 'Calibri','Arial', sans-serif;}
+            |    body { background-color: #${if (Prefs.get().darkMode) "373e43" else "f4f4f4"}; font-family: 'Calibri','Arial', sans-serif; ${if (Prefs.get().darkMode) "color: #ffffff;" else ""}}
             |</style>
             |<body> 
             |   Paste a URL above to get started!
