@@ -13,12 +13,12 @@ import java.io.File
 import java.nio.file.FileAlreadyExistsException
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.*
 
 var ui: CardrUI? = null
 val uiLock = Object()
 val uiLock2 = Object()
-var DONT_SHOW_WINDOW = false
+lateinit var LAUNCH_ARGS: Array<String>
+var CHROME_OCR_MODE = false
 
 private fun setLoggerDir() {
     val dataDir: String
@@ -36,16 +36,18 @@ private fun setLoggerDir() {
 }
 
 fun main(args: Array<String>) {
+    LAUNCH_ARGS = args
+    val useArgs = args.toList().filter { !it.startsWith("cardrOption") }
     System.setProperty("java.net.preferIPv4Stack", "true")
 
-    if (args.size >= 1) {
+    if (useArgs.size >= 1) {
         Thread {
             try {
                 synchronized(uiLock) {
                     try {
-                        if (args.size == 1) {
-                            if (args[0] == "ocr") {
-                                DONT_SHOW_WINDOW = true
+                        if (useArgs.size == 1) {
+                            if (useArgs[0] == "ocr") {
+                                CHROME_OCR_MODE = true
 
                                 synchronized(uiLock2) {
                                     uiLock2.wait()
@@ -53,14 +55,14 @@ fun main(args: Array<String>) {
                                 }
                             } else {
                                 uiLock.wait()
-                                val reader = WebsiteCardCutter(null, args[0], null)
+                                val reader = WebsiteCardCutter(null, useArgs[0], null)
                                 ui!!.loadFromReader(reader)
                             }
-                        } else if (args.size == 2) {
-                            val cardID = args[1]
+                        } else if (useArgs.size == 2) {
+                            val cardID = useArgs[1]
                             CardrDesktop.logger.info("Loaded card ID $cardID")
 
-                            val reader = WebsiteCardCutter(null, args[0], cardID)
+                            val reader = WebsiteCardCutter(null, useArgs[0], cardID)
                             uiLock.wait()
                             ui!!.loadFromReader(reader)
 
@@ -87,7 +89,7 @@ fun main(args: Array<String>) {
 
     setLoggerDir()
 
-    CardrDesktop.logger.info("Launching Cardr with the following arguments: ${Arrays.toString(args)}")
+    CardrDesktop.logger.info("Launching Cardr with the following arguments: ${args.contentToString()}")
     CardrDesktop.logger.info("Running on Java version ${System.getProperty("java.version")} by vendor ${System.getProperty("java.vendor")}")
 
     Application.launch(CardrDesktop::class.java)
