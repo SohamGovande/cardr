@@ -4,8 +4,6 @@ import javafx.scene.Scene
 import javafx.stage.Modality
 import javafx.stage.Stage
 import javafx.stage.WindowEvent
-import me.sohamgovande.cardr.DONT_SHOW_WINDOW
-import java.util.function.Consumer
 
 abstract class ModalWindow(val title: String, private val isModal: Boolean = true) {
 
@@ -16,15 +14,14 @@ abstract class ModalWindow(val title: String, private val isModal: Boolean = tru
     var autoRemove = true
     var forcedClose = false
 
-    open  fun show() {
+    open fun show() {
         if (isModal)
             window.initModality(Modality.APPLICATION_MODAL)
         window.title = title
         window.scene = generateUI()
         window.isResizable = true
         window.sizeToScene()
-        if (!DONT_SHOW_WINDOW)
-            window.show()
+        window.show()
 
         window.setOnCloseRequest {
             close(it)
@@ -47,7 +44,7 @@ abstract class ModalWindow(val title: String, private val isModal: Boolean = tru
         }
     }
 
-    private fun removeFromList() {
+    protected fun removeFromList() {
         if (autoRemove)
             openWindows.remove(this)
     }
