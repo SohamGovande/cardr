@@ -1,37 +1,31 @@
 package me.sohamgovande.cardr.core.ui.windows.ocr
 
-import com.google.gson.JsonParser
 import javafx.application.Platform
 import javafx.geometry.Insets
 import javafx.geometry.Pos
 import javafx.scene.Scene
 import javafx.scene.control.Button
-import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.layout.BorderPane
 import javafx.scene.layout.HBox
 import javafx.scene.paint.Color
 import javafx.stage.StageStyle
-import me.sohamgovande.cardr.CardrDesktop
-import me.sohamgovande.cardr.DONT_SHOW_WINDOW
-import me.sohamgovande.cardr.core.auth.SecretData
+import me.sohamgovande.cardr.CHROME_OCR_MODE
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.WindowDimensions
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.ResizeListener.Companion.BORDER_SIZE
 import me.sohamgovande.cardr.data.prefs.Prefs
-import org.apache.commons.text.StringEscapeUtils
-import org.apache.http.client.methods.CloseableHttpResponse
-import org.apache.http.client.methods.HttpPost
-import org.apache.http.impl.client.HttpClientBuilder
+import me.sohamgovande.cardr.util.OS
+import me.sohamgovande.cardr.util.getOSType
+import me.sohamgovande.cardr.util.showErrorDialogBlocking
+import org.apache.logging.log4j.LogManager
 import java.awt.Rectangle
 import java.awt.Robot
-import java.io.BufferedReader
-import java.io.File
+import java.lang.reflect.Method
 import java.net.URLClassLoader
 import java.nio.file.Files
 import java.nio.file.Paths
-import java.util.jar.JarFile
 import javax.imageio.ImageIO
 import kotlin.math.abs
 import kotlin.system.exitProcess
@@ -72,25 +66,43 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
     }
 
     private fun onCapture() {
-        DONT_SHOW_WINDOW = false
+        logger.info("OCR onCapture invoked. CHROME_OCR_MODE=$CHROME_OCR_MODE")
         Prefs.get().ocrWindowDimensions = WindowDimensions(window)
+        logger.info("Saving window dimensions ${Prefs.get().ocrWindowDimensions}")
         Prefs.save()
 
+        logger.info("Hiding window...")
         window.hide()
-        val robot = Robot()
-        val image = robot.createScreenCapture(Rectangle(
-            window.x.toInt(), window.y.toInt(), window.width.toInt(), window.height.toInt()
-        ))
-        val imageFile = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "ocr-region.png").toFile()
-        ImageIO.write(image, "png", imageFile)
-        window.show()
-        captureBtn.graphic = null
-        captureBtn.text = "Loading..."
-        captureBtn.isDisable = true
 
         thread = Thread {
+            logger.info("Instantiating robot...")
+            val robot = Robot()
+            if (getOSType() == OS.MAC) {
+                logger.info("macOS detected, so delaying 500ms")
+                robot.delay(500)
+            }
+            logger.info("Taking screen capture...")
+            val image = robot.createScreenCapture(Rectangle(
+                window.x.toInt(), window.y.toInt(), window.width.toInt(), window.height.toInt()
+            ))
+            val imageFile = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "ocr-region.png").toFile()
+            logger.info("Taking screen capture, writing to ${imageFile.canonicalPath}")
+            ImageIO.write(image, "png", imageFile)
+            Platform.runLater {
+                window.show()
+                captureBtn.graphic = null
+                captureBtn.text = "Loading..."
+                captureBtn.isDisable = true
+            }
+
             val text = getOCRFromAPI()
             Platform.runLater {
+                if (text == null) {
+                    logger.info("OCR API returned no valid text")
+                    return@runLater
+                }
+
+                logger.info("OCR successful. Closing OCR region and re-opening all windows.")
                 close(null)
                 showAllWindows()
 
@@ -108,14 +120,38 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
         thread!!.start()
     }
 
-    private fun getOCRFromAPI(): String {
-        @Suppress("DEPRECATION") val classLoader = URLClassLoader(arrayOf(Paths.get(System.getProperty("cardr.data.dir"), "ocr", "CardrOCR.jar").toFile().toURL()), ClassLoader.getSystemClassLoader())
-        val ocrClass = classLoader.loadClass("me.sohamgovande.cardr.ocr.CardrOCR")
-        ocrClass.getMethod("doOCR").invoke(
-            ocrClass.getConstructor(Array<String>::class.java)
-                .newInstance(arrayOf(System.getProperty("cardr.data.dir")))
-        )
-        return Files.readString(Paths.get(System.getProperty("cardr.data.dir"), "ocr", "ocr-result.txt"))
+    private fun getOCRFromAPI(): String? {
+        logger.info("Using Jar API to load OCR text")
+        if (getOSType() == OS.MAC) {
+            System.setProperty("jna.library.path", Paths.get(System.getProperty("cardr.data.dir"), "ocr", "native").toFile().canonicalPath)
+            System.setProperty("jna.boot.library.path", Paths.get(System.getProperty("cardr.data.dir"), "ocr", "native").toFile().canonicalPath)
+            System.setProperty("jna.nounpack", "true")
+        }
+
+        if (doOCRMethod == null || ocrInstance == null) {
+            logger.info("First time using OCR - need to initialize reflection API")
+            @Suppress("DEPRECATION") val classLoader = URLClassLoader(arrayOf(Paths.get(System.getProperty("cardr.data.dir"), "ocr", "CardrOCR.jar").toFile().toURL()), ClassLoader.getSystemClassLoader())
+            val ocrClass = classLoader.loadClass("me.sohamgovande.cardr.ocr.CardrOCR")
+
+            if (doOCRMethod == null)
+                doOCRMethod = ocrClass.getMethod("doOCR")
+            if (ocrInstance == null)
+                ocrInstance = ocrClass.getConstructor(Array<String>::class.java)
+                        .newInstance(arrayOf(System.getProperty("cardr.data.dir")))
+        } else {
+            logger.info("Reflection API has already been loaded")
+        }
+        logger.info("Invoking API call...")
+        doOCRMethod!!.invoke(ocrInstance!!)
+        logger.info("Reading back OCR from ocr-result.txt")
+        val ocrResultPath = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "ocr-result.txt")
+        if (!ocrResultPath.toFile().exists()) {
+            logger.info("ocr-result.txt does not exist")
+            showErrorDialogBlocking("Error loading OCR", "OCR result file not found")
+            return null
+        } else {
+            return Files.readString(ocrResultPath)
+        }
     }
 
 //    private fun getOCRFromREST(imageFile: File): String {
@@ -189,10 +225,10 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
             if (thread != null && thread!!.isAlive)
                 thread!!.interrupt()
             close(null)
-            if (DONT_SHOW_WINDOW) {
+            if (CHROME_OCR_MODE) {
                 exitProcess(0)
             } else {
-                DONT_SHOW_WINDOW = false
+                CHROME_OCR_MODE = false
                 showAllWindows()
             }
         }
@@ -203,13 +239,13 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
             if (thread != null && thread!!.isAlive)
                 thread!!.interrupt()
             close(null)
-            DONT_SHOW_WINDOW = false
+            CHROME_OCR_MODE = false
             showAllWindows()
         }
 
         menuBox.alignment = Pos.CENTER
         menuBox.children.add(captureBtn)
-        if (DONT_SHOW_WINDOW)
+        if (CHROME_OCR_MODE)
             menuBox.children.add(openFull)
         menuBox.children.add(closeBtn)
 
@@ -242,4 +278,9 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
         return scene
     }
 
+    companion object {
+        val logger = LogManager.getLogger(OCRSelectionWindow::class.java)
+        var ocrInstance: Any? = null
+        var doOCRMethod: Method? = null
+    }
 }
