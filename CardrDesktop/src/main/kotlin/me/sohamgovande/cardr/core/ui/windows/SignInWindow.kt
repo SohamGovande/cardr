@@ -36,6 +36,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
     private var readyToClose = false
 
     override fun close(event: WindowEvent?) {
+        super.removeFromList()
         if (forcedClose) {
             super.close(event)
             return
