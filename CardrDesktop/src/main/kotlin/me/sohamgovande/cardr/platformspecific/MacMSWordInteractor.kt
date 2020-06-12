@@ -2,6 +2,8 @@ package me.sohamgovande.cardr.platformspecific
 
 import me.sohamgovande.cardr.util.executeCommandBlocking
 import org.apache.logging.log4j.LogManager
+import java.awt.Desktop
+import java.io.File
 import java.nio.file.Paths
 
 
@@ -10,18 +12,20 @@ class MacMSWordInteractor {
     private val getWordWindowsFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "getWordWindows.scpt").toFile()
     private val selectWordWindowFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "selectWordWindow.scpt").toFile()
     private val pasteToWordFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "pasteToWord.scpt").toFile()
+    private val openWordFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "openWord.scpt").toFile()
+
+    fun createNewDoc() {
+        executeCommandBlocking("osascript ${openWordFile.canonicalPath}", logger, true)
+    }
 
     /**
      * Use this API
      * @return A list of all the titles of usable MS Word windows
      */
     fun getValidWordWindows(): List<String> {
-        val list = getWordWindows()
-                .filter { !it.contains("missing value") }
+        return getWordWindows()
+                .filter { !it.contains("missing value") && !it.isBlank()}
                 .toList()
-        if (list.size == 1 && list[0] == "")
-            return emptyList()
-        return list
     }
 
 
