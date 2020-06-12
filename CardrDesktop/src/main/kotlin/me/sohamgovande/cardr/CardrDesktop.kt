@@ -43,7 +43,6 @@ class CardrDesktop: Application() {
                 windowDimensions.apply(stage)
             }
 
-            if (!DONT_SHOW_WINDOW)
                 stage.show()
             logger.info("Window shown")
 
