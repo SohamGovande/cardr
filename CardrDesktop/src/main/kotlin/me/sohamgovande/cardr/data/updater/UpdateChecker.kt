@@ -9,6 +9,7 @@ import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
 import javafx.scene.layout.Region
+import me.sohamgovande.cardr.CHROME_OCR_MODE
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.windows.UpdateWindow
@@ -103,7 +104,7 @@ class UpdateChecker(private val ui: CardrUI) {
 
     fun showMOTD(): Boolean {
         // Message of the day
-        if (Prefs.get().showTips) {
+        if (Prefs.get().showTips && !CHROME_OCR_MODE) {
             val today = currentDate().format(DateTimeFormatter.ISO_DATE)
             if (Prefs.get().lastMOTD != today) {
                 Platform.runLater { me.sohamgovande.cardr.core.ui.motd.showMOTD() }
