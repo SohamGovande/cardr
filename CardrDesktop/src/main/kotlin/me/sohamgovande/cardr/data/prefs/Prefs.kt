@@ -42,7 +42,10 @@ object Prefs {
                     save()
                 } else {
                     prefs = readObject
-                    logger.info("Read preferences successfully: $prefs")
+                    val censoredPrefs = prefs.toString()
+                        .replace(Regex("(?<=, encryptedPassword=)[a-zA-Z0-9=+/]+(?=, )"),"<HIDDEN>")
+                        .replace(Regex("(?<=, accessToken=)[a-zA-Z0-9=+/]+(?=, )"),"<HIDDEN>")
+                    logger.info("Read preferences successfully: $censoredPrefs")
 
                     val lastVersion = readObject.lastUsedVersionInt
                     val lastVersionName = readObject.lastUsedVersion
