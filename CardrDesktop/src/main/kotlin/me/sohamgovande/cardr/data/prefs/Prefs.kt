@@ -50,6 +50,7 @@ object Prefs {
                         val error = updateFrom(lastVersion, CardrDesktop.CURRENT_VERSION_INT)
                         if (error == null) {
                             prefs.lastUsedVersionInt = CardrDesktop.CURRENT_VERSION_INT
+                            prefs.lastUsedVersion = CardrDesktop.CURRENT_VERSION
                             save()
                             showInfoDialogUnblocking("Successfully updated cardr!", "Updated cardr from version $lastVersionName to ${CardrDesktop.CURRENT_VERSION}.",  "See what's new") {
                                 UrlHelper.browse("changelog")
