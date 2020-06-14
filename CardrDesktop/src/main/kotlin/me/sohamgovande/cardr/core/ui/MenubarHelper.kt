@@ -11,6 +11,7 @@ import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.property.DateCardProperty
 import me.sohamgovande.cardr.core.ui.windows.*
+import me.sohamgovande.cardr.core.ui.windows.markup.MarkupCardSettingsWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.urls.UrlHelper
 import me.sohamgovande.cardr.util.*

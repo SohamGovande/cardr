@@ -1,4 +1,4 @@
-package me.sohamgovande.cardr.core.ui.windows
+package me.sohamgovande.cardr.core.ui.windows.markup
 
 import javafx.collections.FXCollections
 import javafx.geometry.Insets
@@ -10,6 +10,7 @@ import javafx.scene.image.Image
 import javafx.scene.layout.*
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
+import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.prefs.PrefsObject
 import java.awt.event.KeyEvent

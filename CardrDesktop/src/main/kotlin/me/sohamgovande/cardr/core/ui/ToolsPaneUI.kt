@@ -12,7 +12,7 @@ import javafx.scene.text.Font
 import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
 import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
-import me.sohamgovande.cardr.core.ui.windows.MarkupCardWindow
+import me.sohamgovande.cardr.core.ui.windows.markup.MarkupCardWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.platformspecific.MacMSWordInteractor
@@ -303,6 +303,19 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
                     };
                     document.designMode = "off";
                 }
+                function makeItalic() {
+                    var range, sel = window.getSelection();
+                    if (sel.rangeCount && sel.getRangeAt) {
+                        range = sel.getRangeAt(0);
+                    };
+                    document.designMode = "on";
+                    if (range) {
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    };
+                    document.execCommand("italic", false);
+                    document.designMode = "off";
+                }
                 
                 function boldSelectedText() {
                     var range, sel = window.getSelection();
@@ -394,7 +407,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
 
         window.window.x = screenBounds.minX - 25
         window.window.y = screenBounds.minY - 150
-        window.window.width = screenBounds.width + 25
+        window.window.width = screenBounds.width + 225
         window.window.height = screenBounds.height + 150
     }
 

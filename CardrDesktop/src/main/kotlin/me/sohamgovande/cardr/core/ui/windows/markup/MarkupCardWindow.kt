@@ -1,5 +1,7 @@
-package me.sohamgovande.cardr.core.ui.windows
+package me.sohamgovande.cardr.core.ui.windows.markup
 
+import javafx.application.Platform
+import javafx.concurrent.Worker
 import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.control.Button
@@ -12,8 +14,10 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.web.WebView
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
 import java.awt.event.KeyEvent.VK_F1
+import javax.print.attribute.IntegerSyntax
 
 class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: String): ModalWindow("Highlight & Underline Card") {
 
@@ -74,7 +78,7 @@ class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: S
         underlineBtn.setOnAction { underlineSelectedText(); clearSelection() }
         highlightBtn.setOnAction { highlightSelectedText(); clearSelection() }
         unhighlightBtn.setOnAction { unhighlightSelectedText(); clearSelection() }
-        emphasizeBtn.setOnAction { underlineSelectedText(); boldSelectedText(); clearSelection() }
+        emphasizeBtn.setOnAction { emphasize() }
         settingsBtn.setOnAction {
             val settings = MarkupCardSettingsWindow()
             settings.addOnCloseListener { refreshShortcutTips() }
@@ -95,6 +99,54 @@ class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: S
         return scene
     }
 
+    fun emphasize() {
+        cardWV.engine.executeScript("makeItalic()")
+        val scrollPosX = cardWV.engine.executeScript("window.scrollX") as Int
+        val scrollPosY = cardWV.engine.executeScript("window.scrollY") as Int
+        var newHTML = cardWV.engine.executeScript("document.documentElement.outerHTML") as String
+
+        val sections = MarkupSection.findSectionsInSelection(newHTML)
+
+        for (section in sections) {
+            section.isBold = section.hasHTMLAttribute(newHTML, "b", null)
+            section.isUnderlined = section.hasHTMLAttribute(newHTML, "u", null)
+        }
+
+        val unemphasize = sections.all { it.isBold!! && it.isUnderlined!! }
+        val oneShotEmphasize = sections.all { !it.isBold!! && !it.isUnderlined!! }
+        if (unemphasize || oneShotEmphasize) {
+            cardWV.engine.executeScript("makeItalic()")
+
+            boldSelectedText()
+            underlineSelectedText()
+            clearSelection()
+            return
+
+        } else {
+            for (section in sections) {
+                if (section.isBold!! && !section.isUnderlined!!) {
+                    newHTML = section.addTags(newHTML, "<u>", "</u>", sections)
+                } else if (!section.isBold!! && section.isUnderlined!!) {
+                    newHTML = section.addTags(newHTML, "<b>", "</b>", sections)
+                } else if (!section.isBold!! && !section.isUnderlined!!) {
+                    newHTML = section.addTags(newHTML, "<u><b>", "</u></b>", sections)
+                }
+            }
+        }
+
+        newHTML = newHTML.replace("<i>","").replace("</i>","")
+
+        var hasLoaded = false
+        cardWV.engine.loadContent(newHTML)
+        cardWV.engine.loadWorker.stateProperty().addListener { _, _, value ->
+            if (value != Worker.State.SUCCEEDED || hasLoaded)
+                return@addListener
+            hasLoaded = true
+
+            cardWV.engine.executeScript("window.scrollBy($scrollPosX, $scrollPosY)")
+        }
+    }
+
     private fun refreshShortcutTips() {
         boldBtn.text = "Bold" + getShortcutName(Prefs.get().boldShortcut)
         underlineBtn.text = "Underline" + getShortcutName(Prefs.get().underlineShortcut)
@@ -111,9 +163,7 @@ class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: S
         when(event.code.code) {
             Prefs.get().boldShortcut -> boldSelectedText()
             Prefs.get().underlineShortcut -> underlineSelectedText()
-            Prefs.get().emphasizeShortcut -> {
-                boldSelectedText(); underlineSelectedText()
-            }
+            Prefs.get().emphasizeShortcut -> emphasize()
             Prefs.get().highlightShortcut -> highlightSelectedText()
             Prefs.get().unhighlightShortcut -> unhighlightSelectedText()
         }
