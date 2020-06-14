@@ -14,6 +14,8 @@ import javafx.scene.image.ImageView
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
+import javafx.scene.text.Text
+import javafx.scene.text.TextFlow
 import javafx.stage.Modality
 import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
@@ -37,10 +39,11 @@ fun showMOTD() {
     val header = Label("Did you know?")
     header.font = Font.font(20.0)
 
-    val information = Label(tip["information"].asString)
-    information.font = Font.font(13.0)
+    val text = Text(tip["information"].asString)
+    text.font = Font.font(13.0)
+
+    val information = TextFlow(text)
     information.prefWidth = 400.0
-    information.isWrapText = true
 
     val checkbox = CheckBox("Display daily Cardr tips")
     checkbox.isSelected = Prefs.get().showTips
@@ -70,7 +73,7 @@ fun showMOTD() {
         tipIndex %= data.size()
         tip = data[tipIndex] as JsonObject
 
-        information.text = tip["information"].asString
+        text.text = tip["information"].asString
         val tipImg = tip["image"]
         if (tip.has("image") && !tipImg.isJsonNull) {
             val imageView = ImageView(CardrDesktop::class.java.getResource("/tips/${tipImg.asString}").toExternalForm())
