@@ -1,6 +1,7 @@
 package me.sohamgovande.cardr.data.updater
 
 import javafx.application.Platform
+import me.sohamgovande.cardr.data.urls.UrlHelper
 import me.sohamgovande.cardr.util.*
 import net.lingala.zip4j.ZipFile
 import org.apache.logging.log4j.LogManager
@@ -16,6 +17,15 @@ class UpdateExecutor(private val version: CardrVersion) {
 
     @Throws(Exception::class)
     fun update() {
+        if (!version.isAutoUpdaterEnabled()) {
+            Platform.runLater {
+                onClose()
+                showInfoDialogBlocking("The auto-updater is not available for this version of Cardr, so you'll need to update manually.", "Once you click OK, we'll open up the official Cardr download page so that you can grab the latest version from there. The updating process shouldn't take more than a few minutes.")
+                UrlHelper.browse("download")
+            }
+            return
+        }
+
         val downloadPath = getInstallerFilePath()
 
         logger.info("Downloading new installer file...")
@@ -29,7 +39,7 @@ class UpdateExecutor(private val version: CardrVersion) {
             Platform.runLater {
                 onClose()
                 showInfoDialogBlocking("Please read the instructions below.", "1. Once you click OK, a Finder window will appear containing the new cardr update. \n2. To install the update, double click the latest version PKG installer.\n\nClick OK to confirm you have read this message.")
-                Desktop.getDesktop().browse(Paths.get(System.getProperty("cardr.data.dir", "Cardr Updates")).toUri())
+                Desktop.getDesktop().browse(Paths.get(System.getProperty("cardr.data.dir"),"Cardr Updates").toUri())
                 exitProcess(0)
             }
         } else {
