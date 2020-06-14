@@ -104,7 +104,7 @@ class UpdateChecker(private val ui: CardrUI) {
 
     fun showMOTD(): Boolean {
         // Message of the day
-        if (Prefs.get().showTips && !CHROME_OCR_MODE) {
+        if (Prefs.get().showTips && !CHROME_OCR_MODE && !CardrDesktop.IS_FIRST_LAUNCH) {
             val today = currentDate().format(DateTimeFormatter.ISO_DATE)
             if (Prefs.get().lastMOTD != today) {
                 Platform.runLater { me.sohamgovande.cardr.core.ui.motd.showMOTD() }
@@ -140,6 +140,7 @@ class UpdateChecker(private val ui: CardrUI) {
                 logger.info("Latest version is $latestVersion - needs to update!")
 
                 Platform.runLater { showUpdateDialog(latestVersion) }
+                return
             } else {
                 logger.info("Latest version is $latestVersion - no need to update.")
                 // Already updated
