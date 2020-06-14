@@ -112,10 +112,12 @@ private fun onFirstLaunchMacOS() {
     val getWordWindowsScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "getWordWindows.scpt")
     val selectWordWindowScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "selectWordWindow.scpt")
     val pasteToWordScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "pasteToWord.scpt")
+    val openWordScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "openWord.scpt")
 
     downloadFileFromURL(UrlHelper.get("getWordWindows"), getWordWindowsScriptPath.toFile(), logger)
     downloadFileFromURL(UrlHelper.get("selectWordWindow"), selectWordWindowScriptPath.toFile(), logger)
     downloadFileFromURL(UrlHelper.get("pasteToWord"), pasteToWordScriptPath.toFile(), logger)
+    downloadFileFromURL(UrlHelper.get("openWord"), openWordScriptPath.toFile(), logger)
 
     if (!selectWordWindowScriptPath.toFile().exists())
         throw FirstLaunchException("Unable to download AppleScript 'selectWordWindow'.")
@@ -123,6 +125,8 @@ private fun onFirstLaunchMacOS() {
         throw FirstLaunchException("Unable to download AppleScript 'getWordWindows'.")
     if (!pasteToWordScriptPath.toFile().exists())
         throw FirstLaunchException("Unable to download AppleScript 'pasteToWord'.")
+    if (!openWordScriptPath.toFile().exists())
+        throw FirstLaunchException("Unable to download AppleScript 'openWord'.")
 
     downloadOCRData()
 }
@@ -167,6 +171,15 @@ fun updateFrom(from: Int, to: Int): Exception? {
         Prefs.save()
         logger.info("Updating OCR data...")
         downloadOCRData()
+        if (getOSType() == OS.MAC) {
+            val macScriptsPath = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts")
+
+            logger.info("Installing openWord.scpt")
+            val openWordScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "openWord.scpt")
+            downloadFileFromURL(UrlHelper.get("openWord"), openWordScriptPath.toFile(), logger)
+            if (!openWordScriptPath.toFile().exists())
+                throw FirstLaunchException("Unable to download AppleScript 'openWord'.")
+        }
         if (!hasUpdatedChrome) {
             logger.info("Updating CardrChromeApp")
             if (getOSType() == OS.MAC) {
