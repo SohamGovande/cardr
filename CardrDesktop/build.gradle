@@ -132,6 +132,25 @@ dependencies {
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 }
 
+/*task runZKM(type: Exec) {
+    doLast {
+        workingDir 'C:\\users\\vgsoh\\onedrive\\backup\\zkmeval'
+        commandLine 'java', '-jar', 'zkm.jar', '-v', 'X:\\dev\\intellij\\Cardr\\export\\zkm.txt'
+    }
+}
+
+jar {
+    doLast {
+        runZKM
+    }
+}
+
+createMergedModule {
+    doFirst {
+        runZKM
+    }
+}*/
+
 compileKotlin {
     kotlinOptions.jvmTarget = "11"
 }
