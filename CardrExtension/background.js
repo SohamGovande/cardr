@@ -24,6 +24,10 @@ function openCardr(urlStr, selectedText, html) {
 function openCardrFromBtn() {
   chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
     var tab = tabs[0];
+    if (tab.url.startsWith("chrome://")) {
+      alert("Sorry, cardr doesn't have permissions to access chrome:// urls. Try another page.");
+      return;
+    }
     chrome.tabs.executeScript( {
       code: "window.getSelection().toString();"
     }, function(selection) {
@@ -31,7 +35,7 @@ function openCardrFromBtn() {
       if (selection != undefined) {
         selectedText = selection[0];
       }
-  
+ 
       chrome.tabs.executeScript({code: "document.all[0].outerHTML;"}, function(dom) {
         var html = dom[0];
         if (tab != undefined) {
@@ -68,5 +72,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     openCardrFromBtn();
   } else if (request == "openOCRTool") {
     openOCRTool();
+  } else if (request == "openWebsite") {
+    chrome.tabs.create({ 'url': "https://cardrdebate.com" });
   }
 });
