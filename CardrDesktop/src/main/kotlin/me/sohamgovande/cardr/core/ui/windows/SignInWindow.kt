@@ -15,16 +15,20 @@ import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.stage.WindowEvent
+import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.auth.CardrUser
+import me.sohamgovande.cardr.core.ui.motd.showMOTD
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.encryption.EncryptionHelper
 import me.sohamgovande.cardr.data.urls.UrlHelper
 import me.sohamgovande.cardr.util.OS
+import me.sohamgovande.cardr.util.currentDate
 import me.sohamgovande.cardr.util.getOSType
 import org.apache.logging.log4j.LogManager
 import java.awt.Desktop
 import java.lang.Exception
 import java.net.URL
+import java.time.format.DateTimeFormatter
 import kotlin.system.exitProcess
 
 
@@ -82,6 +86,12 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
                     readyToClose = true
                     openWindows.remove(this)
                     super.window.close()
+
+                    if (CardrDesktop.IS_FIRST_LAUNCH) {
+                        Platform.runLater { showMOTD() }
+                        Prefs.get().lastMOTD = currentDate().format(DateTimeFormatter.ISO_DATE)
+                        Prefs.save()
+                    }
                 } else {
                     val alert = Alert(AlertType.ERROR)
                     alert.dialogPane.minHeight = Region.USE_PREF_SIZE
