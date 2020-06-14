@@ -10,8 +10,17 @@ data class CardrVersion(
     val urlMacOS: String,
     val downloadFileWin: String?,
     val downloadFileMac: String?,
-    val finalFileMac: String?
+    val finalFileMac: String?,
+    val disabledMac: Boolean?,
+    val disabledWindows: Boolean?
 ) {
+    fun isAutoUpdaterEnabled(): Boolean {
+        return if (getOSType() == OS.MAC)
+            disabledMac == null || !disabledMac
+        else
+            disabledWindows == null || !disabledWindows
+    }
+
     fun getURL(): String {
         return if (getOSType() == OS.MAC) urlMacOS else urlWindows
     }
