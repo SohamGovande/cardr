@@ -213,7 +213,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
                 }
             } else {
                 try {
-                    executeCommandBlocking("open -a \"Microsoft Word\"", logger, false)
+                    MacMSWordInteractor().createNewDoc()
                 } catch (e: Exception) {
                     logger.error("Unable to open Microsoft Word", e)
                     showErrorDialogUnblocking("Unable to launch Word", e.javaClass.simpleName + " - " + e.message)
