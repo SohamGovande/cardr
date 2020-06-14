@@ -15,6 +15,8 @@ import javafx.scene.text.TextFlow
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.property.CardProperty
 import me.sohamgovande.cardr.data.prefs.Prefs
+import me.sohamgovande.cardr.util.OS
+import me.sohamgovande.cardr.util.getOSType
 
 
 class EditPropertiesWindow(private val cardrUI: CardrUI) : ModalWindow("Customize Properties Editor", isModal = false) {
@@ -40,12 +42,14 @@ class EditPropertiesWindow(private val cardrUI: CardrUI) : ModalWindow("Customiz
 
         colName.minWidth = 100.0
         colName.maxWidth = 100.0
-        colMoveUp.minWidth = 35.0
-        colMoveUp.maxWidth = 35.0
-        colMoveDown.minWidth = 35.0
-        colMoveDown.maxWidth = 35.0
-        colEnabled.minWidth = 35.0
-        colEnabled.maxWidth = 35.0
+
+        val width = 35.0 + if (getOSType() == OS.MAC) 5.0 else 0.0
+        colMoveUp.minWidth = width
+        colMoveUp.maxWidth = width
+        colMoveDown.minWidth = width
+        colMoveDown.maxWidth = width
+        colEnabled.minWidth = width
+        colEnabled.maxWidth = width
 
         table.columnResizePolicy = TableView.CONSTRAINED_RESIZE_POLICY
 
@@ -159,7 +163,7 @@ class EditPropertiesWindow(private val cardrUI: CardrUI) : ModalWindow("Customiz
         for (col in table.columns)
             col.isSortable = false
 
-        table.fixedCellSize = 30.0
+        table.fixedCellSize = 30.0 + if (getOSType() == OS.MAC) 5.0 else 0.0
         table.prefHeight = table.fixedCellSize * (table.items.size + 1)
 
         val header = Label("Customize Properties Editor")
@@ -172,7 +176,7 @@ class EditPropertiesWindow(private val cardrUI: CardrUI) : ModalWindow("Customiz
 
         vbox.children.addAll(header, subheader, table, done)
 
-        val scene = Scene(vbox, 650.0, 450.0)
+        val scene = Scene(vbox)
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
