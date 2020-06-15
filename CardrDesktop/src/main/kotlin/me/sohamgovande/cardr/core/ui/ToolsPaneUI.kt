@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
+import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
 import me.sohamgovande.cardr.core.ui.windows.markup.MarkupCardWindow
@@ -41,6 +42,8 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
     val refreshBtn = Button()
 
     val root = VBox()
+
+    lateinit var scrollPane: ScrollPane
 
     private fun generateSendToWordUI() {
         sendToWordUI.spacing = 5.0
@@ -160,7 +163,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
 
         root.maxWidth = 220.0
 
-        val scrollPane = ScrollPane(root)
+        scrollPane = ScrollPane(root)
         scrollPane.hbarPolicy = ScrollPane.ScrollBarPolicy.NEVER
         scrollPane.vbarPolicy = ScrollPane.ScrollBarPolicy.AS_NEEDED
         scrollPane.minWidth = 230.0
@@ -505,6 +508,11 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
             alert.headerText = "No text selected"
             alert.showAndWait()
         }
+    }
+    
+    fun onWindowResized(stage: Stage) {
+        scrollPane.prefWidth = 230.0
+        scrollPane.minWidth = 230.0
     }
 
 
