@@ -406,7 +406,7 @@ class CardrUI(val stage: Stage) {
     fun onWindowResized() {
         urlTF.prefWidth = stage.width - 50
         cardWV.prefWidth = stage.width - 475
-        cardWV.prefHeight = stage.height - 150
+        cardWV.prefHeight = stage.height - 100
         propertyManager.onWindowResized(stage)
     }
 
