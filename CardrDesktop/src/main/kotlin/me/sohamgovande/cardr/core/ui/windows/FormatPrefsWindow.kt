@@ -12,6 +12,7 @@ import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
 import javafx.scene.web.HTMLEditor
 import javafx.stage.WindowEvent
+import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.prefs.PrefsObject
@@ -96,6 +97,7 @@ class FormatPrefsWindow(private val cardrUI: CardrUI): ModalWindow("Settings - C
         }
         infoBtn.setOnAction {
             val alert = Alert(Alert.AlertType.NONE)
+            alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
             alert.title = "Macros"
             alert.headerText = "Available Macros"
             alert.buttonTypes.add(ButtonType.CLOSE)

@@ -94,6 +94,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
                     }
                 } else {
                     val alert = Alert(AlertType.ERROR)
+                    alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
                     alert.dialogPane.minHeight = Region.USE_PREF_SIZE
                     alert.title = "Error"
                     if (result.reason == "That username and password combination is invalid.") {

@@ -5,6 +5,8 @@ import javafx.scene.control.Alert
 import javafx.scene.control.ButtonBar
 import javafx.scene.control.ButtonType
 import javafx.scene.layout.Region
+import me.sohamgovande.cardr.CardrDesktop
+import me.sohamgovande.cardr.data.prefs.Prefs
 import java.awt.Desktop
 import java.io.ByteArrayOutputStream
 import java.io.PrintWriter
@@ -21,6 +23,7 @@ fun showErrorDialogUnblocking(brief: String, full: String) {
 
 fun showErrorDialogBlocking(brief: String, full: String) {
     val alert = Alert(Alert.AlertType.ERROR)
+    alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
     alert.title = "Error"
     alert.headerText = brief
     alert.contentText = full
@@ -36,6 +39,7 @@ fun showInfoDialogUnblocking(brief: String, full: String) {
 
 fun showInfoDialogBlocking(brief: String, full: String) {
     val alert = Alert(Alert.AlertType.INFORMATION)
+    alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
     alert.title = "Message"
     alert.headerText = brief
     alert.contentText = full
@@ -48,6 +52,7 @@ fun showInfoDialogBlocking(brief: String, full: String, primaryOption: String, a
     val exitBT = ButtonType("OK", ButtonBar.ButtonData.CANCEL_CLOSE)
 
     val alert = Alert(Alert.AlertType.INFORMATION, "", primaryBT, exitBT)
+    alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
     alert.title = "Message"
     alert.headerText = brief
     alert.contentText = full
@@ -87,6 +92,7 @@ fun showErrorDialog(e: Exception) {
     val exitBT = ButtonType("Exit", ButtonBar.ButtonData.CANCEL_CLOSE)
 
     val alert = Alert(Alert.AlertType.ERROR, "", sendBT, continueBT, exitBT)
+    alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
     alert.headerText = "Uh-oh! There was an error."
     alert.contentText = "We encountered an unknown error of type ${e.javaClass.simpleName}: ${e.message}. We apologize for the inconvenience. Please kindly select \"Send Log File\" to share the error log with the developers so that they can fix the bug or help you out. We apologize for the inconvenience."
     alert.dialogPane.minHeight = Region.USE_PREF_SIZE

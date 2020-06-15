@@ -31,6 +31,7 @@ class UpdateChecker(private val ui: CardrUI) {
         val seeWhatsNewBT = ButtonType("See what's new", ButtonBar.ButtonData.CANCEL_CLOSE)
 
         val alert = Alert(Alert.AlertType.CONFIRMATION, "", updateBT, remindBT, seeWhatsNewBT, neverShowBT)
+        alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
         alert.title = "Update cardr"
         alert.headerText = "A new version of cardr is available!"
         alert.contentText = "Version ${version.name} has new features, bug fixes, and security updates. Would you like to download it?"

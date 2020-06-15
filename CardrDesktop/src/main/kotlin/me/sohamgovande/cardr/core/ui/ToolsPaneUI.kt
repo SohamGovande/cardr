@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
+import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
 import me.sohamgovande.cardr.core.ui.windows.markup.MarkupCardWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow
@@ -103,6 +104,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
 
             cardrUI.refreshHTML()
             val alert = Alert(Alert.AlertType.INFORMATION)
+            alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
             alert.headerText = "Article content restored to original."
             alert.showAndWait()
         }
@@ -187,6 +189,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
 
         if (!success) {
             val alert = Alert(Alert.AlertType.INFORMATION, "Please highlight at least one full paragraph in the preview pane in order to use this tool.")
+            alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
             alert.headerText = "Not enough text selected"
             alert.showAndWait()
         }
@@ -498,6 +501,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
         }
         if (!success) {
             val alert = Alert(Alert.AlertType.INFORMATION, "Please highlight text in the preview pane before clicking remove.")
+            alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
             alert.headerText = "No text selected"
             alert.showAndWait()
         }

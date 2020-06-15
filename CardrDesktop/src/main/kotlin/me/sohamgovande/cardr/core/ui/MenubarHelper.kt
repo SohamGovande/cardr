@@ -230,6 +230,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
             if (!Prefs.get().darkMode) {
                 val alert = Alert(Alert.AlertType.INFORMATION)
+                alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
                 alert.title = "Please restart cardr"
                 alert.headerText = "Please restart cardr for the changes to take effect."
                 alert.contentText = "Upon restart, your theme changes will be applied."
