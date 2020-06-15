@@ -24,6 +24,7 @@ import me.sohamgovande.cardr.util.showErrorDialogBlocking
 import org.apache.logging.log4j.LogManager
 import java.awt.Rectangle
 import java.awt.Robot
+import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.net.URLClassLoader
 import java.nio.file.Files
@@ -103,6 +104,7 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
             Platform.runLater {
                 if (text == null) {
                     logger.info("OCR API returned no valid text")
+                    close(null)
                     return@runLater
                 }
 
@@ -147,27 +149,35 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
         }
         logger.info("Invoking API call...")
         val executor = Executors.newCachedThreadPool()
-        val future = executor.submit<Any> {
+        val handler = executor.submit<Any> {
             doOCRMethod!!.invoke(ocrInstance!!)
             null
         }
         try {
-            future.get(5, TimeUnit.SECONDS)
+            handler.get(5000, TimeUnit.MILLISECONDS)
         } catch (e: TimeoutException) {
-            Platform.runLater {
-                if (getOSType() == OS.WINDOWS) {
-                    showErrorDialogBlocking("Please install the Visual Studio 64 Redistributable to be able to use OCR.", "We were unable to do OCR, and this most likely means that you don't have the required VS64 library on your computer. Don't worry - it's super easy to install.\n\n1. Once you click OK, we'll take you to a Microsoft webpage.\n\n2. Find the box titled \"Microsoft Visual C++ Redistributable for Visual Studio 2019\". Here, select your system architecture (most probably x64) and click \"Download\".\n\n3. Follow the installer - it should only take a few steps.\n\nClick OK to confirm that you have read this message.")
-                    UrlHelper.browse("visualStudio")
-                    return@runLater
-                } else {
-                    showErrorDialog(e)
-                }
-            }
+            showVSWarning()
         } catch (e: InterruptedException) {
+            logger.error("Error invoking OCR API - InterruptedException", e)
+            return null
         } catch (e: ExecutionException) {
-            showErrorDialog(e)
+            logger.error("Error invoking OCR API - ExecutionException", e)
+            if (e.cause is InvocationTargetException
+                && ((e.cause as InvocationTargetException).cause is UnsatisfiedLinkError ||
+                    ((e.cause as InvocationTargetException).targetException is NoClassDefFoundError))
+                && getOSType() == OS.WINDOWS) {
+                showVSWarning()
+            } else {
+                Platform.runLater { showErrorDialog(e) }
+            }
+            handler.cancel(true)
+            return null
+        } catch (e: InvocationTargetException) {
+            logger.error("Error invoking OCR API - InvocationTargetException", e)
+            Platform.runLater { showErrorDialog(e) }
+            return null
         } finally {
-            future.cancel(true) // may or may not desire this
+            handler.cancel(true)
         }
 
 
@@ -175,7 +185,7 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
         val ocrResultPath = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "ocr-result.txt")
         if (!ocrResultPath.toFile().exists()) {
             logger.info("ocr-result.txt does not exist")
-            showErrorDialogBlocking("Error loading OCR", "OCR result file not found")
+            Platform.runLater { showErrorDialogBlocking("Error loading OCR", "OCR result file not found") }
             return null
         } else {
             return Files.readString(ocrResultPath)
@@ -195,6 +205,13 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
 //        val jsonData = JsonParser().parse(data).asJsonObject
 //        return StringEscapeUtils.unescapeJson(jsonData["ParsedResults"].asJsonArray[0].asJsonObject["ParsedText"].asString)
 //    }
+
+    private fun showVSWarning() {
+        Platform.runLater {
+            showErrorDialogBlocking("Please install the Visual Studio 64 Redistributable to be able to use OCR.", "We were unable to do OCR, and this most likely means that you don't have the required VS64 library on your computer. Don't worry - it's super easy to install.\n\n1. Once you click OK, we'll take you to a Microsoft webpage.\n\n2. Find the box titled \"Microsoft Visual C++ Redistributable for Visual Studio 2019\". Here, select your system architecture (most probably x64) and click \"Download\".\n\n3. Follow the installer - it should only take a few steps.\n\nClick OK to confirm that you have read this message.")
+            UrlHelper.browse("visualStudio")
+        }
+    }
 
     private fun loadOCRText(data: HashMap<String, Any>) {
         if (!data.containsKey("ocrText"))

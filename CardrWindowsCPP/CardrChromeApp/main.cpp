@@ -155,6 +155,7 @@ int main(int argc, char** argv)
 				} else {
 					cmdLine = appName + " \"" + url + "\" " + id;
 				} 
+				cmdLine += " cardrOptionLaunchedByChrome";
 
 				out << "Current dir: " << currentDir << std::endl;
 				out << "Application path: " << appName << std::endl;

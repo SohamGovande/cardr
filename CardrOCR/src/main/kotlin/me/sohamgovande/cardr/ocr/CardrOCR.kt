@@ -17,3 +17,7 @@ class CardrOCR(val args: Array<String>) {
         Files.write(Paths.get(args[0], "ocr", "ocr-result.txt"), result.toByteArray())
     }
 }
+
+fun main(args: Array<String>) {
+    CardrOCR(args).doOCR()
+}

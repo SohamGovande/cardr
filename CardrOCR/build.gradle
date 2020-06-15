@@ -17,8 +17,17 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'me.sohamgovande.cardr.ocr.CardrOCRKt'
+        )
+    }
+}
+
 shadowJar {
     classifier = null
+    version = null
 }
 
 compileKotlin {
