@@ -16,8 +16,10 @@ import me.sohamgovande.cardr.core.ui.WindowDimensions
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.ResizeListener.Companion.BORDER_SIZE
 import me.sohamgovande.cardr.data.prefs.Prefs
+import me.sohamgovande.cardr.data.urls.UrlHelper
 import me.sohamgovande.cardr.util.OS
 import me.sohamgovande.cardr.util.getOSType
+import me.sohamgovande.cardr.util.showErrorDialog
 import me.sohamgovande.cardr.util.showErrorDialogBlocking
 import org.apache.logging.log4j.LogManager
 import java.awt.Rectangle
@@ -26,9 +28,11 @@ import java.lang.reflect.Method
 import java.net.URLClassLoader
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.util.concurrent.*
 import javax.imageio.ImageIO
 import kotlin.math.abs
 import kotlin.system.exitProcess
+
 
 class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"){
 
@@ -142,7 +146,31 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
             logger.info("Reflection API has already been loaded")
         }
         logger.info("Invoking API call...")
-        doOCRMethod!!.invoke(ocrInstance!!)
+        val executor = Executors.newCachedThreadPool()
+        val future = executor.submit<Any> {
+            doOCRMethod!!.invoke(ocrInstance!!)
+            null
+        }
+        try {
+            future.get(5, TimeUnit.SECONDS)
+        } catch (e: TimeoutException) {
+            Platform.runLater {
+                if (getOSType() == OS.WINDOWS) {
+                    showErrorDialogBlocking("Please install the Visual Studio 64 Redistributable to be able to use OCR.", "We were unable to do OCR, and this most likely means that you don't have the required VS64 library on your computer. Don't worry - it's super easy to install.\n\n1. Once you click OK, we'll take you to a Microsoft webpage.\n\n2. Find the box titled \"Microsoft Visual C++ Redistributable for Visual Studio 2019\". Here, select your system architecture (most probably x64) and click \"Download\".\n\n3. Follow the installer - it should only take a few steps.\n\nClick OK to confirm that you have read this message.")
+                    UrlHelper.browse("visualStudio")
+                    return@runLater
+                } else {
+                    showErrorDialog(e)
+                }
+            }
+        } catch (e: InterruptedException) {
+        } catch (e: ExecutionException) {
+            showErrorDialog(e)
+        } finally {
+            future.cancel(true) // may or may not desire this
+        }
+
+
         logger.info("Reading back OCR from ocr-result.txt")
         val ocrResultPath = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "ocr-result.txt")
         if (!ocrResultPath.toFile().exists()) {
