@@ -13,6 +13,7 @@
     "encryptionInfo": "https://cardrdebate.com/data/EncryptionInfo.json",
     "forgotPassword": "https://cardrdebate.com/forgot-password-instructions.html",
     "supportedSitesSpreadsheet": "https://docs.google.com/spreadsheets/d/155sEjiKnhkijTjyAL06CBGPHPm9VPWI-wH27Ncwk9-E/edit?usp=sharing",
+    "visualStudio": "https://visualstudio.microsoft.com/downloads/#other-family",
 
     "winChromeApp": "https://cardrdebate.com/data/win/CardrChromeApp-1.3.0.exe",
     "winChromeJson": "https://cardrdebate.com/data/win/ChromeAppNativeJson-1.2.0.json",
