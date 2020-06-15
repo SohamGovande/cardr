@@ -46,6 +46,7 @@ data class PrefsObject(
 
     var lastMOTD: String = "",
     var showTips: Boolean = true,
+    var hasCutCard: Boolean = false,
 
     var activeProperties: MutableList<Int> = mutableListOf(0, 1, 2, 3, 4, 5),
 

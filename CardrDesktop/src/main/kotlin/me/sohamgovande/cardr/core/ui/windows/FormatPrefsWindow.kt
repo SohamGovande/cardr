@@ -52,7 +52,13 @@ class FormatPrefsWindow(private val cardrUI: CardrUI): ModalWindow("Settings - C
         text0.style = "-fx-font-weight: bold;"
         text2.isStrikethrough = true
         text4.style = "-fx-font-weight: bold;"
-        return TextFlow(text0, text1, text2, text3, text4, text5)
+        val textFlow = TextFlow(text0, text1, text2, text3, text4, text5)
+        for (testNode in textFlow.children) {
+            if (testNode !is Text)
+                continue
+            testNode.styleClass.add("custom-text")
+        }
+        return textFlow
     }
 
     override fun generateUI(): Scene {

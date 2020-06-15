@@ -2,3 +2,7 @@
     -fx-font-family: Calibri, Arial;
     -fx-font-size: 12pt;
 }
+
+.custom-text {
+    -fx-fill: #2b2b2b;
+}

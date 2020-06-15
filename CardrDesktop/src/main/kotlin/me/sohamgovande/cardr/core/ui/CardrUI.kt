@@ -19,6 +19,7 @@ import me.sohamgovande.cardr.core.auth.CardrUser
 import me.sohamgovande.cardr.core.card.Author
 import me.sohamgovande.cardr.core.ui.property.*
 import me.sohamgovande.cardr.core.ui.windows.EditPropertiesWindow
+import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
 import me.sohamgovande.cardr.core.ui.windows.SignInLauncherOptions
 import me.sohamgovande.cardr.core.ui.windows.SignInWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRCardBuilderWindow
@@ -162,6 +163,15 @@ class CardrUI(val stage: Stage) {
     fun visitURL(url: String) {
         if (url == "ocr")
             return
+        Platform.runLater {
+            if (!Prefs.get().hasCutCard) {
+                showInfoDialogBlocking("Want to edit the card format?", "Cardr allows you to edit virtually every aspect of the cards you cut—if you're not satisfied with the default citation format, feel free to tweak it to your needs using Settings > Card and cite format settings...", "Change card/citation format") {
+                    FormatPrefsWindow(this).show()
+                }
+                Prefs.get().hasCutCard = true
+                Prefs.save()
+            }
+        }
         Thread {
             currentUser.visitWebsite(url)
         }.start()

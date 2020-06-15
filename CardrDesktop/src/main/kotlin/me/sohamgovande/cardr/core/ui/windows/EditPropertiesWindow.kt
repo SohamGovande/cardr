@@ -169,7 +169,10 @@ class EditPropertiesWindow(private val cardrUI: CardrUI) : ModalWindow("Customiz
         val header = Label("Customize Properties Editor")
         header.font = Font.font(20.0)
 
-        val subheader = TextFlow(Text("Here, you can change the order of properties and show/hide them in the properties editor. All your changes will be reflected live in the properties editor. You can use the Associated Macros in Settings > Edit Card & Cite Format."))
+        val text = Text("Here, you can change the order of properties and show/hide them in the properties editor. All your changes will be reflected live in the properties editor. You can use the Associated Macros in Settings > Edit Card & Cite Format.")
+        text.styleClass.add("custom-text")
+        val subheader = TextFlow(text)
+        subheader.prefWidth = 600.0
 
         val done = Button("Done")
         done.setOnAction { close(null) }

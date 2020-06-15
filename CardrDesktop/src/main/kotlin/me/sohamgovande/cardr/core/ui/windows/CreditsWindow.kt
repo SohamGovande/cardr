@@ -15,18 +15,16 @@ class CreditsWindow : ModalWindow("Credits") {
 
     private fun boldText(str: String): Text {
         val text = Text(str)
+        text.styleClass.add("custom-text")
         text.style = "-fx-font-weight: bold;"
         text.font = Font.font(13.0)
-        if (Prefs.get().darkMode)
-            text.fill = Color.WHITE
         return text
     }
 
     private fun text(str: String): Text {
         val text = Text(str)
+        text.styleClass.add("custom-text")
         text.font = Font.font(13.0)
-        if (Prefs.get().darkMode)
-            text.fill = Color.WHITE
         return text
     }
 

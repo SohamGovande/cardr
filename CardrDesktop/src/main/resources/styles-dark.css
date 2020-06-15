@@ -6,6 +6,10 @@
     -fx-control-inner-background-alt: -fx-control-inner-background;
 }
 
+.custom-text {
+    -fx-fill: lightgray;
+}
+
 .label{
     -fx-text-fill: lightgray;
 }
@@ -28,9 +32,8 @@
 }
 
 .separator *.line {
-    -fx-background-color: #3C3C3C;
-    -fx-border-style: solid;
-    -fx-border-width: 1px;
+    -fx-background-color: #000000;
+    -fx-border-radius: 0;
 }
 
 .scroll-bar{

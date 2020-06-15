@@ -40,6 +40,7 @@ fun showMOTD() {
     header.font = Font.font(20.0)
 
     val text = Text(tip["information"].asString)
+    text.styleClass.add("custom-text")
     text.font = Font.font(13.0)
 
     val information = TextFlow(text)
