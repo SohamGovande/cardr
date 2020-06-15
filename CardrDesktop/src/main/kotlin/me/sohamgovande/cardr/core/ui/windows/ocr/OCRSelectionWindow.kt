@@ -208,7 +208,7 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
 
     private fun showVSWarning() {
         Platform.runLater {
-            showErrorDialogBlocking("Please install the Visual Studio 64 Redistributable to be able to use OCR.", "We were unable to do OCR, and this most likely means that you don't have the required VS64 library on your computer. Don't worry - it's super easy to install.\n\n1. Once you click OK, we'll take you to a Microsoft webpage.\n\n2. Find the box titled \"Microsoft Visual C++ Redistributable for Visual Studio 2019\". Here, select your system architecture (most probably x64) and click \"Download\".\n\n3. Follow the installer - it should only take a few steps.\n\nClick OK to confirm that you have read this message.")
+            showErrorDialogBlocking("Please install the Visual Studio 64 Redistributable to be able to use OCR.", "We were unable to do OCR, and this most likely means that you don't have the required VS64 library on your computer. Don't worry - it's super easy to install.\n\n1. Once you click OK, we'll take you to a Microsoft webpage.\n\n2. Find the box titled \"Microsoft Visual C++ Redistributable for Visual Studio 2019\". Here, select your system architecture (most probably x64) and click \"Download\".\n\n3. Follow the installer - it should only take a few steps.\n\n4. Restart Cardr.\n\nClick OK to confirm that you have read this message.")
             UrlHelper.browse("visualStudio")
         }
     }
