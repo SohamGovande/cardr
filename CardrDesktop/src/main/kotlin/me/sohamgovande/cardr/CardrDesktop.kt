@@ -1,6 +1,7 @@
 package me.sohamgovande.cardr
 
 import javafx.application.Application
+import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.scene.image.Image
 import javafx.stage.Stage
@@ -69,7 +70,6 @@ class CardrDesktop: Application() {
                 Prefs.save()
                 stage.sizeToScene()
             }
-            ui!!.onWindowResized()
 
             if (IS_FIRST_LAUNCH && WAS_FIRST_LAUNCH_SUCCESSFUL) {
                 WelcomeWindow().show()
@@ -79,6 +79,8 @@ class CardrDesktop: Application() {
                 logger.info("Generating mac menu bar")
                 ui!!.menubarHelper.applyMacMenu()
             }
+
+            Platform.runLater { ui!!.onWindowResized() }
         } catch (e: Throwable) {
             logger.error("Error loading window", e)
         }
