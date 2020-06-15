@@ -13,6 +13,7 @@ import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.util.OS
 import me.sohamgovande.cardr.util.getOSType
 import org.apache.logging.log4j.LogManager
+import kotlin.system.exitProcess
 
 class CardrDesktop: Application() {
 
@@ -21,6 +22,8 @@ class CardrDesktop: Application() {
     private fun onWindowClose(@Suppress("UNUSED_PARAMETER") event: WindowEvent) {
         Prefs.get().windowDimensions = WindowDimensions(stage)
         Prefs.save()
+        logger.info("Window close event received. Exiting normally.")
+        exitProcess(0)
     }
 
     override fun start(stage: Stage) {
