@@ -7,6 +7,8 @@ import javafx.stage.Stage
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import me.sohamgovande.cardr.data.prefs.Prefs
+import me.sohamgovande.cardr.util.OS
+import me.sohamgovande.cardr.util.getOSType
 
 class CardPropertyManager(cardrUI: CardrUI) {
 
@@ -31,8 +33,10 @@ class CardPropertyManager(cardrUI: CardrUI) {
         pGrid.vgap = 10.0
         pGrid.minWidth = 300.0
         pGrid.maxWidth = 305.0
-        pGrid.columnConstraints.add(ColumnConstraints(60.0))
-        pGrid.columnConstraints.add(ColumnConstraints(225.0))
+
+        val extraLabelOffset = if (getOSType() == OS.MAC) 10 else 0
+        pGrid.columnConstraints.add(ColumnConstraints(60.0 + extraLabelOffset))
+        pGrid.columnConstraints.add(ColumnConstraints(225.0 - extraLabelOffset))
 
         for ((counter, propertyIndex) in Prefs.get().activeProperties.withIndex()) {
             val property = cardProperties[propertyIndex]
