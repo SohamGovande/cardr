@@ -11,6 +11,7 @@ import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
 import me.sohamgovande.cardr.data.prefs.Prefs
+import me.sohamgovande.cardr.data.urls.UrlHelper
 import java.awt.Desktop
 import java.net.URL
 
@@ -66,13 +67,13 @@ class CreditsWindow : ModalWindow("Credits") {
                 "Nlohmann Json, " +
                 "NSMenuFX" +
                 "Tess4j, " +
-                "Zip4j, " +
+                "Zip4j" +
                 ""
             )
         )
         libraries.prefWidth = 275.0
 
-        val icons = TextFlow(boldText("Tools Icon Credits: "), link("Icons8", "https://icons8.com"))
+        val icons = TextFlow(boldText("Tools Icon Credits: "), link("Icons8", UrlHelper.get("icons8")))
 
         val closeBtn = Button("Close")
         closeBtn.prefWidth = 275.0
