@@ -233,6 +233,9 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
             sb.append("</p>")
         }
 
+        cardrUI.removeWords.clear()
+        cardrUI.removeParagraphs.clear()
+
         cardrUI.overrideBodyHTML = null
         cardrUI.enableCardBodyEditOptions()
         cardrUI.cardBody.set(sb.toString())
