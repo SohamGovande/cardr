@@ -2,14 +2,17 @@ package me.sohamgovande.cardr.core.ui.windows
 
 import javafx.geometry.Insets
 import javafx.scene.Scene
+import javafx.scene.control.Button
+import javafx.scene.control.Hyperlink
 import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.layout.VBox
-import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
 import me.sohamgovande.cardr.data.prefs.Prefs
+import java.awt.Desktop
+import java.net.URL
 
 class CreditsWindow : ModalWindow("Credits") {
 
@@ -26,6 +29,12 @@ class CreditsWindow : ModalWindow("Credits") {
         text.styleClass.add("custom-text")
         text.font = Font.font(13.0)
         return text
+    }
+
+    private fun link(str: String, href: String): Hyperlink {
+        val link = Hyperlink(str)
+        link.setOnAction { Desktop.getDesktop().browse(URL(href).toURI()) }
+        return link
     }
 
     override fun generateUI(): Scene {
@@ -48,22 +57,34 @@ class CreditsWindow : ModalWindow("Credits") {
 
         val libraries = TextFlow(
             boldText("Libraries: "),
-            text("Apache Commons-Exec 1.3, " +
-            "Apache Commons-IO 2.5, " +
-            "Apache HttpClient 4.5.10, " +
-            "Apache Log4j 2.13.0, " +
-            "Gson 2.8.5, " +
-            "Nlohmann Json 3.7.3, " +
-            "Jsoup 1.12.1, " +
-            "Zip4j 2.3.0")
+            text(
+                "Apache Commons-Exec, " +
+                "Apache Commons-IO, " +
+                "Apache HttpClient, " +
+                "Apache Log4j, " +
+                "Google Gson, " +
+                "Nlohmann Json, " +
+                "Jsoup, " +
+                "Zip4j, " +
+                "NSMenuFX"
+            )
         )
+        libraries.prefWidth = 275.0
+
+        val icons = TextFlow(boldText("Tools Icon Credits: "), link("Icons8", "https://icons8.com"))
+
+        val closeBtn = Button("Close")
+        closeBtn.prefWidth = 275.0
+        closeBtn.setOnAction { close(null) }
 
         vbox.children.add(header)
         vbox.children.add(founderAndDeveloper)
         vbox.children.add(contactUs)
         vbox.children.add(libraries)
+        vbox.children.add(icons)
+        vbox.children.add(closeBtn)
 
-        val scene = Scene(vbox, 300.0, 200.0)
+        val scene = Scene(vbox)
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
         super.window.icons.add(Image(javaClass.getResourceAsStream("/icon-128.png")))
         return scene
