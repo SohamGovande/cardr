@@ -57,16 +57,17 @@ class CreditsWindow : ModalWindow("Credits") {
 
         val libraries = TextFlow(
             boldText("Libraries: "),
-            text(
-                "Apache Commons-Exec, " +
+            text("Apache Commons-Exec, " +
                 "Apache Commons-IO, " +
                 "Apache HttpClient, " +
                 "Apache Log4j, " +
                 "Google Gson, " +
+                "JSoup, " +
                 "Nlohmann Json, " +
-                "Jsoup, " +
+                "NSMenuFX" +
+                "Tess4j, " +
                 "Zip4j, " +
-                "NSMenuFX"
+                ""
             )
         )
         libraries.prefWidth = 275.0
