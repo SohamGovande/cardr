@@ -83,7 +83,11 @@ class CardrDesktop: Application() {
                 ui!!.menubarHelper.applyMacMenu()
             }
 
-            Platform.runLater { ui!!.onWindowResized() }
+            Platform.runLater {
+                ui!!.onWindowResized()
+                stage.width = stage.width + 1.0
+                stage.width = stage.width - 1.0
+            }
         } catch (e: Throwable) {
             logger.error("Error loading window", e)
         }
