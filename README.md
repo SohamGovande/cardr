@@ -1,34 +1,28 @@
 # cardr
-## Don't work harder. Use cardr.
-Cardr is an advanced, next-gen evidence collector for debaters - http://cardr.x10.bz
+## don't work harder, use cardr.
+Cardr is an advanced, next-gen evidence collector for all debaters - https://cardrdebate.com
 
 ## Installation
 
 ### Installing on Windows
 
-1. Visit [the downloads page](http://cardr.x10.bz/download.html) and download the latest Cardr installer.
-2. Double-click the file to run. If you receive a SmartScreen notification, then click "More Info" and then "Run Anyway". This is just a warning displayed to programs that don't have many downloads yet - Cardr is **not** a virus; you can check our VirusTotal rating [here](https://www.virustotal.com/gui/file/b74e925521e2d46dee7bdf72bd4754836284a1b96deac9d3fbc22d4eda98a9cd/detection).
-3. Once Cardr Desktop Client has installed, [get the Chrome extension](https://chrome.google.com/webstore/detail/cardifydebate/ifdnjffggmmjiammdpklgldliaaempce?hl=en).
+1. Visit [the downloads page](https://cardrdebate.com/download-win.html) and download the latest Cardr installer.
+2. Double-click the file to run. If you receive a SmartScreen notification, then click "More Info" and then "Run Anyway". This is just a warning displayed to programs that don't have many downloads yet - Cardr is **not** a virus; you can check our VirusTotal rating [here](https://www.virustotal.com/gui/file/0d1bd1c2fb1520c9853f196c0a3275b169f7f6c7affeb3840dd0d2eb30e62b40/detection).
+3. Once Cardr Desktop Client has installed, [get the Chrome extension](https://chrome.google.com/webstore/detail/cardr-the-next-gen-debate/ifdnjffggmmjiammdpklgldliaaempce?hl=en).
 
 You're all good to go!
 
 ### Installing on macOS
 
-1. Visit http://cardr.x10.bz/download.html and download the latest Cardr installer.
+1. Visit https://cardrdebate.com/download-mac.html and download the latest Cardr installer.
 2. Double-click the installer to run it. Follow all the steps.
-3. Once installed, you will have to manually launch Cardr at least once. Then, [get the Chrome extension](https://chrome.google.com/webstore/detail/cardifydebate/ifdnjffggmmjiammdpklgldliaaempce?hl=en).
+3. Once installed, you will have to manually launch Cardr at least once. Then, [get the Chrome extension](https://chrome.google.com/webstore/detail/cardr-the-next-gen-debate/ifdnjffggmmjiammdpklgldliaaempce?hl=en).
 
 You're all good to go!
 
 ## General Information
 
 Cardr is a piece of software that makes it easier for high-school and collegiate debaters to conduct research and generate citations for evidence.
-
-### Launcher
-
-*CardrLauncher/*
-
-Archived. Not for general use.
 
 ### Desktop Client
 
@@ -46,6 +40,12 @@ The Chrome extension allows you to seamlessly integrate your research experience
 It allows you to "send" a website into the Desktop Client by clicking the extension icon in the Chrome toolbar.
 
 The Chrome extension was written using JavaScript.
+
+### OCR API
+
+*CardrOCR/*
+
+Cardr has a separate OCR API that uses Tess4j to scan text from screenshots.
 
 
 ## Credits
