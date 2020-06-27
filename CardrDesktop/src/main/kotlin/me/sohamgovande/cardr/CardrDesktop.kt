@@ -1,9 +1,9 @@
 package me.sohamgovande.cardr
 
 import javafx.application.Application
-import javafx.application.Platform
 import javafx.scene.Scene
 import javafx.scene.image.Image
+import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import javafx.stage.WindowEvent
 import me.sohamgovande.cardr.core.ui.CardrUI
@@ -47,7 +47,8 @@ class CardrDesktop: Application() {
                 windowDimensions.apply(stage)
             }
 
-                stage.show()
+            stage.scene = Scene(VBox()) // Create a dummy scene - fixes bug when displaying w/ dual monitors
+            stage.show()
             logger.info("Window shown")
 
             logger.info("Loading window components...")
