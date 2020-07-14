@@ -23,5 +23,6 @@
     "getWordWindows": "https://cardrdebate.com/data/mac/MacScripts/getWordWindows-1.2.0.scpt",
     "selectWordWindow": "https://cardrdebate.com/data/mac/MacScripts/selectWordWindow-1.2.0.scpt",
     "pasteToWord": "https://cardrdebate.com/data/mac/MacScripts/pasteToWord-1.2.0.scpt",
-    "openWord": "https://cardrdebate.com/data/mac/MacScripts/openWord-1.3.0.scpt"
+    "openWord": "https://cardrdebate.com/data/mac/MacScripts/openWord-1.3.0.scpt",
+    "copyOCRDependencies": "https://cardrdebate.com/data/mac/MacScripts/copyOCRDependencies-1.4.0.scpt"
 }

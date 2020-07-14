@@ -1,0 +1,3 @@
+// TODO: Delete this file later
+do shell script "mkdir -p /usr/local/opt/leptonica/lib/" with administrator privileges
+do shell script "cp ~/cardr/ocr/specialNatives/liblept.5.dylib /usr/local/opt/leptonica/lib/" with administrator privileges

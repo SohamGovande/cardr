@@ -87,6 +87,20 @@ private fun downloadOCRData() {
 }
 
 @Throws(FirstLaunchException::class, Exception::class)
+private fun unpackMacOCRNatives() {
+    val files = arrayOf("lept.5")
+
+    for (file in files) {
+        val destinationPath = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "specialNatives", "lib$file.dylib")
+        try { Files.createDirectories(destinationPath.parent) } catch (e: FileAlreadyExistsException) {}
+        val destinationFile = destinationPath.toFile()
+
+        Files.copy(CardrDesktop::class.java.getResourceAsStream("/ocr-lib$file.dylib.txt"), destinationPath, StandardCopyOption.REPLACE_EXISTING)
+        destinationFile.setExecutable(true)
+    }
+}
+
+@Throws(FirstLaunchException::class, Exception::class)
 private fun onFirstLaunchWindows() {
     val jsonFile = downloadChromeDataWindows()
 
@@ -113,11 +127,13 @@ private fun onFirstLaunchMacOS() {
     val selectWordWindowScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "selectWordWindow.scpt")
     val pasteToWordScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "pasteToWord.scpt")
     val openWordScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "openWord.scpt")
+    val copyOCRDependenciesPath = Paths.get(macScriptsPath.toFile().absolutePath, "copyOCRDependencies.scpt")
 
     downloadFileFromURL(UrlHelper.get("getWordWindows"), getWordWindowsScriptPath.toFile(), logger)
     downloadFileFromURL(UrlHelper.get("selectWordWindow"), selectWordWindowScriptPath.toFile(), logger)
     downloadFileFromURL(UrlHelper.get("pasteToWord"), pasteToWordScriptPath.toFile(), logger)
     downloadFileFromURL(UrlHelper.get("openWord"), openWordScriptPath.toFile(), logger)
+    downloadFileFromURL(UrlHelper.get("copyOCRDependencies"), copyOCRDependenciesPath.toFile(), logger)
 
     if (!selectWordWindowScriptPath.toFile().exists())
         throw FirstLaunchException("Unable to download AppleScript 'selectWordWindow'.")
@@ -127,8 +143,11 @@ private fun onFirstLaunchMacOS() {
         throw FirstLaunchException("Unable to download AppleScript 'pasteToWord'.")
     if (!openWordScriptPath.toFile().exists())
         throw FirstLaunchException("Unable to download AppleScript 'openWord'.")
+    if (!copyOCRDependenciesPath.toFile().exists())
+        throw FirstLaunchException("Unable to download AppleScript 'copyOCRDependencies'.")
 
     downloadOCRData()
+    unpackMacOCRNatives()
 }
 
 fun onFirstLaunch(): Exception? {
@@ -173,6 +192,7 @@ fun updateFrom(from: Int, to: Int): Exception? {
         downloadOCRData()
         if (getOSType() == OS.MAC) {
             val macScriptsPath = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts")
+            try { Files.createDirectories(macScriptsPath) } catch (e: FileAlreadyExistsException) {}
 
             logger.info("Installing openWord.scpt")
             val openWordScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "openWord.scpt")
@@ -187,6 +207,21 @@ fun updateFrom(from: Int, to: Int): Exception? {
             } else {
                 downloadChromeDataWindows()
             }
+        }
+    }
+
+    if (from < 6 && to >= 6) {
+        if (getOSType() == OS.MAC) {
+            val macScriptsPath = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts")
+            try { Files.createDirectory(macScriptsPath) } catch (e: FileAlreadyExistsException) { }
+
+            logger.info("Updating OCR dependencies...")
+            val copyOCRDependenciesPath = Paths.get(macScriptsPath.toFile().absolutePath, "copyOCRDependencies.scpt")
+            downloadFileFromURL(UrlHelper.get("copyOCRDependencies"), copyOCRDependenciesPath.toFile(), logger)
+            if (!copyOCRDependenciesPath.toFile().exists())
+                throw FirstLaunchException("Unable to download AppleScript 'copyOCRDependencies'.")
+
+            unpackMacOCRNatives()
         }
     }
 

@@ -17,13 +17,12 @@ import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.ResizeListener.Companion.BORDER_SIZE
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.urls.UrlHelper
-import me.sohamgovande.cardr.util.OS
-import me.sohamgovande.cardr.util.getOSType
-import me.sohamgovande.cardr.util.showErrorDialog
-import me.sohamgovande.cardr.util.showErrorDialogBlocking
+import me.sohamgovande.cardr.platformspecific.MacMSWordInteractor
+import me.sohamgovande.cardr.util.*
 import org.apache.logging.log4j.LogManager
 import java.awt.Rectangle
 import java.awt.Robot
+import java.io.File
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 import java.net.URLClassLoader
@@ -132,6 +131,27 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
             System.setProperty("jna.library.path", Paths.get(System.getProperty("cardr.data.dir"), "ocr", "native").toFile().canonicalPath)
             System.setProperty("jna.boot.library.path", Paths.get(System.getProperty("cardr.data.dir"), "ocr", "native").toFile().canonicalPath)
             System.setProperty("jna.nounpack", "true")
+
+            val files = arrayOf("/usr/local/opt/leptonica/lib/liblept.5.dylib")
+            var hasDependencies = true
+            for (file in files) {
+                if (!File(file).exists()) {
+                    hasDependencies = false
+                    break
+                }
+            }
+
+            if (!hasDependencies) {
+                var success = true
+                showInfoDialogBlocking("Allow Cardr to install the necessary files for OCR?", "We may need to request administrator permission to copy files to system directories.", "Cancel") {
+                    success = false
+                }
+                if (success) {
+                    MacMSWordInteractor().copyOCRDependencies()
+                } else {
+                    return "OCR operation cancelled."
+                }
+            }
         }
 
         if (doOCRMethod == null || ocrInstance == null) {

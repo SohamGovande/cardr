@@ -13,6 +13,7 @@ class MacMSWordInteractor {
     private val selectWordWindowFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "selectWordWindow.scpt").toFile()
     private val pasteToWordFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "pasteToWord.scpt").toFile()
     private val openWordFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "openWord.scpt").toFile()
+    private val copyDependenciesFile = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts", "copyOCRDependencies.scpt").toFile()
 
     fun createNewDoc() {
         executeCommandBlocking("osascript ${openWordFile.canonicalPath}", logger, true)
@@ -31,6 +32,11 @@ class MacMSWordInteractor {
 
     fun pasteToWord() {
         val cmd = "osascript ${pasteToWordFile.canonicalPath}"
+        executeCommandBlocking(cmd, logger, true)
+    }
+
+    fun copyOCRDependencies() {
+        val cmd = "osascript ${copyDependenciesFile.canonicalPath}"
         executeCommandBlocking(cmd, logger, true)
     }
 
