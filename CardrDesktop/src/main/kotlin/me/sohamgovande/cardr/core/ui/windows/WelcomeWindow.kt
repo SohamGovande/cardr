@@ -9,20 +9,19 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.text.TextAlignment
 import javafx.stage.WindowEvent
+import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.urls.UrlHelper
-import java.awt.Desktop
-import java.net.URL
 
 
-class WelcomeWindow : ModalWindow("Welcome to cardr!") {
+class WelcomeWindow(private val cardrUI: CardrUI) : ModalWindow("Welcome to cardr!") {
 
     var linkOpened = false
 
     override fun close(event: WindowEvent?) {
         super.close(event)
         if (!forcedClose)
-            WelcomeWindow2().show()
+            WelcomeWindow2(cardrUI).show()
     }
 
     override fun generateUI(): Scene {
