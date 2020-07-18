@@ -8,11 +8,17 @@ import java.io.*
 import java.net.URL
 import java.nio.channels.Channels
 import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.*
 
 
-fun makeFileExecutableViaChmod(path: String, logger: Logger) {
-    executeCommandBlocking("chmod +x \"$path\"", logger, true)
+fun makeFileExecutable(path: String, logger: Logger) {
+    val result = Paths.get(path).toFile().setExecutable(true)
+    if (result) {
+        logger.info("Successfully made $path executable")
+    } else {
+        logger.error("Error making $path executable")
+    }
 }
 
 @Throws(Exception::class)
