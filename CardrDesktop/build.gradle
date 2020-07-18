@@ -92,7 +92,7 @@ jlink {
             jpackageHome = jpackageJDK14HomeMac
 
             imageOptions = [
-                    '--icon', appMacICO
+                    '--icon', appIconMac
             ]
 
             jvmArgs = [
@@ -123,6 +123,10 @@ jlink {
             jpackageHome = jpackageJDK14HomeWin
 
             jvmArgs = ['-Djava.library.path="dlls"']
+
+            imageOptions = [
+                    '--icon', appIconWin
+            ]
 
             installerOptions = [
                     '--type', 'msi',
