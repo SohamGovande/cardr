@@ -19,6 +19,7 @@ import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.platformspecific.MacMSWordInteractor
 import me.sohamgovande.cardr.platformspecific.WinMSWordInteractor
+import me.sohamgovande.cardr.ui
 import me.sohamgovande.cardr.util.*
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
@@ -96,11 +97,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
         val header = Label("Tools")
         header.font = Font.font(20.0)
 
-        ocrBtn.setOnAction {
-            val window = OCRSelectionWindow(cardrUI)
-            window.ensureDependencies()
-            window.show()
-        }
+        ocrBtn.setOnAction {OCRSelectionWindow.openWindow(ui!!) }
         removeSelectedBtn.setOnAction { removeSelectedText() }
         restoreRemovedBtn.setOnAction {
             cardrUI.removeWords.clear()
