@@ -15,9 +15,12 @@ import javafx.scene.layout.VBox
 import javafx.scene.paint.Color
 import javafx.scene.text.Font
 import javafx.stage.WindowEvent
+import me.sohamgovande.cardr.CHROME_OCR_MODE
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.auth.CardrUser
+import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.motd.showMOTD
+import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.encryption.EncryptionHelper
 import me.sohamgovande.cardr.data.urls.UrlHelper
@@ -25,14 +28,12 @@ import me.sohamgovande.cardr.util.OS
 import me.sohamgovande.cardr.util.currentDate
 import me.sohamgovande.cardr.util.getOSType
 import org.apache.logging.log4j.LogManager
-import java.awt.Desktop
 import java.lang.Exception
-import java.net.URL
 import java.time.format.DateTimeFormatter
 import kotlin.system.exitProcess
 
 
-class SignInWindow(private val options: SignInLauncherOptions, private val currentUser: CardrUser) : ModalWindow("Sign in to cardr") {
+class SignInWindow(private val options: SignInLauncherOptions, private val currentUser: CardrUser, private val cardrUI: CardrUI) : ModalWindow("Sign in to cardr") {
 
     private val emailTF = TextField()
     private val passwordTF = PasswordField()
@@ -47,6 +48,11 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
         if (!readyToClose && options != SignInLauncherOptions.MANUAL_SIGNIN) {
             exitProcess(0)
         }
+    }
+
+    override fun show() {
+        super.show()
+        openWindows.firstOrNull { it is OCRSelectionWindow }?.window?.onCloseRequest?.handle(null)
     }
 
     private fun loadPassword() {
@@ -87,7 +93,9 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
                     openWindows.remove(this)
                     super.window.close()
 
-                    if (CardrDesktop.IS_FIRST_LAUNCH) {
+                    if (CHROME_OCR_MODE) {
+                        OCRSelectionWindow.openWindow(cardrUI)
+                    } else if (CardrDesktop.IS_FIRST_LAUNCH) {
                         Platform.runLater { showMOTD() }
                         Prefs.get().lastMOTD = currentDate().format(DateTimeFormatter.ISO_DATE)
                         Prefs.save()
