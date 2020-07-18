@@ -14,6 +14,7 @@ import me.sohamgovande.cardr.CHROME_OCR_MODE
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.WindowDimensions
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
+import me.sohamgovande.cardr.core.ui.windows.SignInWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.ResizeListener.Companion.BORDER_SIZE
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.urls.UrlHelper
@@ -45,6 +46,8 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
     private var thread: Thread? = null
 
     override fun show() {
+        if (openWindows.any { it is SignInWindow })
+            return
         hideAllWindows()
         window.initStyle(StageStyle.TRANSPARENT)
         window.title = title
