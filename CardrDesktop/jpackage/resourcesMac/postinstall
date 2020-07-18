@@ -1,0 +1,4 @@
+#!/bin/sh
+
+open -b 'me.sohamgovande.cardr'
+exit 0
