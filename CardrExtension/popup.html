@@ -8,15 +8,24 @@
         height: 25px;
         text-align: center;
         padding-top: 4px;
-        background-color: #eee;
+        background-color: #f3f3f3;
         transition: ease-in-out 200ms;
         border-radius: 5px;
         margin-bottom: 10px;
       }
 
       .fake-button:hover {
-        background-color: #ccc;
+        background-color: #ddd;
         cursor: pointer;
+      }
+
+
+      .primary-button {
+        box-shadow: 0px 0px 3px 2px #00aeff;
+      }
+
+      .primary-button:hover {
+        
       }
 
       h2 {
@@ -44,8 +53,8 @@
     <p>
       <i>NOTE: You can highlight text on a webpage before converting it to a card. This will limit the card to only contain the selected text.</i>
     </p>
-    <div class="fake-button" id="openCardr">Convert page/selection to card</div>
-    <div class="fake-button" id="useOCR" >Use OCR tool</div>
+    <div class="fake-button primary-button" id="openCardr">Convert page/selection to card</div>
+    <div class="fake-button" id="useOCR" >Open OCR tool</div>
     <script src="popup.js"></script>
   </body>
 </html>
