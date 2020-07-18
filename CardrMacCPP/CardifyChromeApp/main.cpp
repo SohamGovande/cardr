@@ -40,8 +40,8 @@ int main(int argc, char** argv)
             fwrite(jsonMsg, 1, iLen, stdout);
             fflush(stdout);
 
-            std::ofstream out("CardifyChromeAppLog.txt");
-            out << "Cardify Chrome App - Last Updated v1.2.0" << std::endl;
+            std::ofstream out("CardrChromeApp.txt");
+            out << "Cardr Chrome App - Last Updated v1.3.0" << std::endl;
 
             std::string jsonString(jsonMsg, iSize);
             out << "Received data '" << jsonString << "'" << std::endl;
@@ -58,34 +58,46 @@ int main(int argc, char** argv)
 
             out << "Parsed json." << std::endl;
             std::string url = parsed["url"].get<std::string>();
-            out << "Extracted url." << std::endl;
-            std::string selection = parsed["selection"].get<std::string>();
-            out << "Extracted selection." << std::endl;
-            std::string html = parsed["html"].get<std::string>();
-            out << "Extracted HTML." << std::endl;
+            std::string id;
+            bool ocrMode = false;
+            if (url == "ocr") {
+                ocrMode = true;
+            } else {
+                out << "Extracted url." << std::endl;
+                std::string selection = parsed["selection"].get<std::string>();
+                out << "Extracted selection." << std::endl;
+                std::string html = parsed["html"].get<std::string>();
+                out << "Extracted HTML." << std::endl;
 
-            out << "Creating ID..." << std::endl;
-            std::string id = std::to_string(rand() % 1000);
-            out << "Created ID " << id << std::endl;
-            std::string selectionFilepath = "CardifySelection-" + id + ".txt";
-            out << "Created selection path " << selectionFilepath << std::endl;
-            std::string htmlFilepath = "CardifyPage-" + id + ".html";
-            out << "Created html path " << htmlFilepath << std::endl;
+                out << "Creating ID..." << std::endl;
+                std::string id = std::to_string(rand() % 1000);
+                out << "Created ID " << id << std::endl;
+                std::string selectionFilepath = "CardrSelection-" + id + ".txt";
+                out << "Created selection path " << selectionFilepath << std::endl;
+                std::string htmlFilepath = "CardrPage-" + id + ".html";
+                out << "Created html path " << htmlFilepath << std::endl;
 
-            out << "Writing selection data to file " << selectionFilepath << std::endl;
-            out << "Writing html data to file " << htmlFilepath << std::endl;
+                out << "Writing selection data to file " << selectionFilepath << std::endl;
+                out << "Writing html data to file " << htmlFilepath << std::endl;
 
-            std::ofstream selectionFile;
-            selectionFile.open(selectionFilepath);
-            selectionFile << selection;
-            selectionFile.close();
+                std::ofstream selectionFile;
+                selectionFile.open(selectionFilepath);
+                selectionFile << selection;
+                selectionFile.close();
 
-            std::ofstream htmlFile;
-            htmlFile.open(htmlFilepath);
-            htmlFile << html;
-            htmlFile.close();
-
-            std::string command = "/Applications/CardifyDebate.app/Contents/MacOS/CardifyDebate \"" + url + "\" " + id;
+                std::ofstream htmlFile;
+                htmlFile.open(htmlFilepath);
+                htmlFile << html;
+                htmlFile.close();
+            }
+            
+            std::string command;
+            if (ocrMode) {
+                command = "/Applications/cardr.app/Contents/MacOS/cardr ocr";
+            } else {
+                command = "/Applications/cardr.app/Contents/MacOS/cardr \"" + url + "\" " + id;
+            }
+            command += " cardrOptionLaunchedFromChrome";
             out << "Running system command: " << command << std::endl;
 
             system(command.c_str());
