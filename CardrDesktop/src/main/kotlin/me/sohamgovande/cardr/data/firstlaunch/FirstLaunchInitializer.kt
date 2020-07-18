@@ -71,10 +71,10 @@ private fun createDependencySymlinks() {
     for (pkg in packages!!) {
         if (pkg.isHidden) continue
         val version = pkg.listFiles()!!.first { !it.isHidden }
-        val reference = version.absolutePath.replace(packageFolder.toFile().absolutePath,"/usr/local/Cellar")
-        val pointer = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "dependencies","opt",pkg.name)
-        val cmd = "ln -s \"$reference\" \"$pointer\""
-        executeCommandBlocking(cmd, logger, false)
+        val actual = Paths.get(version.absolutePath.replace(packageFolder.toFile().absolutePath,"/usr/local/Cellar"))
+        val link = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "dependencies","opt",pkg.name)
+        Files.deleteIfExists(link)
+        Files.createSymbolicLink(link, actual)
     }
 }
 
