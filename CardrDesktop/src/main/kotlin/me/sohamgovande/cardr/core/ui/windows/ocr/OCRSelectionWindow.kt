@@ -69,6 +69,33 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
         }
     }
 
+    fun ensureDependencies(): Boolean {
+        if (getOSType() != OS.MAC)
+            return true
+        val files = arrayOf(
+            "/usr/local/opt/leptonica/lib/liblept.5.dylib",
+            "/usr/local/opt/libtiff/lib/libtiff.5.dylib"
+        )
+        var hasDependencies = true
+        for (file in files) {
+            if (!File(file).exists()) {
+                hasDependencies = false
+                break
+            }
+        }
+        if (hasDependencies)
+            return true
+
+        var success = true
+        showInfoDialogBlocking("Allow Cardr to install the necessary files for OCR?", "We may need to request administrator permission to copy files to system directories.", "Cancel") {
+            success = false
+        }
+        if (success) {
+            MacMSWordInteractor().copyOCRDependencies()
+        }
+        return success
+    }
+
     private fun onCapture() {
         logger.info("OCR onCapture invoked. CHROME_OCR_MODE=$CHROME_OCR_MODE")
         Prefs.get().ocrWindowDimensions = WindowDimensions(window)
@@ -131,27 +158,6 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
             System.setProperty("jna.library.path", Paths.get(System.getProperty("cardr.data.dir"), "ocr", "native").toFile().canonicalPath)
             System.setProperty("jna.boot.library.path", Paths.get(System.getProperty("cardr.data.dir"), "ocr", "native").toFile().canonicalPath)
             System.setProperty("jna.nounpack", "true")
-
-            val files = arrayOf("/usr/local/opt/leptonica/lib/liblept.5.dylib")
-            var hasDependencies = true
-            for (file in files) {
-                if (!File(file).exists()) {
-                    hasDependencies = false
-                    break
-                }
-            }
-
-            if (!hasDependencies) {
-                var success = true
-                showInfoDialogBlocking("Allow Cardr to install the necessary files for OCR?", "We may need to request administrator permission to copy files to system directories.", "Cancel") {
-                    success = false
-                }
-                if (success) {
-                    MacMSWordInteractor().copyOCRDependencies()
-                } else {
-                    return "OCR operation cancelled."
-                }
-            }
         }
 
         if (doOCRMethod == null || ocrInstance == null) {
