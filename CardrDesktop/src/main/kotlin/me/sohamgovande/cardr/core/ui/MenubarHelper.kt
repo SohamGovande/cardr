@@ -73,7 +73,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             Prefs.get().accessToken = ""
             Prefs.save()
             signInMI.text = "Sign in..."
-            val signInWindow = SignInWindow(SignInLauncherOptions.MANUAL_SIGNIN, cardrUI.currentUser)
+            val signInWindow = SignInWindow(SignInLauncherOptions.MANUAL_SIGNIN, cardrUI.currentUser, cardrUI)
             signInWindow.show()
         }
         val historyMI = MenuItem("Card History")

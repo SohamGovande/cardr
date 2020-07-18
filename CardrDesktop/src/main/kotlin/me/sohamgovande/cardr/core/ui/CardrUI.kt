@@ -264,13 +264,13 @@ class CardrUI(val stage: Stage) {
             || Prefs.get().accessToken.isEmpty()) {
             // Needs to sign in
             logger.info("User needs to sign in - first time")
-            Platform.runLater { SignInWindow(SignInLauncherOptions.WELCOME, currentUser).show() }
+            Platform.runLater { SignInWindow(SignInLauncherOptions.WELCOME, currentUser, this).show() }
         } else {
             val renewResult = currentUser.renew()
             if (!renewResult.wasSuccessful()) {
                 logger.info("User needs to sign in - token expired")
                 // Access token has expired
-                Platform.runLater { SignInWindow(SignInLauncherOptions.TOKEN_EXPIRED, currentUser).show() }
+                Platform.runLater { SignInWindow(SignInLauncherOptions.TOKEN_EXPIRED, currentUser, this).show() }
             } else {
                 logger.info("Successfully renewed login token")
             }
