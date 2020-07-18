@@ -13,6 +13,7 @@ import javafx.stage.WindowEvent
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
+import me.sohamgovande.cardr.ui
 
 class OCRCardBuilderWindow(private val cardrUI: CardrUI) : ModalWindow("OCR Card Builder", isModal = false) {
 
@@ -38,11 +39,7 @@ class OCRCardBuilderWindow(private val cardrUI: CardrUI) : ModalWindow("OCR Card
 
         val addMoreTextBtn = Button("Add more OCR text")
         addMoreTextBtn.graphic = cardrUI.loadMiniIcon("/capture-ocr.png", false, 1.0)
-        addMoreTextBtn.setOnAction {
-            val window = OCRSelectionWindow(cardrUI)
-            window.ensureDependencies()
-            window.show()
-        }
+        addMoreTextBtn.setOnAction { OCRSelectionWindow.openWindow(ui!!) }
 
         val discardBtn = Button("Discard & Exit")
         discardBtn.setOnAction { close(null) }
