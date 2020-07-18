@@ -5,6 +5,7 @@ import me.sohamgovande.cardr.data.urls.UrlHelper
 import me.sohamgovande.cardr.util.*
 import org.apache.logging.log4j.LogManager
 import java.awt.Desktop
+import java.io.File
 import java.nio.file.Path
 import java.nio.file.Paths
 import kotlin.system.exitProcess
@@ -56,7 +57,7 @@ class UpdateExecutor(private val version: CardrVersion) {
     private fun initInstallerFile(download: Path) {
         if (version.shouldExtract()) {
             val downloadFile = download.toFile()
-            extractZipFile(downloadFile, logger, destFolderRaw = Paths.get(System.getProperty("cardr.data.dir"), "Cardr Updates").toFile().canonicalPath)
+            extractZipFile(downloadFile, logger, destFolderRaw = Paths.get(System.getProperty("cardr.data.dir"), "Cardr Updates").toFile().canonicalPath + File.separator)
         }
     }
 
