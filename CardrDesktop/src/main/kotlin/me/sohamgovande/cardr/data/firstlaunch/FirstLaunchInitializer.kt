@@ -1,225 +1,133 @@
-package me.sohamgovande.cardr.data.firstlaunch
-import me.sohamgovande.cardr.CardrDesktop
-import me.sohamgovande.cardr.data.prefs.Prefs
-import me.sohamgovande.cardr.data.prefs.PrefsObject
-import me.sohamgovande.cardr.data.urls.UrlHelper
-import me.sohamgovande.cardr.util.*
-import org.apache.commons.io.IOUtils
-import org.apache.logging.log4j.LogManager
-import java.io.File
-import java.nio.file.*
+package me.sohamgovande.cardr.util
 
-private val logger = LogManager.getLogger(Prefs::class.java)
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.archivers.zip.ZipFile
+import org.apache.commons.exec.*
+import org.apache.logging.log4j.Logger
+import java.io.*
+import java.net.URL
+import java.nio.channels.Channels
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.*
 
-@Throws(FirstLaunchException::class, Exception::class)
-private fun downloadChromeDataWindows(): File {
-    executeCommandBlocking("taskkill /f /im CardifyChromeApp.exe", logger, true)
-    executeCommandBlocking("taskkill /f /im CardrChromeApp.exe", logger, true)
 
-    val executable = Paths.get(System.getProperty("cardr.data.dir"), "CardrChromeApp.exe").toFile()
-    downloadFileFromURL(UrlHelper.get("winChromeApp"), executable, logger)
-
-    val jsonFile = Paths.get(System.getProperty("cardr.data.dir"), "me.sohamgovande.cardr.json").toFile()
-    downloadFileFromURL(UrlHelper.get("winChromeJson"), jsonFile, logger)
-
-    if (!jsonFile.exists())
-        throw FirstLaunchException("Unable to download Chrome App Native JSON.")
-
-    return jsonFile
-}
-
-@Throws(FirstLaunchException::class, Exception::class)
-private fun downloadChromeDataMacOS() {
-    logger.info("Entered macOS First Launch")
-    logger.info("Creating paths...")
-    val jsonPath = Paths.get(System.getProperty("user.home"), "Library", "Application Support", "Google", "Chrome", "NativeMessagingHosts", "me.sohamgovande.cardr.json")
-    if (!jsonPath.parent.parent.toFile().exists())
-        throw FirstLaunchException("No Google Chrome installation detected")
-    jsonPath.parent.toFile().mkdirs()
-
-    val executablePath = Paths.get(System.getProperty("cardr.data.dir"), "CardrChromeApp")
-    val executableZipPath = Paths.get(System.getProperty("cardr.data.dir"), "CardrChromeApp.zip")
-    try { Files.createDirectories(executablePath.parent) } catch (e: FileAlreadyExistsException) { }
-
-    logger.info("Opening data stream for json file...")
-    val dataStream = UrlHelper.url("macChromeJson").openStream()
-
-    logger.info("Reading json file...")
-    @Suppress("DEPRECATION") var data = IOUtils.toString(dataStream)
-    IOUtils.closeQuietly(dataStream)
-
-    logger.info("Writing json file to ${jsonPath.toFile().absolutePath} with executable ${executablePath.toFile().absolutePath}...")
-    data = data.replace("%FILEPATH%", executablePath.toFile().absolutePath)
-    Files.write(jsonPath, data.toByteArray())
-
-    downloadFileFromURL(UrlHelper.get("macChromeApp"), executableZipPath.toFile(), logger)
-
-    extractZipFile(executableZipPath.toFile(), logger)
-
-    makeFileExecutableViaChmod(executablePath.toFile().absolutePath, logger)
-
-    if (!jsonPath.toFile().exists())
-        throw FirstLaunchException("Unable to download Chrome App Native JSON.")
-    if (!executablePath.toFile().exists())
-        throw FirstLaunchException("Unable to download Chrome App Native Executable.")
-}
-
-@Throws(FirstLaunchException::class, Exception::class)
-private fun createDependencySymlinks() {
-    val packageFolder = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "dependencies","Cellar")
-    val packages = packageFolder.toFile().listFiles()
-    for (pkg in packages!!) {
-        if (pkg.isHidden) continue
-        val version = pkg.listFiles()!!.first { !it.isHidden }
-        val actual = Paths.get(version.absolutePath.replace(packageFolder.toFile().absolutePath,"/usr/local/Cellar"))
-        val link = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "dependencies","opt",pkg.name)
-        Files.deleteIfExists(link)
-        Files.createSymbolicLink(link, actual)
+fun makeFileExecutable(path: String, logger: Logger) {
+    val result = Paths.get(path).toFile().setExecutable(true)
+    if (result) {
+        logger.info("Successfully made $path executable")
+    } else {
+        logger.error("Error making $path executable")
     }
 }
 
-@Throws(FirstLaunchException::class, Exception::class)
-private fun downloadOCRData() {
-    logger.info("Initializing OCR...")
-    val input = CardrDesktop::class.java.getResourceAsStream("/ocr-data.txt")
-    logger.info("Transferring OCR file")
-    Files.copy(
-            input,
-            Paths.get(System.getProperty("cardr.data.dir"), "OCRData.zip"),
-            StandardCopyOption.REPLACE_EXISTING
-    )
-    extractZipFile(Paths.get(System.getProperty("cardr.data.dir"), "OCRData.zip").toFile(), logger)
-
-    if (getOSType() == OS.MAC)
-        createDependencySymlinks()
-    logger.info("Finished OCR")
+@Throws(Exception::class)
+fun downloadFileFromURL(url: String, downloadTo: File, logger: Logger) {
+    logger.info("Opening URL $url")
+    val dataStream = URL(url).openStream()
+    val fos = FileOutputStream(downloadTo)
+    logger.info("Transferring data from url $url to ${downloadTo.absolutePath}")
+    fos.channel.transferFrom(Channels.newChannel(dataStream), 0, Long.MAX_VALUE)
+    logger.info("Closing data streams")
+    dataStream.close()
+    fos.close()
 }
 
-@Throws(FirstLaunchException::class, Exception::class)
-private fun onFirstLaunchWindows() {
-    val jsonFile = downloadChromeDataWindows()
-
-    val commands = arrayOf(
-            "REG DELETE \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /f",
-            "REG DELETE \"HKLM\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /f",
-            "REG ADD \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /ve /t REG_SZ /d \"${jsonFile.absolutePath}\" /f"
-    )
-    for (cmd in commands) {
-        executeCommandBlocking(cmd, logger, true)
-    }
-
-    downloadOCRData()
-}
-
-@Throws(FirstLaunchException::class, Exception::class)
-private fun onFirstLaunchMacOS() {
-    downloadChromeDataMacOS()
-
-    val macScriptsPath = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts")
-    try { Files.createDirectory(macScriptsPath) } catch (e: FileAlreadyExistsException) { }
-
-    val getWordWindowsScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "getWordWindows.scpt")
-    val selectWordWindowScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "selectWordWindow.scpt")
-    val pasteToWordScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "pasteToWord.scpt")
-    val openWordScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "openWord.scpt")
-    val copyOCRDependenciesPath = Paths.get(macScriptsPath.toFile().absolutePath, "copyOCRDependencies.scpt")
-
-    downloadFileFromURL(UrlHelper.get("getWordWindows"), getWordWindowsScriptPath.toFile(), logger)
-    downloadFileFromURL(UrlHelper.get("selectWordWindow"), selectWordWindowScriptPath.toFile(), logger)
-    downloadFileFromURL(UrlHelper.get("pasteToWord"), pasteToWordScriptPath.toFile(), logger)
-    downloadFileFromURL(UrlHelper.get("openWord"), openWordScriptPath.toFile(), logger)
-    downloadFileFromURL(UrlHelper.get("copyOCRDependencies"), copyOCRDependenciesPath.toFile(), logger)
-
-    if (!selectWordWindowScriptPath.toFile().exists())
-        throw FirstLaunchException("Unable to download AppleScript 'selectWordWindow'.")
-    if (!getWordWindowsScriptPath.toFile().exists())
-        throw FirstLaunchException("Unable to download AppleScript 'getWordWindows'.")
-    if (!pasteToWordScriptPath.toFile().exists())
-        throw FirstLaunchException("Unable to download AppleScript 'pasteToWord'.")
-    if (!openWordScriptPath.toFile().exists())
-        throw FirstLaunchException("Unable to download AppleScript 'openWord'.")
-    if (!copyOCRDependenciesPath.toFile().exists())
-        throw FirstLaunchException("Unable to download AppleScript 'copyOCRDependencies'.")
-
-    downloadOCRData()
-}
-
-fun onFirstLaunch(): Exception? {
-    return try {
-        logger.info("First launch method invoked with OS ${System.getProperty("os.name")}")
-        if (getOSType() == OS.WINDOWS)
-            onFirstLaunchWindows()
-        if (getOSType() == OS.MAC)
-            onFirstLaunchMacOS()
-        null
-    } catch (e: Exception) {
-        e
-    }
-}
-
-fun updateFrom(from: Int, to: Int): Exception? {
-    val prefs = Prefs.get()
-    var hasUpdatedChrome = false
-    if (from == 1 && to >= 2) {
-        logger.info("Resetting card format...")
-        prefs.cardFormat = PrefsObject.DEFAULT_CARD_FORMAT
-        if (getOSType() == OS.MAC) {
-            prefs.cardFormat = prefs.cardFormat.replace("Calibri", PrefsObject.MAC_CALIBRI_FONT)
-        }
-    }
-    if (from < 3 && to >= 3) {
-        logger.info("Updating CardrChromeApp")
-        hasUpdatedChrome = true
-        if (getOSType() == OS.MAC) {
-            downloadChromeDataMacOS()
-            prefs.cardFormat = prefs.cardFormat.replace("Helvetica", PrefsObject.MAC_CALIBRI_FONT)
+@Throws(Exception::class)
+fun executeCommandBlocking(cmd: String, logger: Logger, allowNonzeroExit: Boolean): String {
+    logger.info("Running command '$cmd' (blocking)")
+    val stdout = ByteArrayOutputStream()
+    val stdoutPsh = PumpStreamHandler(stdout)
+    val cmdLine = CommandLine.parse(cmd)
+    val executor = DefaultExecutor()
+    executor.streamHandler = stdoutPsh
+    try {
+        val exitValue = executor.execute(cmdLine)
+        logger.info("$cmd terminated with exit $exitValue")
+    } catch (e: ExecuteException) {
+        if (e.message!!.contains("Process exited with an error:") && allowNonzeroExit) {
+            logger.info("Error executing command $cmd but ignored return value '${e.message}'")
         } else {
-            downloadChromeDataWindows()
+            logger.error("Error executing command $cmd", e)
+            throw e
         }
     }
+    val result = stdout.toString()
+    logger.info("Command '$cmd' returned '$result'")
+    return result
+}
 
-    if (from < 5 && to >= 5) {
-        if (!Prefs.get().windowDimensions.maximized)
-            Prefs.get().windowDimensions.w += 250
-        Prefs.save()
-        logger.info("Updating OCR data...")
-        downloadOCRData()
-        if (getOSType() == OS.MAC) {
-            val macScriptsPath = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts")
-            try { Files.createDirectories(macScriptsPath) } catch (e: FileAlreadyExistsException) {}
+@Throws(Exception::class)
+fun executeCommandUnblocking(cmd: String, logger: Logger) {
+    logger.info("Running command '$cmd' (unblocking)")
+    val stdout = ByteArrayOutputStream()
+    val stdoutPsh = PumpStreamHandler(stdout)
+    val cmdLine = CommandLine.parse(cmd)
+    val executor = DefaultExecutor()
 
-            logger.info("Installing openWord.scpt")
-            val openWordScriptPath = Paths.get(macScriptsPath.toFile().absolutePath, "openWord.scpt")
-            downloadFileFromURL(UrlHelper.get("openWord"), openWordScriptPath.toFile(), logger)
-            if (!openWordScriptPath.toFile().exists())
-                throw FirstLaunchException("Unable to download AppleScript 'openWord'.")
-        }
-        if (!hasUpdatedChrome) {
-            logger.info("Updating CardrChromeApp")
-            if (getOSType() == OS.MAC) {
-                downloadChromeDataMacOS()
+    val resultHandler = DefaultExecuteResultHandler()
+    executor.streamHandler = stdoutPsh
+
+    try {
+        val exitValue = executor.execute(cmdLine, resultHandler)
+        logger.info("$cmd terminated with  exit $exitValue")
+    } catch (e: Exception) {
+        logger.info("Error executing command $cmd", e)
+    }
+}
+
+fun extractZipFile(zipFileRaw: File, logger: Logger, destFolderRaw: String? = null, deleteOnExit: Boolean = true) {
+    val buffer = 1024
+
+    val zipFile = ZipFile(zipFileRaw)
+    val data = ByteArray(buffer)
+    val destFolder = destFolderRaw ?: (zipFileRaw.parent + File.separator)
+    logger.info("Extracting ${zipFileRaw.absolutePath} to $destFolder")
+
+    val entries: Enumeration<ZipArchiveEntry> = zipFile.entries
+
+    while (entries.hasMoreElements()) {
+        val zipEntry = entries.nextElement()
+        val destFile = File(destFolder + zipEntry.name)
+
+        if (zipEntry.isDirectory)
+            destFile.mkdirs()
+        else
+            destFile.parentFile.mkdirs()
+
+        if (zipEntry.isUnixSymlink) {
+            if (getOSType() != OS.MAC) {
+                logger.error("Error trying to unzip $zipFileRaw - encountered symlink ${zipEntry.name} on non-Mac computer")
             } else {
-                downloadChromeDataWindows()
+                val target = File(zipFile.getUnixSymlink(zipEntry))
+                try {
+                    val destPath = destFile.toPath()
+                    Files.deleteIfExists(destPath)
+                    Files.createSymbolicLink(destPath, target.toPath())
+                    continue
+                } catch (e: Exception) {
+                    logger.error("Failed to create symbolic link: " +
+                        destFile.absolutePath + " -> " +
+                        target.absolutePath, e)
+                }
+            }
+        }
+
+        if (!destFile.isDirectory) {
+            var count: Int
+            val fos = FileOutputStream(destFile)
+            BufferedOutputStream(fos, buffer).use { dest ->
+                val stream = zipFile.getInputStream(zipEntry)
+                while (stream.read(data, 0, buffer).also { count = it } != -1) {
+                    dest.write(data, 0, count)
+                }
             }
         }
     }
 
-    if (from < 6 && to >= 6) {
-        if (getOSType() == OS.MAC) {
-            val macScriptsPath = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts")
-            try { Files.createDirectory(macScriptsPath) } catch (e: FileAlreadyExistsException) { }
+    if (deleteOnExit)
+        zipFileRaw.deleteOnExit()
+    zipFile.close()
 
-            logger.info("Updating OCR data...")
-            downloadOCRData()
-
-            val copyOCRDependenciesPath = Paths.get(macScriptsPath.toFile().absolutePath, "copyOCRDependencies.scpt")
-            downloadFileFromURL(UrlHelper.get("copyOCRDependencies"), copyOCRDependenciesPath.toFile(), logger)
-            if (!copyOCRDependenciesPath.toFile().exists())
-                throw FirstLaunchException("Unable to download AppleScript 'copyOCRDependencies'.")
-
-        }
-    }
-
-    prefs.hideUpdateDialog = false
-    return null
+    logger.info("... Finished extraction.")
 }
