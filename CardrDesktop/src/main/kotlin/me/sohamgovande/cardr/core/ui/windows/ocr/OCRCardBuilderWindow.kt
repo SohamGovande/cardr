@@ -39,7 +39,9 @@ class OCRCardBuilderWindow(private val cardrUI: CardrUI) : ModalWindow("OCR Card
         val addMoreTextBtn = Button("Add more OCR text")
         addMoreTextBtn.graphic = cardrUI.loadMiniIcon("/capture-ocr.png", false, 1.0)
         addMoreTextBtn.setOnAction {
-            OCRSelectionWindow(cardrUI).show()
+            val window = OCRSelectionWindow(cardrUI)
+            window.ensureDependencies()
+            window.show()
         }
 
         val discardBtn = Button("Discard & Exit")
