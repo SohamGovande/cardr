@@ -8,18 +8,17 @@ import javafx.scene.image.ImageView
 import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.stage.WindowEvent
+import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.ui
-import java.awt.Desktop
-import java.net.URL
 
 
-class WelcomeWindow2 : ModalWindow("How do I use cardr?") {
+class WelcomeWindow2(private val cardrUI: CardrUI) : ModalWindow("How do I use cardr?") {
 
     override fun close(event: WindowEvent?) {
         super.close(event)
         if (!forcedClose)
-            SignInWindow(SignInLauncherOptions.WELCOME, ui!!.currentUser).show()
+            SignInWindow(SignInLauncherOptions.WELCOME, ui!!.currentUser, cardrUI).show()
     }
 
     override fun generateUI(): Scene {
