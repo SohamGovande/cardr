@@ -51,11 +51,7 @@ fun main(args: Array<String>) {
 
                                 synchronized(uiLock2) {
                                     uiLock2.wait()
-                                    Platform.runLater {
-                                        val window = OCRSelectionWindow(ui!!)
-                                        window.ensureDependencies()
-                                        window.show()
-                                    }
+                                    Platform.runLater { OCRSelectionWindow.openWindow(ui!!) }
                                 }
                             } else {
                                 uiLock.wait()
