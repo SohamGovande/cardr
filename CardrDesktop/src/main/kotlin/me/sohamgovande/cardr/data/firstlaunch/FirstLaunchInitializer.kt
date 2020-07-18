@@ -160,6 +160,8 @@ fun onFirstLaunch(): Exception? {
 fun updateFrom(from: Int, to: Int): Exception? {
     val prefs = Prefs.get()
     var hasUpdatedChrome = false
+    var hasDownloadedOCR = false
+    
     if (from == 1 && to >= 2) {
         logger.info("Resetting card format...")
         prefs.cardFormat = PrefsObject.DEFAULT_CARD_FORMAT
@@ -167,6 +169,7 @@ fun updateFrom(from: Int, to: Int): Exception? {
             prefs.cardFormat = prefs.cardFormat.replace("Calibri", PrefsObject.MAC_CALIBRI_FONT)
         }
     }
+    
     if (from < 3 && to >= 3) {
         logger.info("Updating CardrChromeApp")
         hasUpdatedChrome = true
@@ -182,8 +185,11 @@ fun updateFrom(from: Int, to: Int): Exception? {
         if (!Prefs.get().windowDimensions.maximized)
             Prefs.get().windowDimensions.w += 250
         Prefs.save()
-        logger.info("Updating OCR data...")
-        downloadOCRData()
+        if (!hasDownloadedOCR) {
+            logger.info("Updating OCR data...")
+            downloadOCRData()
+            hasDownloadedOCR = true
+        }
         if (getOSType() == OS.MAC) {
             val macScriptsPath = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts")
             try { Files.createDirectories(macScriptsPath) } catch (e: FileAlreadyExistsException) {}
@@ -201,6 +207,7 @@ fun updateFrom(from: Int, to: Int): Exception? {
             } else {
                 downloadChromeDataWindows()
             }
+            hasUpdatedChrome = true
         }
     }
 
@@ -209,8 +216,11 @@ fun updateFrom(from: Int, to: Int): Exception? {
             val macScriptsPath = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts")
             try { Files.createDirectory(macScriptsPath) } catch (e: FileAlreadyExistsException) { }
 
-            logger.info("Updating OCR data...")
-            downloadOCRData()
+            if (!hasDownloadedOCR) {
+                logger.info("Updating OCR data...")
+                downloadOCRData()
+                hasDownloadedOCR = true
+            }
 
             val copyOCRDependenciesPath = Paths.get(macScriptsPath.toFile().absolutePath, "copyOCRDependencies.scpt")
             downloadFileFromURL(UrlHelper.get("copyOCRDependencies"), copyOCRDependenciesPath.toFile(), logger)
