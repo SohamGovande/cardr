@@ -72,13 +72,10 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
     fun ensureDependencies(): Boolean {
         if (getOSType() != OS.MAC)
             return true
-        val files = arrayOf(
-            "/usr/local/opt/leptonica/lib/liblept.5.dylib",
-            "/usr/local/opt/libtiff/lib/libtiff.5.dylib"
-        )
+        val files = Paths.get(System.getProperty("cardr.data.dir"),"ocr","dependencies","Cellar").toFile().listFiles()!!
         var hasDependencies = true
         for (file in files) {
-            if (!File(file).exists()) {
+            if (!File("/usr/local/opt/${file.name}").exists()) {
                 hasDependencies = false
                 break
             }
