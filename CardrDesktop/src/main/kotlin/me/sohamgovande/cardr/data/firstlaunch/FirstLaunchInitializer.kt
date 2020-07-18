@@ -69,14 +69,28 @@ private fun downloadChromeDataMacOS() {
 }
 
 @Throws(FirstLaunchException::class, Exception::class)
+private fun createDependencySymlinks() {
+    val packageFolder = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "dependencies","Cellar")
+    val packages = packageFolder.toFile().listFiles()
+    for (pkg in packages!!) {
+        if (pkg.isHidden) continue
+        val version = pkg.listFiles()!!.first { !it.isHidden }
+        val reference = version.absolutePath.replace(packageFolder.toFile().absolutePath,"/usr/local/Cellar")
+        val pointer = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "dependencies","opt",pkg.name)
+        val cmd = "ln -s \"$reference\" \"$pointer\""
+        executeCommandBlocking(cmd, logger, false)
+    }
+}
+
+@Throws(FirstLaunchException::class, Exception::class)
 private fun downloadOCRData() {
     logger.info("Initializing OCR...")
     val input = CardrDesktop::class.java.getResourceAsStream("/ocr-data.txt")
     logger.info("Transferring OCR file")
     Files.copy(
-        input,
-        Paths.get(System.getProperty("cardr.data.dir"), "OCRData.zip"),
-        StandardCopyOption.REPLACE_EXISTING
+            input,
+            Paths.get(System.getProperty("cardr.data.dir"), "OCRData.zip"),
+            StandardCopyOption.REPLACE_EXISTING
     )
     logger.info("Extracting ZIP data")
     val zipFileRaw = Paths.get(System.getProperty("cardr.data.dir"), "OCRData.zip").toFile()
@@ -84,20 +98,8 @@ private fun downloadOCRData() {
     zipFile.extractAll(System.getProperty("cardr.data.dir"))
     zipFileRaw.deleteOnExit()
     logger.info("Finished OCR")
-}
-
-@Throws(FirstLaunchException::class, Exception::class)
-private fun unpackMacOCRNatives() {
-    val files = arrayOf("lept.5")
-
-    for (file in files) {
-        val destinationPath = Paths.get(System.getProperty("cardr.data.dir"), "ocr", "specialNatives", "lib$file.dylib")
-        try { Files.createDirectories(destinationPath.parent) } catch (e: FileAlreadyExistsException) {}
-        val destinationFile = destinationPath.toFile()
-
-        Files.copy(CardrDesktop::class.java.getResourceAsStream("/ocr-lib$file.dylib.txt"), destinationPath, StandardCopyOption.REPLACE_EXISTING)
-        destinationFile.setExecutable(true)
-    }
+    if (getOSType() == OS.MAC)
+        createDependencySymlinks()
 }
 
 @Throws(FirstLaunchException::class, Exception::class)
@@ -105,9 +107,9 @@ private fun onFirstLaunchWindows() {
     val jsonFile = downloadChromeDataWindows()
 
     val commands = arrayOf(
-        "REG DELETE \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /f",
-        "REG DELETE \"HKLM\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /f",
-        "REG ADD \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /ve /t REG_SZ /d \"${jsonFile.absolutePath}\" /f"
+            "REG DELETE \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /f",
+            "REG DELETE \"HKLM\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /f",
+            "REG ADD \"HKCU\\Software\\Google\\Chrome\\NativeMessagingHosts\\me.sohamgovande.cardr\" /ve /t REG_SZ /d \"${jsonFile.absolutePath}\" /f"
     )
     for (cmd in commands) {
         executeCommandBlocking(cmd, logger, true)
@@ -147,7 +149,6 @@ private fun onFirstLaunchMacOS() {
         throw FirstLaunchException("Unable to download AppleScript 'copyOCRDependencies'.")
 
     downloadOCRData()
-    unpackMacOCRNatives()
 }
 
 fun onFirstLaunch(): Exception? {
@@ -215,13 +216,14 @@ fun updateFrom(from: Int, to: Int): Exception? {
             val macScriptsPath = Paths.get(System.getProperty("cardr.data.dir"), "MacScripts")
             try { Files.createDirectory(macScriptsPath) } catch (e: FileAlreadyExistsException) { }
 
-            logger.info("Updating OCR dependencies...")
+            logger.info("Updating OCR data...")
+            downloadOCRData()
+
             val copyOCRDependenciesPath = Paths.get(macScriptsPath.toFile().absolutePath, "copyOCRDependencies.scpt")
             downloadFileFromURL(UrlHelper.get("copyOCRDependencies"), copyOCRDependenciesPath.toFile(), logger)
             if (!copyOCRDependenciesPath.toFile().exists())
                 throw FirstLaunchException("Unable to download AppleScript 'copyOCRDependencies'.")
 
-            unpackMacOCRNatives()
         }
     }
 
