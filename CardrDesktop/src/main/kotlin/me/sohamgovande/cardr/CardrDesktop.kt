@@ -76,7 +76,7 @@ class CardrDesktop: Application() {
             }
 
             if (IS_FIRST_LAUNCH && WAS_FIRST_LAUNCH_SUCCESSFUL) {
-                WelcomeWindow().show()
+                WelcomeWindow(ui!!).show()
             }
 
             if (getOSType() == OS.MAC) {
