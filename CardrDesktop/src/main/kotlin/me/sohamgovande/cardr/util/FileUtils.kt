@@ -95,12 +95,14 @@ fun extractZipFile(zipFileRaw: File, logger: Logger, destFolderRaw: String? = nu
             } else {
                 val target = File(zipFile.getUnixSymlink(zipEntry))
                 try {
-                    Files.createSymbolicLink(destFile.toPath(), target.toPath())
+                    val destPath = destFile.toPath()
+                    Files.deleteIfExists(destPath)
+                    Files.createSymbolicLink(destPath, target.toPath())
                     continue
                 } catch (e: Exception) {
                     logger.error("Failed to create symbolic link: " +
                         destFile.absolutePath + " -> " +
-                        target.absolutePath)
+                        target.absolutePath, e)
                 }
             }
         }
