@@ -3,7 +3,6 @@ package me.sohamgovande.cardr.data.updater
 import javafx.application.Platform
 import me.sohamgovande.cardr.data.urls.UrlHelper
 import me.sohamgovande.cardr.util.*
-import net.lingala.zip4j.ZipFile
 import org.apache.logging.log4j.LogManager
 import java.awt.Desktop
 import java.nio.file.Path
@@ -56,11 +55,8 @@ class UpdateExecutor(private val version: CardrVersion) {
 
     private fun initInstallerFile(download: Path) {
         if (version.shouldExtract()) {
-            messageHandler("Extracting zipped file...")
             val downloadFile = download.toFile()
-            val zipFile = ZipFile(downloadFile)
-            zipFile.extractAll(Paths.get(System.getProperty("cardr.data.dir"), "Cardr Updates").toFile().canonicalPath)
-            downloadFile.deleteOnExit()
+            extractZipFile(downloadFile, logger, destFolderRaw = Paths.get(System.getProperty("cardr.data.dir"), "Cardr Updates").toFile().canonicalPath)
         }
     }
 

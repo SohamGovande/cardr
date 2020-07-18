@@ -12,7 +12,6 @@ module CardrDesktop.main {
     requires org.apache.commons.codec;
     requires org.apache.commons.text;
     requires kotlin.stdlib;
-    requires zip4j;
     requires commons.exec;
     requires commons.io;
     requires org.apache.httpcomponents.httpcore;
@@ -22,6 +21,7 @@ module CardrDesktop.main {
     requires org.apache.logging.log4j.core;
     requires centerdevice.nsmenufx;
     requires jdk.crypto.ec;
+    requires org.apache.commons.compress;
 
     exports me.sohamgovande.cardr;
 }

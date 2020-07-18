@@ -1,12 +1,14 @@
 package me.sohamgovande.cardr.util
 
+import org.apache.commons.compress.archivers.zip.ZipArchiveEntry
+import org.apache.commons.compress.archivers.zip.ZipFile
 import org.apache.commons.exec.*
 import org.apache.logging.log4j.Logger
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
+import java.io.*
 import java.net.URL
 import java.nio.channels.Channels
+import java.nio.file.Files
+import java.util.*
 
 
 fun makeFileExecutableViaChmod(path: String, logger: Logger) {
@@ -66,4 +68,58 @@ fun executeCommandUnblocking(cmd: String, logger: Logger) {
     } catch (e: Exception) {
         logger.info("Error executing command $cmd", e)
     }
+}
+
+fun extractZipFile(zipFileRaw: File, logger: Logger, destFolderRaw: String? = null, deleteOnExit: Boolean = true) {
+    val buffer = 1024
+
+    val zipFile = ZipFile(zipFileRaw)
+    val data = ByteArray(buffer)
+    val destFolder = destFolderRaw ?: (zipFileRaw.parent + File.separator)
+    logger.info("Extracting ${zipFileRaw.absolutePath} to $destFolder")
+
+    val entries: Enumeration<ZipArchiveEntry> = zipFile.entries
+
+    while (entries.hasMoreElements()) {
+        val zipEntry = entries.nextElement()
+        val destFile = File(destFolder + zipEntry.name)
+
+        if (zipEntry.isDirectory)
+            destFile.mkdirs()
+        else
+            destFile.parentFile.mkdirs()
+
+        if (zipEntry.isUnixSymlink) {
+            if (getOSType() != OS.MAC) {
+                logger.error("Error trying to unzip $zipFileRaw - encountered symlink ${zipEntry.name} on non-Mac computer")
+            } else {
+                val target = File(zipFile.getUnixSymlink(zipEntry))
+                try {
+                    Files.createSymbolicLink(destFile.toPath(), target.toPath())
+                    continue
+                } catch (e: Exception) {
+                    logger.error("Failed to create symbolic link: " +
+                        destFile.absolutePath + " -> " +
+                        target.absolutePath)
+                }
+            }
+        }
+
+        if (!destFile.isDirectory) {
+            var count: Int
+            val fos = FileOutputStream(destFile)
+            BufferedOutputStream(fos, buffer).use { dest ->
+                val stream = zipFile.getInputStream(zipEntry)
+                while (stream.read(data, 0, buffer).also { count = it } != -1) {
+                    dest.write(data, 0, count)
+                }
+            }
+        }
+    }
+
+    if (deleteOnExit)
+        zipFileRaw.deleteOnExit()
+    zipFile.close()
+
+    logger.info("... Finished extraction.")
 }

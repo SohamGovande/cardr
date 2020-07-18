@@ -4,7 +4,6 @@ import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.prefs.PrefsObject
 import me.sohamgovande.cardr.data.urls.UrlHelper
 import me.sohamgovande.cardr.util.*
-import net.lingala.zip4j.ZipFile
 import org.apache.commons.io.IOUtils
 import org.apache.logging.log4j.LogManager
 import java.io.File
@@ -55,10 +54,7 @@ private fun downloadChromeDataMacOS() {
 
     downloadFileFromURL(UrlHelper.get("macChromeApp"), executableZipPath.toFile(), logger)
 
-    logger.info("Extracting zipped executable...")
-    val zipFile = ZipFile(executableZipPath.toFile())
-    zipFile.extractAll(executablePath.parent.toFile().absolutePath)
-    executableZipPath.toFile().deleteOnExit()
+    extractZipFile(executableZipPath.toFile(), logger)
 
     makeFileExecutableViaChmod(executablePath.toFile().absolutePath, logger)
 
@@ -92,14 +88,11 @@ private fun downloadOCRData() {
             Paths.get(System.getProperty("cardr.data.dir"), "OCRData.zip"),
             StandardCopyOption.REPLACE_EXISTING
     )
-    logger.info("Extracting ZIP data")
-    val zipFileRaw = Paths.get(System.getProperty("cardr.data.dir"), "OCRData.zip").toFile()
-    val zipFile = ZipFile(zipFileRaw)
-    zipFile.extractAll(System.getProperty("cardr.data.dir"))
-    zipFileRaw.deleteOnExit()
-    logger.info("Finished OCR")
+    extractZipFile(Paths.get(System.getProperty("cardr.data.dir"), "OCRData.zip").toFile(), logger)
+
     if (getOSType() == OS.MAC)
         createDependencySymlinks()
+    logger.info("Finished OCR")
 }
 
 @Throws(FirstLaunchException::class, Exception::class)
