@@ -353,5 +353,12 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
         val logger = LogManager.getLogger(OCRSelectionWindow::class.java)
         var ocrInstance: Any? = null
         var doOCRMethod: Method? = null
+
+        @JvmStatic
+        fun openWindow(cardrUI: CardrUI) {
+            val window = OCRSelectionWindow(cardrUI)
+            if (window.ensureDependencies())
+                window.show()
+        }
     }
 }
