@@ -96,7 +96,11 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
         val header = Label("Tools")
         header.font = Font.font(20.0)
 
-        ocrBtn.setOnAction { OCRSelectionWindow(cardrUI).show() }
+        ocrBtn.setOnAction {
+            val window = OCRSelectionWindow(cardrUI)
+            window.ensureDependencies()
+            window.show()
+        }
         removeSelectedBtn.setOnAction { removeSelectedText() }
         restoreRemovedBtn.setOnAction {
             cardrUI.removeWords.clear()
