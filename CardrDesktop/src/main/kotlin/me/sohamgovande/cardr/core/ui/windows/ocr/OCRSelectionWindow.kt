@@ -75,16 +75,19 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
     fun ensureDependencies(): Boolean {
         if (getOSType() != OS.MAC)
             return true
-        val files = Paths.get(System.getProperty("cardr.data.dir"),"ocr","dependencies","Cellar").toFile().listFiles()!!
-        var hasDependencies = true
-        for (file in files) {
-            if (!File("/usr/local/opt/${file.name}").exists()) {
-                hasDependencies = false
-                break
+        val cellarFile = Paths.get(System.getProperty("cardr.data.dir"),"ocr","dependencies","Cellar").toFile()
+        if (cellarFile.exists()) {
+            val files = cellarFile.listFiles()!!
+            var hasDependencies = true
+            for (file in files) {
+                if (!File("/usr/local/opt/${file.name}").exists()) {
+                    hasDependencies = false
+                    break
+                }
             }
+            if (hasDependencies)
+                return true
         }
-        if (hasDependencies)
-            return true
 
         var success = true
         showInfoDialogBlocking("Allow Cardr to install the necessary files for OCR?", "We may need to request administrator permission to copy files to system directories.", "Cancel") {
