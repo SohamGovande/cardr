@@ -31,7 +31,7 @@ class CardrDesktop: Application() {
         this.stage = stage
         try {
             logger.info("Launched Cardr")
-            stage.title = "cardr $CURRENT_VERSION"
+            stage.title = "Card Editor - cardr $CURRENT_VERSION"
             stage.isResizable = true
             stage.width = WIDTH
             stage.height = HEIGHT
