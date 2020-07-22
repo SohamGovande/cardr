@@ -10,6 +10,7 @@ import javafx.scene.layout.VBox
 import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.property.DateCardProperty
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.core.ui.windows.*
 import me.sohamgovande.cardr.core.ui.windows.markup.MarkupCardSettingsWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
@@ -66,7 +67,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             macApplicationMenu = Menu()
         }
         val accountMenu = Menu("Account")
-        
+
         signInMI.setOnAction {
             Prefs.get().encryptedPassword = ""
             Prefs.get().emailAddress = ""
@@ -90,15 +91,15 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         val exportMenu = Menu("Export")
         val copyMI = MenuItem("Copy card")
         copyMI.accelerator = KeyCodeCombination(KeyCode.C, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
-        copyMI.setOnAction { cardrUI.toolsUI.copyCardToClipboard() }
+        copyMI.setOnAction { cardrUI.getSelectedTab(EditCardTabUI::class.java)?.toolsUI?.copyCardToClipboard() }
 
         val refreshWordMI  = MenuItem("Refresh Word windows")
         refreshWordMI.accelerator = KeyCodeCombination(KeyCode.R, ctrlKeyMask)
-        refreshWordMI.setOnAction { cardrUI.toolsUI.refreshWordWindows() }
+        refreshWordMI.setOnAction { cardrUI.getSelectedTab(EditCardTabUI::class.java)?.toolsUI?.refreshWordWindows() }
 
         val sendMI = MenuItem("Send to Word")
         sendMI.accelerator = KeyCodeCombination(KeyCode.S, ctrlKeyMask)
-        sendMI.setOnAction { cardrUI.toolsUI.sendCardToWord() }
+        sendMI.setOnAction { cardrUI.getSelectedTab(EditCardTabUI::class.java)?.toolsUI?.sendCardToWord() }
 
         exportMenu.items.add(copyMI)
         exportMenu.items.add(refreshWordMI)
@@ -106,18 +107,18 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
         val addRemoveMenu = Menu("Add & Remove Text")
         removeSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
-        removeSelectedMI.setOnAction { cardrUI.toolsUI.removeSelectedText() }
+        removeSelectedMI.setOnAction { cardrUI.getSelectedTab(EditCardTabUI::class.java)?.toolsUI?.removeSelectedText() }
 
         keepSelectedMI.accelerator = KeyCodeCombination(KeyCode.X, ctrlKeyMask, KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN)
-        keepSelectedMI.setOnAction { cardrUI.toolsUI.keepOnlySelectedText() }
+        keepSelectedMI.setOnAction { cardrUI.getSelectedTab(EditCardTabUI::class.java)?.toolsUI?.keepOnlySelectedText() }
 
         val ocrMI = MenuItem("OCR tool")
         ocrMI.accelerator = KeyCodeCombination(KeyCode.O, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
-        ocrMI.setOnAction { cardrUI.toolsUI.ocrBtn.fire() }
+        ocrMI.setOnAction { cardrUI.getSelectedTab(EditCardTabUI::class.java)?.toolsUI?.ocrBtn?.fire() }
 
         val restoreToOriginalMI = MenuItem("Restore to Original")
         restoreToOriginalMI.accelerator = KeyCodeCombination(KeyCode.R, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
-        restoreToOriginalMI.setOnAction { cardrUI.toolsUI.restoreRemovedBtn.fire() }
+        restoreToOriginalMI.setOnAction { cardrUI.getSelectedTab(EditCardTabUI::class.java)?.toolsUI?.restoreRemovedBtn?.fire() }
 
         addRemoveMenu.items.add(restoreToOriginalMI)
         addRemoveMenu.items.add(removeSelectedMI)
@@ -127,7 +128,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         val manipTextMenu = Menu("Edit Card")
         val highlightUnderlineMI = MenuItem("Highlight & Underline Card")
         highlightUnderlineMI.accelerator = KeyCodeCombination(KeyCode.H, ctrlKeyMask, KeyCombination.SHIFT_DOWN)
-        highlightUnderlineMI.setOnAction { cardrUI.toolsUI.markupBtn.fire() }
+        highlightUnderlineMI.setOnAction { cardrUI.getSelectedTab(EditCardTabUI::class.java)?.toolsUI?.markupBtn?.fire() }
 
         manipTextMenu.items.add(highlightUnderlineMI)
 
@@ -139,16 +140,15 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
         val formatMI = MenuItem("Card and cite format settings...")
         formatMI.setOnAction {
-            val window = FormatPrefsWindow(cardrUI)
-            window.addOnCloseListener{
-                cardrUI.refreshHTML()
-            }
+            val window = FormatPrefsWindow(cardrUI, cardrUI.getSelectedTab(EditCardTabUI::class.java)!!.propertyManager)
+            window.addOnCloseListener{ cardrUI.refreshAllHTML() }
             window.show()
         }
 
+        // TODO: add option to disable these features when in separate tab
         val wordPasteMI = MenuItem("Send to Word settings...")
         wordPasteMI.setOnAction {
-            SendToWordSettingsWindow(cardrUI).show()
+            SendToWordSettingsWindow(cardrUI, cardrUI.getSelectedTab(EditCardTabUI::class.java)!!).show()
         }
 
         val highlightUnderlineSettingsMI = MenuItem("Highlight & underline settings...")
@@ -158,7 +158,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
         val customizePropertiesListMI = MenuItem("Customize properties list...")
         customizePropertiesListMI.setOnAction {
-            EditPropertiesWindow(cardrUI).show()
+            EditPropertiesWindow(cardrUI.getSelectedTab(EditCardTabUI::class.java)!!).show()
         }
 
         val condenseMI = CheckMenuItem("Condense paragraphs")
@@ -166,7 +166,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         condenseMI.setOnAction {
             Prefs.get().condense = condenseMI.isSelected
             Prefs.save()
-            cardrUI.refreshHTML()
+            cardrUI.refreshAllHTML()
             reopenMenu(settingsMenu)
         }
 
@@ -175,7 +175,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         useSmallDatesMI.setOnAction {
             Prefs.get().onlyCardYear = !useSmallDatesMI.isSelected
             Prefs.save()
-            cardrUI.refreshHTML()
+            cardrUI.refreshAllHTML()
             reopenMenu(settingsMenu)
         }
 
@@ -184,7 +184,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         useEtAlMI.setOnAction {
             Prefs.get().useEtAl = useEtAlMI.isSelected
             Prefs.save()
-            cardrUI.refreshHTML()
+            cardrUI.refreshAllHTML()
             reopenMenu(settingsMenu)
         }
 
@@ -193,7 +193,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         capitalizeAuthorsMI.setOnAction {
             Prefs.get().capitalizeAuthors = capitalizeAuthorsMI.isSelected
             Prefs.save()
-            cardrUI.refreshHTML()
+            cardrUI.refreshAllHTML()
             reopenMenu(settingsMenu)
         }
 
@@ -202,8 +202,9 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         useSlashMI.setOnAction {
             Prefs.get().useSlashInsteadOfDash = useSlashMI.isSelected
             Prefs.save()
-            cardrUI.propertyManager.getByName<DateCardProperty>("Date")?.loadDateSeparatorLabels()
-            cardrUI.refreshHTML()
+            for (tab in cardrUI.getTabsByClass(EditCardTabUI::class.java))
+                tab.propertyManager.getByName<DateCardProperty>("Date")?.loadDateSeparatorLabels()
+            cardrUI.refreshAllHTML()
             reopenMenu(settingsMenu)
         }
 
@@ -212,7 +213,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         endQualsWithCommaMI.setOnAction {
             Prefs.get().endQualsWithComma = endQualsWithCommaMI.isSelected
             Prefs.save()
-            cardrUI.refreshHTML()
+            cardrUI.refreshAllHTML()
             reopenMenu(settingsMenu)
         }
 
@@ -225,7 +226,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
             stage.scene.stylesheets.remove("/styles.css")
             stage.scene.stylesheets.remove("/styles-dark.css")
             stage.scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())
-            cardrUI.refreshHTML()
+            cardrUI.refreshAllHTML()
             cardrUI.loadMenuIcons()
 
             if (!Prefs.get().darkMode) {
@@ -253,7 +254,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
         showParagraphBreaksMI.setOnAction {
             Prefs.get().showParagraphBreaks = showParagraphBreaksMI.isSelected
             Prefs.save()
-            cardrUI.refreshHTML()
+            cardrUI.refreshAllHTML()
             reopenMenu(settingsMenu)
         }
 

@@ -3,6 +3,7 @@ package me.sohamgovande.cardr
 import javafx.application.Application
 import javafx.application.Platform
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow
 import me.sohamgovande.cardr.util.showErrorDialogUnblocking
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
@@ -51,26 +52,26 @@ fun main(args: Array<String>) {
 
                                 synchronized(uiLock2) {
                                     uiLock2.wait()
-                                    Platform.runLater { OCRSelectionWindow.openWindow(ui!!) }
+                                    Platform.runLater { OCRSelectionWindow.openWindow(ui!!) { ui!!.getSelectedTab(EditCardTabUI::class.java)!! } }
                                 }
                             } else {
                                 uiLock.wait()
-                                val reader = WebsiteCardCutter(null, useArgs[0], null)
-                                ui!!.loadFromReader(reader)
+                                val reader = WebsiteCardCutter(null, { ui!!.getSelectedTab(EditCardTabUI::class.java)!! }, useArgs[0], null)
+                                val unused = ui!!.getSelectedTab(EditCardTabUI::class.java)?.loadFromReader(reader)
                             }
                         } else if (useArgs.size == 2) {
                             val cardID = useArgs[1]
                             CardrDesktop.logger.info("Loaded card ID $cardID")
 
-                            val reader = WebsiteCardCutter(null, useArgs[0], cardID)
+                            val reader = WebsiteCardCutter(null, { ui!!.getSelectedTab(EditCardTabUI::class.java)!! }, useArgs[0], cardID)
                             uiLock.wait()
-                            ui!!.loadFromReader(reader)
+                            ui!!.getSelectedTab(EditCardTabUI::class.java)?.loadFromReader(reader)
 
                             val selectionDataFile = Paths.get(System.getProperty("cardr.data.dir"), "CardrSelection-$cardID.txt").toFile()
                             val selectionData: String = selectionDataFile.inputStream().bufferedReader().use(BufferedReader::readText)
                             if (selectionData.isNotBlank()) {
                                 Platform.runLater {
-                                    ui!!.keepOnlyText(selectionData)
+                                    ui!!.getSelectedTab(EditCardTabUI::class.java)?.keepOnlyText(selectionData)
                                 }
                             }
                             if (CardrDesktop.RELEASE_MODE)

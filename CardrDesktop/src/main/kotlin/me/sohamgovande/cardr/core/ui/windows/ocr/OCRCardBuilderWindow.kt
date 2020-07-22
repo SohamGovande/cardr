@@ -11,11 +11,13 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.stage.WindowEvent
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
+import me.sohamgovande.cardr.core.ui.tabs.TabUI
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.ui
 
-class OCRCardBuilderWindow(private val cardrUI: CardrUI) : ModalWindow("OCR Card Builder", isModal = false) {
+class OCRCardBuilderWindow(private val cardrUI: CardrUI, private val currentTab: () -> EditCardTabUI) : ModalWindow("OCR Card Builder", isModal = false) {
 
     private val textArea = TextArea()
 
@@ -38,8 +40,8 @@ class OCRCardBuilderWindow(private val cardrUI: CardrUI) : ModalWindow("OCR Card
         }
 
         val addMoreTextBtn = Button("Add more OCR text")
-        addMoreTextBtn.graphic = cardrUI.loadMiniIcon("/capture-ocr.png", false, 1.0)
-        addMoreTextBtn.setOnAction { OCRSelectionWindow.openWindow(ui!!) }
+        addMoreTextBtn.graphic = TabUI.loadMiniIcon("/capture-ocr.png", false, 1.0)
+        addMoreTextBtn.setOnAction { OCRSelectionWindow.openWindow(ui!!, currentTab) }
 
         val discardBtn = Button("Discard & Exit")
         discardBtn.setOnAction { close(null) }
@@ -61,8 +63,8 @@ class OCRCardBuilderWindow(private val cardrUI: CardrUI) : ModalWindow("OCR Card
             closeHbox
         )
 
-        discardBtn.graphic = cardrUI.loadMiniIcon("/close.png", false, 1.0)
-        applyBtn.graphic = cardrUI.loadMiniIcon("/checkmark.png", false, 1.0)
+        discardBtn.graphic = TabUI.loadMiniIcon("/close.png", false, 1.0)
+        applyBtn.graphic = TabUI.loadMiniIcon("/checkmark.png", false, 1.0)
 
         val scene = Scene(vbox, WIDTH, HEIGHT)
         scene.stylesheets.add(javaClass.getResource(Prefs.get().getStylesheet()).toExternalForm())

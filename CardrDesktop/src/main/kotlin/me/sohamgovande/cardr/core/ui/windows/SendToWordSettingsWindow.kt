@@ -10,10 +10,11 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.stage.WindowEvent
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.data.prefs.Prefs
 import java.awt.event.KeyEvent
 
-class SendToWordSettingsWindow(private val cardrUI: CardrUI) : ModalWindow("Settings - Send to Word") {
+class SendToWordSettingsWindow(private val cardrUI: CardrUI, private val currentTab: EditCardTabUI) : ModalWindow("Settings - Send to Word") {
 
     private lateinit var plainTextRB: RadioButton
     private lateinit var htmlTextRB: RadioButton
@@ -63,10 +64,10 @@ class SendToWordSettingsWindow(private val cardrUI: CardrUI) : ModalWindow("Sett
         val saveBtn = Button("Save")
         saveBtn.requestFocus()
         saveBtn.setOnAction {
-            if (plainTextRB.isSelected && cardrUI.overrideBodyHTML != null) {
-                cardrUI.statusBar.text = "Because of highlighting/underlining, plaintext paste will be overridden with HTML paste for this card."
+            if (plainTextRB.isSelected && currentTab.overrideBodyHTML != null) {
+                currentTab.statusBar.text = "Because of highlighting/underlining, plaintext paste will be overridden with HTML paste for this card."
             } else {
-                cardrUI.statusBar.text = ""
+                currentTab.statusBar.text = ""
             }
             close(null)
         }

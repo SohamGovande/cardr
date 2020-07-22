@@ -6,11 +6,11 @@ import javafx.scene.control.Label
 import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
 import me.sohamgovande.cardr.core.card.Timestamp
-import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import me.sohamgovande.cardr.util.currentDate
 
-class DateCardProperty(cardrUI: CardrUI) : CardProperty("Date", arrayOf("{DateShortened}", "{DateFull}", "{CurrentDate}"), cardrUI) {
+class DateCardProperty(currentTab: EditCardTabUI) : CardProperty("Date", arrayOf("{DateShortened}", "{DateFull}", "{CurrentDate}"), currentTab) {
 
     private val dateGrid = GridPane()
 

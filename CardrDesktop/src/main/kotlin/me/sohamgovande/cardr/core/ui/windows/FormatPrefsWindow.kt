@@ -14,6 +14,9 @@ import javafx.scene.web.HTMLEditor
 import javafx.stage.WindowEvent
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.property.CardProperty
+import me.sohamgovande.cardr.core.ui.property.CardPropertyManager
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.prefs.PrefsObject
 import me.sohamgovande.cardr.util.OS
@@ -21,7 +24,7 @@ import me.sohamgovande.cardr.util.getOSType
 import java.awt.Toolkit
 import java.awt.datatransfer.StringSelection
 
-class FormatPrefsWindow(private val cardrUI: CardrUI): ModalWindow("Settings - Card Format") {
+class FormatPrefsWindow(private val cardrUI: CardrUI, private val propertyManager: CardPropertyManager): ModalWindow("Settings - Card Format") {
 
     private val editText = HTMLEditor()
 
@@ -109,7 +112,7 @@ class FormatPrefsWindow(private val cardrUI: CardrUI): ModalWindow("Settings - C
             alert.buttonTypes.add(ButtonType.CLOSE)
 
             val macroList = arrayListOf("{CardBody}")
-            for (property in cardrUI.propertyManager.cardProperties)
+            for (property in propertyManager.cardProperties)
                 for (macro in property.macros)
                     macroList.add(macro)
 

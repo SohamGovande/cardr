@@ -14,6 +14,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.web.WebView
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.tabs.TabUI
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
 import java.awt.event.KeyEvent.VK_F1
@@ -191,15 +192,15 @@ class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: S
     }
 
     fun loadMenuIcons() {
-        highlightBtn.graphic = cardrUI.loadMiniIcon("/highlight.png", false, 1.0)
-        emphasizeBtn.graphic = cardrUI.loadMiniIcon("/emphasize.png", false, 1.0)
-        underlineBtn.graphic = cardrUI.loadMiniIcon("/underline.png", false, 1.0)
-        boldBtn.graphic = cardrUI.loadMiniIcon("/bold.png", false, 1.0)
-        unhighlightBtn.graphic = cardrUI.loadMiniIcon("/eraser.png", false, 1.0)
-        resetAllBtn.graphic = cardrUI.loadMiniIcon("/reset-all.png", false, 1.0)
-        settingsBtn.graphic = cardrUI.loadMiniIcon("/settings.png", false, 1.0)
-        applyChangesBtn.graphic = cardrUI.loadMiniIcon("/checkmark.png", false, 1.0)
-        discardChangesBtn.graphic = cardrUI.loadMiniIcon("/close.png", false, 1.0)
+        highlightBtn.graphic = TabUI.loadMiniIcon("/highlight.png", false, 1.0)
+        emphasizeBtn.graphic = TabUI.loadMiniIcon("/emphasize.png", false, 1.0)
+        underlineBtn.graphic = TabUI.loadMiniIcon("/underline.png", false, 1.0)
+        boldBtn.graphic = TabUI.loadMiniIcon("/bold.png", false, 1.0)
+        unhighlightBtn.graphic = TabUI.loadMiniIcon("/eraser.png", false, 1.0)
+        resetAllBtn.graphic = TabUI.loadMiniIcon("/reset-all.png", false, 1.0)
+        settingsBtn.graphic = TabUI.loadMiniIcon("/settings.png", false, 1.0)
+        applyChangesBtn.graphic = TabUI.loadMiniIcon("/checkmark.png", false, 1.0)
+        discardChangesBtn.graphic = TabUI.loadMiniIcon("/close.png", false, 1.0)
     }
 
     companion object {

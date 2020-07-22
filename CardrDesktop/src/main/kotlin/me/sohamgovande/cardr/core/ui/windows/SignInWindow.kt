@@ -20,6 +20,7 @@ import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.auth.CardrUser
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.motd.showMOTD
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.encryption.EncryptionHelper
@@ -102,7 +103,7 @@ class SignInWindow(private val options: SignInLauncherOptions, private val curre
                     super.window.close()
 
                     if (CHROME_OCR_MODE) {
-                        OCRSelectionWindow.openWindow(cardrUI)
+                        OCRSelectionWindow.openWindow(cardrUI) { cardrUI.getSelectedTab(EditCardTabUI::class.java)!! }
                     } else if (CardrDesktop.IS_FIRST_LAUNCH) {
                         Platform.runLater { showMOTD() }
                         Prefs.get().lastMOTD = currentDate().format(DateTimeFormatter.ISO_DATE)

@@ -4,24 +4,24 @@ import javafx.scene.control.Label
 import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.stage.Stage
-import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.util.OS
 import me.sohamgovande.cardr.util.getOSType
 
-class CardPropertyManager(cardrUI: CardrUI) {
+class CardPropertyManager(currentTab: EditCardTabUI) {
 
     var cardProperties = mutableListOf(
-        UrlCardProperty(cardrUI),
-        DateCardProperty(cardrUI),
-        PublicationCardProperty(cardrUI),
-        TitleCardProperty(cardrUI),
-        CardTagCardProperty(cardrUI),
-        AuthorsCardProperty(cardrUI),
-        VolumeCardProperty(cardrUI),
-        IssueCardProperty(cardrUI),
-        PagesCardProperty(cardrUI)
+        UrlCardProperty(currentTab),
+        DateCardProperty(currentTab),
+        PublicationCardProperty(currentTab),
+        TitleCardProperty(currentTab),
+        CardTagCardProperty(currentTab),
+        AuthorsCardProperty(currentTab),
+        VolumeCardProperty(currentTab),
+        IssueCardProperty(currentTab),
+        PagesCardProperty(currentTab)
     )
 
     private var pGrid = GridPane()

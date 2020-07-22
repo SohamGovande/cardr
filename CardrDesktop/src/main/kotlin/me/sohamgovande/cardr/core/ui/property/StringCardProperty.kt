@@ -4,9 +4,10 @@ import javafx.beans.property.SimpleStringProperty
 import javafx.scene.Node
 import javafx.scene.control.TextField
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 
-abstract class StringCardProperty(name: String, macro: String, cardrUI: CardrUI) : CardProperty(name, arrayOf("{$macro}"), cardrUI) {
+abstract class StringCardProperty(name: String, macro: String, currentTab: EditCardTabUI) : CardProperty(name, arrayOf("{$macro}"), currentTab) {
 
     private val value = SimpleStringProperty("")
     private val textField = TextField()
@@ -45,17 +46,17 @@ abstract class StringCardProperty(name: String, macro: String, cardrUI: CardrUI)
     }
 }
 
-class PublicationCardProperty(cardrUI: CardrUI) : StringCardProperty("Publication", "Publication", cardrUI) {
+class PublicationCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Publication", "Publication", currentTab) {
     override fun loadFromReader(reader: WebsiteCardCutter) {
         setValue(reader.getPublication())
     }
 }
 
-class TitleCardProperty(cardrUI: CardrUI) : StringCardProperty("Title", "Title", cardrUI) {
+class TitleCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Title", "Title", currentTab) {
 
     init {
         getValueProperty().addListener { _, _, value ->
-            cardrUI.updateWindowTitle(value)
+            currentTab.updateWindowTitle(value)
         }
     }
     override fun loadFromReader(reader: WebsiteCardCutter) {
@@ -63,13 +64,13 @@ class TitleCardProperty(cardrUI: CardrUI) : StringCardProperty("Title", "Title",
     }
 }
 
-class UrlCardProperty(cardrUI: CardrUI) : StringCardProperty("URL", "Url", cardrUI) {
+class UrlCardProperty(currentTab: EditCardTabUI) : StringCardProperty("URL", "Url", currentTab) {
     override fun loadFromReader(reader: WebsiteCardCutter) {
         setValue(reader.getURL())
     }
 }
 
-class CardTagCardProperty(cardrUI: CardrUI) : StringCardProperty("Card Tag", "Tag", cardrUI) {
+class CardTagCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Card Tag", "Tag", currentTab) {
     init {
         getValueProperty().addListener { _, _, value ->
             for (dash in DASHES) {
@@ -92,14 +93,14 @@ class CardTagCardProperty(cardrUI: CardrUI) : StringCardProperty("Card Tag", "Ta
     }
 }
 
-class VolumeCardProperty(cardrUI: CardrUI) : StringCardProperty("Volume", "Volume", cardrUI) {
+class VolumeCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Volume", "Volume", currentTab) {
     override fun loadFromReader(reader: WebsiteCardCutter) {}
 }
 
-class IssueCardProperty(cardrUI: CardrUI) : StringCardProperty("Issue", "Issue", cardrUI) {
+class IssueCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Issue", "Issue", currentTab) {
     override fun loadFromReader(reader: WebsiteCardCutter) {}
 }
 
-class PagesCardProperty(cardrUI: CardrUI) : StringCardProperty("Pages", "Pages", cardrUI) {
+class PagesCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Pages", "Pages", currentTab) {
     override fun loadFromReader(reader: WebsiteCardCutter) {}
 }

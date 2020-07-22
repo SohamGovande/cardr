@@ -12,25 +12,26 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.text.Text
 import javafx.scene.text.TextFlow
-import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.property.CardProperty
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
+import me.sohamgovande.cardr.core.ui.tabs.TabUI
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.util.OS
 import me.sohamgovande.cardr.util.getOSType
 
 
-class EditPropertiesWindow(private val cardrUI: CardrUI) : ModalWindow("Customize Properties Editor", isModal = false) {
+class EditPropertiesWindow(private val currentTab: EditCardTabUI) : ModalWindow("Customize Properties Editor", isModal = false) {
 
     private val table = TableView<CardProperty>()
 
-    private var enabledGrid = BooleanArray(cardrUI.propertyManager.cardProperties.size)
+    private var enabledGrid = BooleanArray(currentTab.propertyManager.cardProperties.size)
 
     override fun generateUI(): Scene {
         val vbox = VBox()
         vbox.padding = Insets(10.0)
         vbox.spacing = 10.0
 
-        table.items = FXCollections.observableList(cardrUI.propertyManager.cardProperties)
+        table.items = FXCollections.observableList(currentTab.propertyManager.cardProperties)
         for (index in Prefs.get().activeProperties)
             enabledGrid[index] = true
 
@@ -56,14 +57,14 @@ class EditPropertiesWindow(private val cardrUI: CardrUI) : ModalWindow("Customiz
         colName.setCellValueFactory { SimpleStringProperty(it.value.name) }
         colMacros.setCellValueFactory { SimpleStringProperty(it.value.macros.joinToString()) }
         colEnabled.setCellValueFactory {
-            SimpleBooleanProperty(Prefs.get().activeProperties.contains(cardrUI.propertyManager.cardProperties.indexOf(it.value)))
+            SimpleBooleanProperty(Prefs.get().activeProperties.contains(currentTab.propertyManager.cardProperties.indexOf(it.value)))
         }
         colEnabled.setCellFactory { object : TableCell<CardProperty, Boolean>() {
             private val btn = Button()
 
             fun loadGraphic() {
-                val cIndex = cardrUI.propertyManager.cardProperties.indexOf(table.items[index])
-                btn.graphic = cardrUI.loadMiniIcon(
+                val cIndex = currentTab.propertyManager.cardProperties.indexOf(table.items[index])
+                btn.graphic = TabUI.loadMiniIcon(
                     if (enabledGrid[cIndex]) "/visible.png" else "/hidden.png", false, 1.0
                 )
             }
@@ -75,12 +76,12 @@ class EditPropertiesWindow(private val cardrUI: CardrUI) : ModalWindow("Customiz
                     text = null
                     graphic = null
                 } else {
-                    val cIndex = cardrUI.propertyManager.cardProperties.indexOf(table.items[index])
+                    val cIndex = currentTab.propertyManager.cardProperties.indexOf(table.items[index])
                     btn.setOnAction {
                         enabledGrid[cIndex] = !enabledGrid[cIndex]
                         loadGraphic()
                         updatePrefs()
-                        cardrUI.refreshPropertiesGrid()
+                        currentTab.refreshPropertiesGrid()
                     }
                     loadGraphic()
                     graphic = btn
@@ -114,9 +115,9 @@ class EditPropertiesWindow(private val cardrUI: CardrUI) : ModalWindow("Customiz
                         table.selectionModel.select(index-1)
 
                         updatePrefs()
-                        cardrUI.refreshPropertiesGrid()
+                        currentTab.refreshPropertiesGrid()
                     }
-                    btn.graphic = cardrUI.loadMiniIcon("/up.png", false, 1.0)
+                    btn.graphic = TabUI.loadMiniIcon("/up.png", false, 1.0)
                     btn.isDisable = index == 0
                     graphic = btn
                     text = null
@@ -149,9 +150,9 @@ class EditPropertiesWindow(private val cardrUI: CardrUI) : ModalWindow("Customiz
                         table.selectionModel.select(index+1)
 
                         updatePrefs()
-                        cardrUI.refreshPropertiesGrid()
+                        currentTab.refreshPropertiesGrid()
                     }
-                    btn.graphic = cardrUI.loadMiniIcon("/down.png", false, 1.0)
+                    btn.graphic = TabUI.loadMiniIcon("/down.png", false, 1.0)
                     btn.isDisable = index == table.items.size-1
                     graphic = btn
                     text = null
@@ -189,7 +190,7 @@ class EditPropertiesWindow(private val cardrUI: CardrUI) : ModalWindow("Customiz
         val indices = mutableListOf<Int>()
 
         for ((index, value) in enabledGrid.withIndex()) {
-            val cIndex = cardrUI.propertyManager.cardProperties.indexOf(table.items[index])
+            val cIndex = currentTab.propertyManager.cardProperties.indexOf(table.items[index])
             if (value)
                 indices.add(cIndex)
         }

@@ -12,6 +12,7 @@ import javafx.scene.layout.VBox
 import javafx.scene.text.Font
 import javafx.scene.web.WebView
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.urls.UrlHelper
 import java.awt.Desktop
@@ -73,8 +74,10 @@ class HistoryWindow(private val cardrUI: CardrUI): ModalWindow("Card History") {
             } else if (!loc.contains("cardr")){
                 if (onClickCombo.selectionModel.selectedIndex == 0) {
                     close(null)
-                    cardrUI.urlTF.text = loc
-                    cardrUI.gotoUrlBtn.fire()
+                    val currentTab = cardrUI.getSelectedTab(EditCardTabUI::class.java)
+//                  TODO: open new tab
+//                    cardrUI.urlTF.text = loc
+//                    cardrUI.gotoUrlBtn.fire()
                 } else {
                     Desktop.getDesktop().browse(URL(loc).toURI())
                     Platform.runLater { webView.engine.load(oldLoc) }

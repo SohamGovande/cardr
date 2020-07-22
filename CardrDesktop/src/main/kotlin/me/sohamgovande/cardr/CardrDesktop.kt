@@ -94,8 +94,8 @@ class CardrDesktop: Application() {
         const val WIDTH = 835.0
         const val HEIGHT = 600.0
 
-        const val CURRENT_VERSION = "v1.4.0"
-        const val CURRENT_VERSION_INT = 6
+        const val CURRENT_VERSION = "v1.5.0"
+        const val CURRENT_VERSION_INT = 7
         var IS_FIRST_LAUNCH = false
         var WAS_FIRST_LAUNCH_SUCCESSFUL = false
 

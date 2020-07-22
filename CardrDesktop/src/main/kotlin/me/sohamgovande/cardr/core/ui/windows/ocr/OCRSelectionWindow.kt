@@ -13,6 +13,8 @@ import javafx.stage.StageStyle
 import me.sohamgovande.cardr.CHROME_OCR_MODE
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.WindowDimensions
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
+import me.sohamgovande.cardr.core.ui.tabs.TabUI
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.core.ui.windows.SignInWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.ResizeListener.Companion.BORDER_SIZE
@@ -35,7 +37,7 @@ import kotlin.math.abs
 import kotlin.system.exitProcess
 
 
-class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"){
+class OCRSelectionWindow(private val cardrUI: CardrUI, private val currentTab: () -> EditCardTabUI): ModalWindow("OCR Region"){
 
     private val menuBox = HBox()
     private val captureBtn = Button("Capture")
@@ -141,7 +143,7 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
                 close(null)
                 showAllWindows()
 
-                val builder = if (cardrUI.ocrCardBuilderWindow == null) OCRCardBuilderWindow(cardrUI) else cardrUI.ocrCardBuilderWindow!!
+                val builder = if (cardrUI.ocrCardBuilderWindow == null) OCRCardBuilderWindow(cardrUI, currentTab) else cardrUI.ocrCardBuilderWindow!!
                 if (cardrUI.ocrCardBuilderWindow == null) {
                     cardrUI.ocrCardBuilderWindow = builder
                     builder.show()
@@ -251,9 +253,11 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
             text = text.replace("\n\n","\n")
         text = text.trim()
 
-        cardrUI.overrideBodyParagraphs = text.split("\n").toMutableList()
+        val currentTab = this.currentTab()
+
+        currentTab.overrideBodyParagraphs = text.split("\n").toMutableList()
         val sb = StringBuilder()
-        cardrUI.overrideBodyParagraphs!!.forEach {
+        currentTab.overrideBodyParagraphs!!.forEach {
             sb.append("<p>")
 
             sb.append(it)
@@ -262,13 +266,13 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
             sb.append("</p>")
         }
 
-        cardrUI.removeWords.clear()
-        cardrUI.removeParagraphs.clear()
+        currentTab.removeWords.clear()
+        currentTab.removeParagraphs.clear()
 
-        cardrUI.overrideBodyHTML = null
-        cardrUI.enableCardBodyEditOptions()
-        cardrUI.cardBody.set(sb.toString())
-        cardrUI.refreshHTML()
+        currentTab.overrideBodyHTML = null
+        currentTab.enableCardBodyEditOptions()
+        currentTab.cardBody.set(sb.toString())
+        currentTab.refreshHTML()
     }
 
     private fun hideAllWindows() {
@@ -293,11 +297,11 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
         menuBox.spacing = 10.0
         menuBox.padding = Insets(10.0)
 
-        captureBtn.graphic = cardrUI.loadMiniIcon("/capture-ocr.png", true, 1.5)
+        captureBtn.graphic = TabUI.loadMiniIcon("/capture-ocr.png", true, 1.5)
         captureBtn.setOnAction { onCapture() }
 
         val closeBtn = Button("Close")
-        closeBtn.graphic = cardrUI.loadMiniIcon("/close.png", true, 1.5)
+        closeBtn.graphic = TabUI.loadMiniIcon("/close.png", true, 1.5)
         closeBtn.setOnAction {
             if (thread != null && thread!!.isAlive)
                 thread!!.interrupt()
@@ -311,7 +315,7 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
         }
 
         val openFull = Button("Full Cardr")
-        openFull.graphic = cardrUI.loadMiniIcon("/window.png", true, 1.5)
+        openFull.graphic = TabUI.loadMiniIcon("/window.png", true, 1.5)
         openFull.setOnAction {
             if (thread != null && thread!!.isAlive)
                 thread!!.interrupt()
@@ -361,8 +365,8 @@ class OCRSelectionWindow(private val cardrUI: CardrUI): ModalWindow("OCR Region"
         var doOCRMethod: Method? = null
 
         @JvmStatic
-        fun openWindow(cardrUI: CardrUI) {
-            val window = OCRSelectionWindow(cardrUI)
+        fun openWindow(cardrUI: CardrUI, currentTab: () -> EditCardTabUI) {
+            val window = OCRSelectionWindow(cardrUI, currentTab)
             if (window.ensureDependencies())
                 window.show()
         }

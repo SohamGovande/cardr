@@ -7,6 +7,7 @@ import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.card.Author
 import me.sohamgovande.cardr.core.card.Timestamp
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.util.*
 import org.apache.commons.text.StringEscapeUtils
@@ -21,7 +22,7 @@ import java.security.SecureRandom
 import javax.net.ssl.SSLContext
 
 
-class WebsiteCardCutter(var cardrUI: CardrUI?, private val url: String, private val cardID: String?) {
+class WebsiteCardCutter(var cardrUI: CardrUI?, private val currentTab: () -> EditCardTabUI, private val url: String, private val cardID: String?) {
 
     private val logger = LogManager.getLogger(javaClass)
     private lateinit var doc: Document
@@ -614,8 +615,9 @@ class WebsiteCardCutter(var cardrUI: CardrUI?, private val url: String, private 
     fun getURL() = url
 
     fun getBodyParagraphsText(): MutableList<String> {
-        if (cardrUI?.overrideBodyParagraphs != null)
-            return cardrUI!!.overrideBodyParagraphs!!
+        val currentTab = this.currentTab()
+        if (currentTab.overrideBodyParagraphs != null)
+            return currentTab.overrideBodyParagraphs!!
         if (bodyParagraphElements == null) {
             val reader = CardBodyReader(getHostName(url).toLowerCase(), doc)
             bodyParagraphElements = reader.getBodyParagraphs(cardID != null)

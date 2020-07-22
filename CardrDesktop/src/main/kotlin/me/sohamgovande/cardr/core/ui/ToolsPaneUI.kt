@@ -13,6 +13,7 @@ import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
 import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
 import me.sohamgovande.cardr.core.ui.windows.markup.MarkupCardWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow
@@ -27,7 +28,7 @@ import java.awt.Desktop
 import java.awt.Toolkit
 import java.nio.file.Paths
 
-class ToolsPaneUI(private val cardrUI: CardrUI) {
+class ToolsPaneUI(private val currentTab: EditCardTabUI, private val cardrUI: CardrUI) {
 
     val copyBtn = Button("Copy")
     val removeSelectedBtn = Button("Remove Selected")
@@ -97,23 +98,23 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
         val header = Label("Tools")
         header.font = Font.font(20.0)
 
-        ocrBtn.setOnAction {OCRSelectionWindow.openWindow(ui!!) }
+        ocrBtn.setOnAction {OCRSelectionWindow.openWindow(ui!!) { currentTab } }
         removeSelectedBtn.setOnAction { removeSelectedText() }
         restoreRemovedBtn.setOnAction {
-            cardrUI.removeWords.clear()
-            cardrUI.removeParagraphs.clear()
-            cardrUI.overrideBodyHTML = null
-            cardrUI.enableCardBodyEditOptions()
-            cardrUI.statusBar.text = ""
+            currentTab.removeWords.clear()
+            currentTab.removeParagraphs.clear()
+            currentTab.overrideBodyHTML = null
+            currentTab.enableCardBodyEditOptions()
+            currentTab.statusBar.text = ""
 
-            cardrUI.refreshHTML()
+            currentTab.refreshHTML()
             val alert = Alert(Alert.AlertType.INFORMATION)
             alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
             alert.headerText = "Article content restored to original."
             alert.showAndWait()
         }
         keepOnlySelectedBtn.setOnAction { keepOnlySelectedText() }
-        editCardFormatBtn.setOnAction { FormatPrefsWindow(cardrUI).show() }
+        editCardFormatBtn.setOnAction { FormatPrefsWindow(cardrUI, cardrUI.getSelectedTab(EditCardTabUI::class.java)!!.propertyManager).show() }
         refreshBtn.setOnAction { refreshWordWindows() }
         markupBtn.setOnAction { openMarkupWindow() }
 
@@ -182,9 +183,9 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
     fun keepOnlySelectedText() {
         var success = false
         try {
-            if (cardrUI.reader == null)
+            if (currentTab.reader == null)
                 return
-            cardrUI.keepOnlyText(cardrUI.cardWV.engine.executeScript("getSelectionTextCustom()") as String)
+            currentTab.keepOnlyText(currentTab.cardWV.engine.executeScript("getSelectionTextCustom()") as String)
             success = true
         } catch (e: Exception) {
             logger.error(e)
@@ -285,7 +286,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
     }
 
     private fun openMarkupWindow() {
-        val cardBody = cardrUI.generateCardBodyHTML(cardrUI.cardBody.get(), cardBodyIsHTML = true)
+        val cardBody = currentTab.generateCardBodyHTML(currentTab.cardBody.get(), cardBodyIsHTML = true)
         val html = """
         <head>
             <style>
@@ -370,7 +371,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
         """.trimIndent()
 
         val window = MarkupCardWindow(cardrUI, html)
-        val screenBounds = cardrUI.cardWV.localToScreen(cardrUI.cardWV.boundsInLocal)
+        val screenBounds = currentTab.cardWV.localToScreen(currentTab.cardWV.boundsInLocal)
 
         window.addOnCloseListener {
             if (!window.applyChanges)
@@ -390,10 +391,10 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
                 }
             }
 
-            cardrUI.disableCardBodyEditOptions()
-            cardrUI.overrideBodyHTML = innerBody.html()
+            currentTab.disableCardBodyEditOptions()
+            currentTab.overrideBodyHTML = innerBody.html()
 
-            cardrUI.refreshHTML()
+            currentTab.refreshHTML()
 
             if (!Prefs.get().hideFormattingDialog) {
                 showInfoDialogBlocking("Applied highlighting & underlining changes.",
@@ -407,7 +408,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
             }
 
             if (Prefs.get().pastePlainText) {
-                cardrUI.statusBar.text = "Because of highlighting/underlining, plaintext paste will be overridden with HTML paste for this card."
+                currentTab.statusBar.text = "Because of highlighting/underlining, plaintext paste will be overridden with HTML paste for this card."
             }
         }
         window.show()
@@ -423,7 +424,7 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
             .systemClipboard
             .setContents(
                 HTMLSelection(
-                    cardrUI.generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = null)
+                    currentTab.generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = null)
                 ),
                 null
             )
@@ -470,12 +471,12 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
             }
         }
 
-        if (Prefs.get().pastePlainText && cardrUI.overrideBodyHTML == null) {
+        if (Prefs.get().pastePlainText && currentTab.overrideBodyHTML == null) {
             val cardBodyReplacement = "safd7asdyfkjahnw3k5nsd"
-            val cardHtml = cardrUI.generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = cardBodyReplacement)
+            val cardHtml = currentTab.generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = cardBodyReplacement)
             val cardBodyIndex = cardHtml.indexOf(cardBodyReplacement)
             val beforeBody = cardHtml.substring(0, cardBodyIndex)
-            var body = cardrUI.generateCardBodyHTML(cardrUI.reader!!.getBodyParagraphText(false), false)
+            var body = currentTab.generateCardBodyHTML(currentTab.reader!!.getBodyParagraphText(false), false)
             if (body.endsWith("\n"))
                 body += "\n"
             val afterBody = cardHtml.substring(cardBodyIndex + cardBodyReplacement.length)
@@ -485,21 +486,21 @@ class ToolsPaneUI(private val cardrUI: CardrUI) {
             if (afterBody != "</span></p>\n </body>\n</html>")
                 pasteObject(afterBody, KeyboardPasteMode.NORMAL)
         } else {
-            pasteObject(cardrUI.generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = null), KeyboardPasteMode.NORMAL)
+            pasteObject(currentTab.generateFullHTML(switchFont = true, forCopy = true, cardBodyReplacement = null), KeyboardPasteMode.NORMAL)
         }
     }
 
     fun removeSelectedText() {
         var success = false
         try {
-            val selection = cardrUI.cardWV.engine.executeScript("getSelectionTextCustom()") as String
+            val selection = currentTab.cardWV.engine.executeScript("getSelectionTextCustom()") as String
             for (str in selection.split(Regex("[\\n\\t\\r]"))) {
                 if (str.isNotBlank()) {
-                    cardrUI.removeWords.add(str)
+                    currentTab.removeWords.add(str)
                     success = true
                 }
             }
-            cardrUI.refreshHTML()
+            currentTab.refreshHTML()
         } catch (e: Exception) {
             success = false
         }

@@ -9,14 +9,15 @@ import javafx.scene.layout.VBox
 import me.sohamgovande.cardr.core.card.Author
 import me.sohamgovande.cardr.core.card.AuthorListManager
 import me.sohamgovande.cardr.core.card.AuthorNameFormat
-import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
+import me.sohamgovande.cardr.core.ui.tabs.TabUI
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import java.awt.Desktop
 import java.net.URL
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-class AuthorsCardProperty(cardrUI: CardrUI) : CardProperty("Authors", arrayOf("{AuthorFullName}", "{AuthorLastName}", "{AuthorFirstName}", "{Qualifications}"), cardrUI) {
+class AuthorsCardProperty(currentTab: EditCardTabUI) : CardProperty("Authors", arrayOf("{AuthorFullName}", "{AuthorLastName}", "{AuthorFirstName}", "{Qualifications}"), currentTab) {
 
     val deleteAuthorButtons = arrayListOf<Button>()
     val searchButtons = arrayListOf<Button>()
@@ -68,7 +69,7 @@ class AuthorsCardProperty(cardrUI: CardrUI) : CardProperty("Authors", arrayOf("{
             bindToRefreshWebView(authorGridLName)
 
             val deleteAuthor = Button()
-            deleteAuthor.graphic = cardrUI.loadMiniIcon("/remove.png", false, 1.0)
+            deleteAuthor.graphic = TabUI.loadMiniIcon("/remove.png", false, 1.0)
             deleteAuthorButtons.add(deleteAuthor)
             deleteAuthor.prefWidth = 25.0
             if (value.size == 1)
@@ -80,7 +81,7 @@ class AuthorsCardProperty(cardrUI: CardrUI) : CardProperty("Authors", arrayOf("{
             bindToRefreshWebView(authorGridQuals)
 
             val searchQuals = Button()
-            searchQuals.graphic = cardrUI.loadMiniIcon("/search.png", false, 1.0)
+            searchQuals.graphic = TabUI.loadMiniIcon("/search.png", false, 1.0)
             searchButtons.add(searchQuals)
             searchQuals.prefWidth = 25.0
 
@@ -105,9 +106,8 @@ class AuthorsCardProperty(cardrUI: CardrUI) : CardProperty("Authors", arrayOf("{
                 value = authorsMutable.toTypedArray()
 
                 generateAuthorsGrid()
-                cardrUI.refreshHTML()
+                currentTab.refreshHTML()
             }
-
         }
 
         addAuthor.setOnAction {
@@ -116,7 +116,7 @@ class AuthorsCardProperty(cardrUI: CardrUI) : CardProperty("Authors", arrayOf("{
             value = authorsMutable.toTypedArray()
 
             generateAuthorsGrid()
-            cardrUI.refreshHTML()
+            currentTab.refreshHTML()
         }
     }
 
