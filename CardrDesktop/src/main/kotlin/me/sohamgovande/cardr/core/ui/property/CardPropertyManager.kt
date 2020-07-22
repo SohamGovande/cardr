@@ -5,7 +5,7 @@ import javafx.scene.layout.ColumnConstraints
 import javafx.scene.layout.GridPane
 import javafx.stage.Stage
 import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
-import me.sohamgovande.cardr.core.web.WebsiteCardCutter
+import me.sohamgovande.cardr.core.web.CardWebScraper
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.util.OS
 import me.sohamgovande.cardr.util.getOSType
@@ -73,7 +73,7 @@ class CardPropertyManager(currentTab: EditCardTabUI) {
             property.bindProperties()
     }
 
-    fun loadFromReader(reader: WebsiteCardCutter) {
+    fun loadFromReader(reader: CardWebScraper) {
         for (property in cardProperties) {
             property.loadFromReader(reader)
         }

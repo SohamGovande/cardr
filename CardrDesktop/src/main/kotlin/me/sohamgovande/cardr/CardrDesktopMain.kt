@@ -7,7 +7,7 @@ import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow
 import me.sohamgovande.cardr.util.showErrorDialogUnblocking
-import me.sohamgovande.cardr.core.web.WebsiteCardCutter
+import me.sohamgovande.cardr.core.web.CardWebScraper
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.core.LoggerContext
 import java.io.BufferedReader
@@ -56,7 +56,7 @@ fun processArgs(args: List<String>, ui: () -> CardrUI?, nonNullCurrentTab: () ->
                 if (ui() == null || !ui()!!.finishedDeferredLoad) {
                     finishedLoadingUiLock.wait()
                 }
-                val reader = WebsiteCardCutter(null, nonNullCurrentTab, args[0], null)
+                val reader = CardWebScraper(null, nonNullCurrentTab, args[0], null)
                 nonNullCurrentTab().loadFromReader(reader)
             }
         } else if (args.size == 2) {
@@ -64,7 +64,7 @@ fun processArgs(args: List<String>, ui: () -> CardrUI?, nonNullCurrentTab: () ->
                 val cardID = args[1]
                 CardrDesktop.logger.info("Loaded card ID $cardID")
 
-                val reader = WebsiteCardCutter(null, { ui()!!.getSelectedTab(EditCardTabUI::class.java)!! }, args[0], cardID)
+                val reader = CardWebScraper(null, { ui()!!.getSelectedTab(EditCardTabUI::class.java)!! }, args[0], cardID)
                 finishedLoadingUiLock.wait()
                 ui()!!.getSelectedTab(EditCardTabUI::class.java)?.loadFromReader(reader)
 

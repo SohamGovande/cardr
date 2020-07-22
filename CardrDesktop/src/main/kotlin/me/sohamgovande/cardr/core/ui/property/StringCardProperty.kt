@@ -3,9 +3,8 @@ package me.sohamgovande.cardr.core.ui.property
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.Node
 import javafx.scene.control.TextField
-import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
-import me.sohamgovande.cardr.core.web.WebsiteCardCutter
+import me.sohamgovande.cardr.core.web.CardWebScraper
 
 abstract class StringCardProperty(name: String, macro: String, currentTab: EditCardTabUI) : CardProperty(name, arrayOf("{$macro}"), currentTab) {
 
@@ -16,7 +15,7 @@ abstract class StringCardProperty(name: String, macro: String, currentTab: EditC
         textField.textProperty().bindBidirectional(value)
     }
 
-    abstract override fun loadFromReader(reader: WebsiteCardCutter)
+    abstract override fun loadFromReader(reader: CardWebScraper)
 
     override fun resolveMacro(macro: String): String {
         if (macro == macros[0])
@@ -47,7 +46,7 @@ abstract class StringCardProperty(name: String, macro: String, currentTab: EditC
 }
 
 class PublicationCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Publication", "Publication", currentTab) {
-    override fun loadFromReader(reader: WebsiteCardCutter) {
+    override fun loadFromReader(reader: CardWebScraper) {
         setValue(reader.getPublication())
     }
 }
@@ -59,13 +58,13 @@ class TitleCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Title",
             currentTab.updateWindowTitle(value)
         }
     }
-    override fun loadFromReader(reader: WebsiteCardCutter) {
+    override fun loadFromReader(reader: CardWebScraper) {
         setValue(reader.getTitle() ?: "")
     }
 }
 
 class UrlCardProperty(currentTab: EditCardTabUI) : StringCardProperty("URL", "Url", currentTab) {
-    override fun loadFromReader(reader: WebsiteCardCutter) {
+    override fun loadFromReader(reader: CardWebScraper) {
         setValue(reader.getURL())
     }
 }
@@ -80,7 +79,7 @@ class CardTagCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Card 
         }
     }
 
-    override fun loadFromReader(reader: WebsiteCardCutter) {
+    override fun loadFromReader(reader: CardWebScraper) {
         setValue(reader.getTitle() ?: "")
     }
 
@@ -94,13 +93,13 @@ class CardTagCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Card 
 }
 
 class VolumeCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Volume", "Volume", currentTab) {
-    override fun loadFromReader(reader: WebsiteCardCutter) {}
+    override fun loadFromReader(reader: CardWebScraper) {}
 }
 
 class IssueCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Issue", "Issue", currentTab) {
-    override fun loadFromReader(reader: WebsiteCardCutter) {}
+    override fun loadFromReader(reader: CardWebScraper) {}
 }
 
 class PagesCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Pages", "Pages", currentTab) {
-    override fun loadFromReader(reader: WebsiteCardCutter) {}
+    override fun loadFromReader(reader: CardWebScraper) {}
 }

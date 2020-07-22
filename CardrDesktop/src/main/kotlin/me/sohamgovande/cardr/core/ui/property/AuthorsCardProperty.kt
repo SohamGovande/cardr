@@ -11,7 +11,7 @@ import me.sohamgovande.cardr.core.card.AuthorListManager
 import me.sohamgovande.cardr.core.card.AuthorNameFormat
 import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.core.ui.tabs.TabUI
-import me.sohamgovande.cardr.core.web.WebsiteCardCutter
+import me.sohamgovande.cardr.core.web.CardWebScraper
 import java.awt.Desktop
 import java.net.URL
 import java.net.URLEncoder
@@ -25,7 +25,7 @@ class AuthorsCardProperty(currentTab: EditCardTabUI) : CardProperty("Authors", a
     var value = arrayOf(Author("", ""))
     private var authorGrid = GridPane()
 
-    override fun loadFromReader(reader: WebsiteCardCutter) {
+    override fun loadFromReader(reader: CardWebScraper) {
         value = reader.getAuthors() ?: arrayOf(Author("", ""))
         generateAuthorsGrid()
     }

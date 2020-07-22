@@ -22,7 +22,7 @@ import java.security.SecureRandom
 import javax.net.ssl.SSLContext
 
 
-class WebsiteCardCutter(var cardrUI: CardrUI?, private val currentTab: () -> EditCardTabUI, private val url: String, private val cardID: String?) {
+class CardWebScraper(var cardrUI: CardrUI?, private val currentTab: () -> EditCardTabUI, private val url: String, private val cardID: String?) {
 
     private val logger = LogManager.getLogger(javaClass)
     private lateinit var doc: Document
@@ -619,7 +619,7 @@ class WebsiteCardCutter(var cardrUI: CardrUI?, private val currentTab: () -> Edi
         if (currentTab.overrideBodyParagraphs != null)
             return currentTab.overrideBodyParagraphs!!
         if (bodyParagraphElements == null) {
-            val reader = CardBodyReader(getHostName(url).toLowerCase(), doc)
+            val reader = CardBodyScraper(getHostName(url).toLowerCase(), doc)
             bodyParagraphElements = reader.getBodyParagraphs(cardID != null)
         }
         return (bodyParagraphElements as Elements).map { it.text() }.toMutableList()

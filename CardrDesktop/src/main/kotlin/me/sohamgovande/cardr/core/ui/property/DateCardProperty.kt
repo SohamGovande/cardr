@@ -7,7 +7,7 @@ import javafx.scene.control.TextField
 import javafx.scene.layout.GridPane
 import me.sohamgovande.cardr.core.card.Timestamp
 import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
-import me.sohamgovande.cardr.core.web.WebsiteCardCutter
+import me.sohamgovande.cardr.core.web.CardWebScraper
 import me.sohamgovande.cardr.util.currentDate
 
 class DateCardProperty(currentTab: EditCardTabUI) : CardProperty("Date", arrayOf("{DateShortened}", "{DateFull}", "{CurrentDate}"), currentTab) {
@@ -23,7 +23,7 @@ class DateCardProperty(currentTab: EditCardTabUI) : CardProperty("Date", arrayOf
     private val propertyYearTF = TextField()
     private var timestamp = Timestamp()
 
-    override fun loadFromReader(reader: WebsiteCardCutter) {
+    override fun loadFromReader(reader: CardWebScraper) {
         timestamp = reader.getDate()
 
         propertyDayTF.textProperty().bindBidirectional(this.timestamp.day)

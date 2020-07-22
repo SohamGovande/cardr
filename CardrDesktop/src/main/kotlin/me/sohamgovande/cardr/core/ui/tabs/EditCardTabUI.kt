@@ -24,7 +24,7 @@ import me.sohamgovande.cardr.core.ui.property.CardPropertyManager
 import me.sohamgovande.cardr.core.ui.property.DateCardProperty
 import me.sohamgovande.cardr.core.ui.property.UrlCardProperty
 import me.sohamgovande.cardr.core.ui.windows.EditPropertiesWindow
-import me.sohamgovande.cardr.core.web.WebsiteCardCutter
+import me.sohamgovande.cardr.core.web.CardWebScraper
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.prefs.PrefsObject
 import me.sohamgovande.cardr.util.OS
@@ -46,7 +46,7 @@ class EditCardTabUI(cardrUI: CardrUI) : TabUI("Card Editor", cardrUI) {
     private lateinit var pGridScrollPane: ScrollPane
     private var pGridVbox = VBox()
     private val editPropertiesBtn = Button("Customize List...")
-    var reader: WebsiteCardCutter? = null
+    var reader: CardWebScraper? = null
     val cardBody: StringProperty = SimpleStringProperty("")
 
     var overrideBodyParagraphs: MutableList<String>? = null
@@ -132,7 +132,7 @@ class EditCardTabUI(cardrUI: CardrUI) : TabUI("Card Editor", cardrUI) {
         gotoUrlBtn.setOnAction {
             Thread {
                 try {
-                    val reader = WebsiteCardCutter(cardrUI, { this }, urlTF.text, null)
+                    val reader = CardWebScraper(cardrUI, { this }, urlTF.text, null)
                     this.reader = reader
 
                     overrideBodyHTML = null
@@ -334,7 +334,7 @@ class EditCardTabUI(cardrUI: CardrUI) : TabUI("Card Editor", cardrUI) {
         }
     }
 
-    fun loadFromReader(reader: WebsiteCardCutter) {
+    fun loadFromReader(reader: CardWebScraper) {
         this.reader = reader
         reader.cardrUI = cardrUI
 

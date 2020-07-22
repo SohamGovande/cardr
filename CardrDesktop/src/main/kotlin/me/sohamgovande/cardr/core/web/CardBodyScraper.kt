@@ -5,7 +5,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 
-class CardBodyReader(private val hostName: String, private val doc: Document) {
+class CardBodyScraper(private val hostName: String, private val doc: Document) {
 
     private val logger = LogManager.getLogger(javaClass)
 
@@ -398,6 +398,6 @@ class CardBodyReader(private val hostName: String, private val doc: Document) {
             "usatoday"
         )
 
-        val logger = LogManager.getLogger(CardBodyReader::class.java)
+        val logger = LogManager.getLogger(CardBodyScraper::class.java)
     }
 }
