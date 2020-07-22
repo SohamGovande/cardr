@@ -65,7 +65,7 @@ class EditCardTabUI(cardrUI: CardrUI) : TabUI("Card Editor", cardrUI) {
     var toolsUI = ToolsPaneUI(this, cardrUI)
 
     override fun generate() {
-        logger.info("Creating UI components")
+        logger.info("Creating UI components for Edit Card tab")
         searchBarPanel.spacing = 5.0
         searchBarPanel.padding = Insets(5.0)
 
