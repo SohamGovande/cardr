@@ -436,8 +436,7 @@ class EditCardTabUI(cardrUI: CardrUI) : TabUI("Card Editor", cardrUI) {
         if (title.isBlank()) {
             trimmed = "Card Editor"
         } else {
-            trimmed = title
-            title.substring(0, title.length.coerceAtMost(20))
+            trimmed = title.substring(0, title.length.coerceAtMost(20))
             if (title.length >= 20)
                 trimmed += "..."
         }
