@@ -74,10 +74,7 @@ class HistoryWindow(private val cardrUI: CardrUI): ModalWindow("Card History") {
             } else if (!loc.contains("cardr")){
                 if (onClickCombo.selectionModel.selectedIndex == 0) {
                     close(null)
-                    val currentTab = cardrUI.getSelectedTab(EditCardTabUI::class.java)
-//                  TODO: open new tab
-//                    cardrUI.urlTF.text = loc
-//                    cardrUI.gotoUrlBtn.fire()
+                    cardrUI.createNewEditTab(loc)
                 } else {
                     Desktop.getDesktop().browse(URL(loc).toURI())
                     Platform.runLater { webView.engine.load(oldLoc) }

@@ -183,6 +183,17 @@ class CardrUI(val stage: Stage) {
         }
     }
 
+    fun createNewEditTab(url: String?) {
+        val tab = EditCardTabUI(this)
+        tab.addToTabPane(tabPane)
+        tabPane.selectionModel.select(tab.internalTab)
+
+        if (url != null) {
+            tab.urlTF.text = url
+            tab.gotoUrlBtn.fire()
+        }
+    }
+
     private fun mapToTabUI(tab: Tab): TabUI {
         return tabs.first { it.internalTab == tab }
     }
