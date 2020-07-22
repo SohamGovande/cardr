@@ -54,8 +54,9 @@ class CardrDesktop: Application() {
             logger.info("Loading window components...")
 
             ui = CardrUI(stage)
-            synchronized(uiLock2) {
-                uiLock2.notifyAll()
+            synchronized(constructorUiLock) {
+                logger.info("Notifying lock: 'finishedConstructorUiLock'")
+                constructorUiLock.notifyAll()
             }
             stage.scene = Scene(ui!!.initialize())
 
@@ -64,8 +65,9 @@ class CardrDesktop: Application() {
 
             logger.info("Loading deferred components")
             ui!!.doDeferredLoad()
-            synchronized(uiLock) {
-                uiLock.notifyAll()
+            synchronized(finishedLoadingUiLock) {
+                logger.info("Notifying lock: 'finishedLoadingUiLock'")
+                finishedLoadingUiLock.notifyAll()
             }
             logger.info("... Success")
 

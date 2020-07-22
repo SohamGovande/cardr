@@ -27,13 +27,14 @@ class CardrUI(val stage: Stage) {
     private val panel = VBox()
     val menubarHelper = MenubarHelper(this, stage)
 
-    private val tabs = mutableListOf<TabUI>()
+    val tabs = mutableListOf<TabUI>()
     private val tabPane = TabPane()
     var currentUser = CardrUser()
 
     var ocrCardBuilderWindow: OCRCardBuilderWindow? = null
 
-    var loaded = false
+    var finishedInitialLoad = false
+    var finishedDeferredLoad = false
 
     init {
         currentUser.onSuccessfulLogin = menubarHelper::onSuccessfulLogin
@@ -54,8 +55,11 @@ class CardrUI(val stage: Stage) {
             tab.generate()
             tab.addToTabPane(tabPane)
         }
+        tabPane.selectionModel.select(0)
         tabPane.selectionModel.selectedItemProperty().addListener { _, oldTab, newTab: Tab? ->
-            if (newTab != null) { selectNewTab(mapToTabUI(oldTab), mapToTabUI(newTab)) }
+            if (newTab != null) {
+                selectNewTab(mapToTabUI(oldTab)!!, mapToTabUI(newTab)!!)
+            }
         }
         tabPane.tabClosingPolicy = TabPane.TabClosingPolicy.ALL_TABS
         panel.children.add(tabPane)
@@ -69,7 +73,7 @@ class CardrUI(val stage: Stage) {
             logger.info("Checking for updates")
             checkForUpdates()
         }.start()
-        loaded = true
+        finishedInitialLoad = true
 
         return panel
     }
@@ -77,6 +81,7 @@ class CardrUI(val stage: Stage) {
     fun doDeferredLoad() {
         for (tab in tabs)
             tab.doDeferredLoad()
+        finishedDeferredLoad = true
     }
 
     fun loadMenuIcons() {
@@ -130,7 +135,7 @@ class CardrUI(val stage: Stage) {
 
     @Suppress("UNCHECKED_CAST")
     fun <T : TabUI>getSelectedTab(clazz: Class<T>): T? {
-        val selectedTab: Tab? = tabPane.selectionModel.selectedItem
+        val selectedTab = mapToTabUI(tabPane.selectionModel.selectedItem)
         if (selectedTab == null || (selectedTab.javaClass != clazz && clazz != TabUI::class.java))
             return null
         return selectedTab as T
@@ -185,6 +190,9 @@ class CardrUI(val stage: Stage) {
 
     fun createNewEditTab(url: String?) {
         val tab = EditCardTabUI(this)
+        tabs.add(tab)
+
+        tab.generate()
         tab.addToTabPane(tabPane)
         tabPane.selectionModel.select(tab.internalTab)
 
@@ -194,8 +202,8 @@ class CardrUI(val stage: Stage) {
         }
     }
 
-    private fun mapToTabUI(tab: Tab): TabUI {
-        return tabs.first { it.internalTab == tab }
+    private fun mapToTabUI(tab: Tab): TabUI? {
+        return tabs.firstOrNull { it.internalTab == tab }
     }
 
     companion object {
