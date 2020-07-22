@@ -195,6 +195,7 @@ class CardrUI(val stage: Stage) {
         tabs.add(tabs.size - 1, tab)
 
         tab.generate()
+        tab.doDeferredLoad()
         tab.addToTabPane(tabPane, true)
         tabPane.selectionModel.select(tab.internalTab)
 
