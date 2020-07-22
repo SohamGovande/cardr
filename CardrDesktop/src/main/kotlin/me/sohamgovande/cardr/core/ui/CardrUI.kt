@@ -64,7 +64,7 @@ class CardrUI(val stage: Stage) {
         tabPane.tabClosingPolicy = TabPane.TabClosingPolicy.ALL_TABS
         panel.children.add(tabPane)
 
-        updateTabClosingPolicy(0)
+        updateTabClosingPolicy()
 
         Thread {
             logger.info("Checking login status")
@@ -136,13 +136,13 @@ class CardrUI(val stage: Stage) {
     @Suppress("UNCHECKED_CAST")
     fun <T : TabUI>getSelectedTab(clazz: Class<T>): T? {
         val selectedTab = mapToTabUI(tabPane.selectionModel.selectedItem)
-        if (selectedTab == null || (selectedTab.javaClass != clazz && clazz != TabUI::class.java))
+        if (selectedTab == null || (selectedTab.javaClass != clazz && clazz != TabUI::class.java) && selectedTab.isAlive)
             return null
         return selectedTab as T
     }
 
     fun <T : TabUI>getTabsByClass(clazz: Class<T>): List<T> {
-        return tabs.filter { it.javaClass == clazz }
+        return tabs.filter { it.javaClass == clazz && it.isAlive }
             .map {
                 @Suppress("UNCHECKED_CAST")
                 it as T
@@ -169,9 +169,9 @@ class CardrUI(val stage: Stage) {
         }
     }
 
-    fun updateTabClosingPolicy(sizeOffset: Int) {
+    fun updateTabClosingPolicy() {
         val otherTabs = getTabsByClass(EditCardTabUI::class.java)
-        if (otherTabs.size + sizeOffset == 1) {
+        if (otherTabs.size == 1) {
             otherTabs[0].internalTab.isClosable = false
         } else {
             for (tab in otherTabs)

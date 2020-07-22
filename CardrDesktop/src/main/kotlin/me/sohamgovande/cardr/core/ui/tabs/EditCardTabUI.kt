@@ -24,15 +24,12 @@ import me.sohamgovande.cardr.core.ui.property.CardPropertyManager
 import me.sohamgovande.cardr.core.ui.property.DateCardProperty
 import me.sohamgovande.cardr.core.ui.property.UrlCardProperty
 import me.sohamgovande.cardr.core.ui.windows.EditPropertiesWindow
-import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
-import me.sohamgovande.cardr.core.ui.windows.ocr.OCRCardBuilderWindow
 import me.sohamgovande.cardr.core.web.WebsiteCardCutter
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.prefs.PrefsObject
 import me.sohamgovande.cardr.util.OS
 import me.sohamgovande.cardr.util.getOSType
 import me.sohamgovande.cardr.util.showErrorDialogUnblocking
-import me.sohamgovande.cardr.util.showInfoDialogBlocking
 import org.apache.logging.log4j.LogManager
 import org.jsoup.Jsoup
 
@@ -112,8 +109,8 @@ class EditCardTabUI(cardrUI: CardrUI) : TabUI("Card Editor", cardrUI) {
         propertyManager.bindAllToWebView()
         propertyManager.getByName<DateCardProperty>("Date")?.loadDateSeparatorLabels()
 
-        internalTab.setOnClosed {
-            cardrUI.updateTabClosingPolicy(-1)
+        onCloseListeners.add {
+            cardrUI.updateTabClosingPolicy()
         }
     }
 

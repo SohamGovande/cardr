@@ -12,14 +12,25 @@ import java.io.InputStream
 
 abstract class TabUI(tabName: String, val cardrUI: CardrUI) {
 
+    var isAlive = true
     protected val panel = VBox()
     val internalTab = Tab(tabName)
+    protected val onCloseListeners = mutableListOf<() -> Unit>()
 
     abstract fun generate()
 
     fun addToTabPane(tabPane: TabPane) {
         internalTab.content = panel
+        internalTab.setOnClosed {
+            onClose()
+            for (listener in onCloseListeners)
+                listener()
+        }
         tabPane.tabs.add(internalTab)
+    }
+
+    fun onClose() {
+        isAlive = false
     }
 
     open fun doDeferredLoad() {}
