@@ -1,4 +1,4 @@
-package me.sohamgovande.cardr.core.ui
+package me.sohamgovande.cardr.core.ui.tabs
 
 import javafx.application.Platform
 import javafx.beans.value.ObservableValue
@@ -13,7 +13,7 @@ import javafx.scene.text.TextAlignment
 import javafx.stage.FileChooser
 import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
-import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
+import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
 import me.sohamgovande.cardr.core.ui.windows.markup.MarkupCardWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRSelectionWindow

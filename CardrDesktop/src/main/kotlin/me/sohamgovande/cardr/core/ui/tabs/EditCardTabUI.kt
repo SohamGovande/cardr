@@ -18,7 +18,6 @@ import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.card.Author
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.HTMLGeneratorHelper
-import me.sohamgovande.cardr.core.ui.ToolsPaneUI
 import me.sohamgovande.cardr.core.ui.property.AuthorsCardProperty
 import me.sohamgovande.cardr.core.ui.property.CardPropertyManager
 import me.sohamgovande.cardr.core.ui.property.DateCardProperty

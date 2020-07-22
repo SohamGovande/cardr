@@ -19,20 +19,26 @@ abstract class TabUI(tabName: String, val cardrUI: CardrUI) {
 
     abstract fun generate()
 
-    fun addToTabPane(tabPane: TabPane) {
+    fun addToTabPane(tabPane: TabPane, addedPostInit: Boolean) {
         internalTab.content = panel
         internalTab.setOnClosed {
             onClose()
             for (listener in onCloseListeners)
                 listener()
         }
-        tabPane.tabs.add(internalTab)
+        internalTab.setOnSelectionChanged {
+            if (internalTab.isSelected)
+                onTabSelected()
+        }
+        tabPane.tabs.add(tabPane.tabs.size + if (addedPostInit) -1 else 0,  internalTab)
     }
 
     fun onClose() {
         isAlive = false
+        cardrUI.tabs.remove(this)
     }
 
+    open fun onTabSelected() {}
     open fun doDeferredLoad() {}
     open fun loadIcons() {}
     open fun onWindowResized() {}

@@ -9,6 +9,7 @@ import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.auth.CardrUser
 import me.sohamgovande.cardr.core.ui.property.TitleCardProperty
 import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
+import me.sohamgovande.cardr.core.ui.tabs.NewTabTabUI
 import me.sohamgovande.cardr.core.ui.tabs.TabUI
 import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
 import me.sohamgovande.cardr.core.ui.windows.SignInLauncherOptions
@@ -51,9 +52,10 @@ class CardrUI(val stage: Stage) {
 
         tabs.add(EditCardTabUI(this))
         tabs.add(EditCardTabUI(this))
+        tabs.add(NewTabTabUI(this))
         for (tab in tabs) {
             tab.generate()
-            tab.addToTabPane(tabPane)
+            tab.addToTabPane(tabPane, false)
         }
         tabPane.selectionModel.select(0)
         tabPane.selectionModel.selectedItemProperty().addListener { _, oldTab, newTab: Tab? ->
@@ -183,23 +185,25 @@ class CardrUI(val stage: Stage) {
         if (newTab is EditCardTabUI) {
             val title = newTab.propertyManager.getByName<TitleCardProperty>("Title")!!.getValue()
             updateWindowTitle(if (title.isBlank()) "Card Editor" else title)
-        } else {
+        } else if (newTab !is NewTabTabUI) {
             updateWindowTitle(newTab.internalTab.text)
         }
     }
 
     fun createNewEditTab(url: String?) {
         val tab = EditCardTabUI(this)
-        tabs.add(tab)
+        tabs.add(tabs.size - 1, tab)
 
         tab.generate()
-        tab.addToTabPane(tabPane)
+        tab.addToTabPane(tabPane, true)
         tabPane.selectionModel.select(tab.internalTab)
 
         if (url != null) {
             tab.urlTF.text = url
             tab.gotoUrlBtn.fire()
         }
+
+        updateTabClosingPolicy()
     }
 
     private fun mapToTabUI(tab: Tab): TabUI? {
