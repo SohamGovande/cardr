@@ -15,6 +15,8 @@ import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
 import me.sohamgovande.cardr.core.ui.windows.SignInLauncherOptions
 import me.sohamgovande.cardr.core.ui.windows.SignInWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRCardBuilderWindow
+import me.sohamgovande.cardr.data.files.CardData
+import me.sohamgovande.cardr.data.files.CardrFileSystem
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.updater.UpdateChecker
 import me.sohamgovande.cardr.util.OS
@@ -51,7 +53,6 @@ class CardrUI(val stage: Stage) {
         }
 
         tabs.add(EditCardTabUI(this))
-        tabs.add(EditCardTabUI(this))
         tabs.add(NewTabTabUI(this))
         for (tab in tabs) {
             tab.generate()
@@ -65,6 +66,10 @@ class CardrUI(val stage: Stage) {
         }
         tabPane.tabClosingPolicy = TabPane.TabClosingPolicy.ALL_TABS
         panel.children.add(tabPane)
+
+        if (CardrFileSystem.cards.size > 0) {
+            CardrFileSystem.cards.random().createNewTab(this)
+        }
 
         updateTabClosingPolicy()
 
@@ -190,7 +195,7 @@ class CardrUI(val stage: Stage) {
         }
     }
 
-    fun createNewEditTab(url: String?) {
+    fun createNewEditTab(url: String?): EditCardTabUI {
         val tab = EditCardTabUI(this)
         tabs.add(tabs.size - 1, tab)
 
@@ -206,6 +211,7 @@ class CardrUI(val stage: Stage) {
         }
 
         updateTabClosingPolicy()
+        return tab
     }
 
     private fun mapToTabUI(tab: Tab): TabUI? {

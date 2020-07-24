@@ -4,6 +4,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.JsonObject
 import com.google.gson.JsonParser
 import me.sohamgovande.cardr.CardrDesktop
+import me.sohamgovande.cardr.data.files.CardrFileSystem
 import me.sohamgovande.cardr.data.firstlaunch.onFirstLaunch
 import me.sohamgovande.cardr.data.firstlaunch.updateFrom
 import me.sohamgovande.cardr.data.urls.UrlHelper
@@ -27,6 +28,7 @@ object Prefs {
     init {
         try { Files.createDirectories(path.parent) } catch (e: FileAlreadyExistsException) { }
         read(true)
+        CardrFileSystem.read()
     }
 
     fun get(): PrefsObject = prefs

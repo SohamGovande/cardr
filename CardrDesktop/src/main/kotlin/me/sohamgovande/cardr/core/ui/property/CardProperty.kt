@@ -1,5 +1,6 @@
 package me.sohamgovande.cardr.core.ui.property
 
+import com.google.gson.JsonObject
 import javafx.scene.Node
 import javafx.scene.control.TextField
 import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
@@ -12,6 +13,8 @@ abstract class CardProperty(val name: String, val macros: Array<String>, val cur
     abstract fun generateEditUI(): Node
 
     abstract fun bindProperties()
+    abstract fun loadFromJson(data: JsonObject)
+    abstract fun saveToJson(): JsonObject
 
     protected fun bindToRefreshWebView(component: TextField) {
         component.textProperty().addListener(currentTab.changeListenerUpdateHTML)

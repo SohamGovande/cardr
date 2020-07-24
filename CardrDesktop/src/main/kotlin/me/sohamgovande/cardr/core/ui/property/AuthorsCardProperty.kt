@@ -1,5 +1,9 @@
 package me.sohamgovande.cardr.core.ui.property
 
+import com.google.gson.JsonArray
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.Node
 import javafx.scene.control.Button
@@ -127,5 +131,34 @@ class AuthorsCardProperty(currentTab: EditCardTabUI) : CardProperty("Authors", a
 
     override fun bindProperties() {
         // NA, implemented in generation code
+    }
+
+    override fun loadFromJson(data: JsonObject) {
+        val loadedAuthors = mutableListOf<Author>()
+        val jsonArray = data["value"].asJsonArray
+        for (authorRaw in jsonArray) {
+            val authorRawObj = authorRaw.asJsonObject
+            val author = Author(
+                authorRawObj["firstName"].asString,
+                authorRawObj["lastName"].asString
+            )
+            author.qualifications.set(authorRawObj["qualifications"].asString)
+            loadedAuthors.add(author)
+        }
+        value = loadedAuthors.toTypedArray()
+    }
+
+    override fun saveToJson(): JsonObject {
+        val jsonObject = JsonObject()
+        val jsonArray = JsonArray()
+        for (author in value) {
+            val authorObject = JsonObject()
+            authorObject.add("firstName", JsonPrimitive(author.firstName.get()))
+            authorObject.add("lastName", JsonPrimitive(author.lastName.get()))
+            authorObject.add("qualifications", JsonPrimitive(author.qualifications.get()))
+            jsonArray.add(authorObject)
+        }
+        jsonObject.add("value", jsonArray)
+        return jsonObject
     }
 }

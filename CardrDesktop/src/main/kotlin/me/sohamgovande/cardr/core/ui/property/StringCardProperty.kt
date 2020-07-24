@@ -1,5 +1,7 @@
 package me.sohamgovande.cardr.core.ui.property
 
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.Node
 import javafx.scene.control.TextField
@@ -16,6 +18,16 @@ abstract class StringCardProperty(name: String, macro: String, currentTab: EditC
     }
 
     abstract override fun loadFromReader(reader: CardWebScraper)
+
+    override fun loadFromJson(data: JsonObject) {
+        value.set(data["value"].asString)
+    }
+
+    override fun saveToJson(): JsonObject {
+        val jsonObject = JsonObject()
+        jsonObject.add("value", JsonPrimitive(value.get()))
+        return jsonObject
+    }
 
     override fun resolveMacro(macro: String): String {
         if (macro == macros[0])

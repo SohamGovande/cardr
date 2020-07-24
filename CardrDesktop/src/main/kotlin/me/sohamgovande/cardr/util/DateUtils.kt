@@ -1,6 +1,7 @@
 package me.sohamgovande.cardr.util
 
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 fun currentDate(): LocalDateTime {
     return LocalDateTime.now()
@@ -45,4 +46,12 @@ fun convertMonthNumberToName(num: String): String {
 fun ensureYYYYFormat(yy: String): String {
     if (yy.length == 2) return "20$yy"
     return yy
+}
+
+fun getTodayAsString(): String {
+    return currentDate().format(DateTimeFormatter.ISO_DATE)
+}
+
+fun parseDate(date: String): LocalDateTime {
+    return LocalDateTime.parse(date, DateTimeFormatter.ISO_DATE)
 }

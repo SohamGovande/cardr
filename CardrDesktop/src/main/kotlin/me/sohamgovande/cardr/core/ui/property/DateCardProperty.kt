@@ -1,5 +1,7 @@
 package me.sohamgovande.cardr.core.ui.property
 
+import com.google.gson.JsonObject
+import com.google.gson.JsonPrimitive
 import javafx.geometry.Insets
 import javafx.scene.Node
 import javafx.scene.control.Label
@@ -69,6 +71,20 @@ class DateCardProperty(currentTab: EditCardTabUI) : CardProperty("Date", arrayOf
         bindToRefreshWebView(propertyDayTF)
         bindToRefreshWebView(propertyMonthTF)
         bindToRefreshWebView(propertyYearTF)
+    }
+
+    override fun loadFromJson(data: JsonObject) {
+        timestamp.day.set(data.get("day").asString)
+        timestamp.month.set(data.get("month").asString)
+        timestamp.year.set(data.get("year").asString)
+    }
+
+    override fun saveToJson(): JsonObject {
+        val jsonObject = JsonObject()
+        jsonObject.add("day", JsonPrimitive(timestamp.day.get()))
+        jsonObject.add("month", JsonPrimitive(timestamp.month.get()))
+        jsonObject.add("year", JsonPrimitive(timestamp.year.get()))
+        return jsonObject
     }
 
     fun loadDateSeparatorLabels() {
