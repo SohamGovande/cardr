@@ -3,6 +3,7 @@ package me.sohamgovande.cardr.data.files
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
+import me.sohamgovande.cardr.CardrDesktop
 import org.apache.logging.log4j.LogManager
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -11,7 +12,7 @@ import java.util.*
 object CardrFileSystem {
 
     private val logger = LogManager.getLogger(CardrFileSystem::class.java)
-    private val foldersJsonPath = Paths.get(System.getProperty("cardr.data.dir"), "cards", "Folders.json")
+    private val foldersJsonPath = Paths.get(System.getProperty("cardr.data.dir"), "Cards", "Folders.json")
 
     val folders = mutableListOf<FSFolder>()
     val cards = mutableListOf<CardData>()
@@ -19,7 +20,7 @@ object CardrFileSystem {
     private val gson = GsonBuilder().setPrettyPrinting().setLenient().create()
 
     fun read() {
-        val folder = Paths.get(System.getProperty("cardr.data.dir"), "cards")
+        val folder = Paths.get(System.getProperty("cardr.data.dir"), "Cards")
         try { Files.createDirectories(folder) } catch (e: FileAlreadyExistsException) { }
 
         // Load all folders
@@ -32,6 +33,9 @@ object CardrFileSystem {
                 else
                     logger.error("Unable to parse folder from json data $folderRawObj")
             }
+        } else {
+            folders.add(FSFolder(CardrDesktop.CURRENT_VERSION_INT, "Uncategorized", mutableListOf()))
+            saveFolders()
         }
 
         // Load all cards
@@ -55,7 +59,7 @@ object CardrFileSystem {
     fun saveFolders() {
         val jsonArray = JsonArray()
         for (folder in  folders)
-            jsonArray.add(gson.toJson(folder, FSFolder::class.java))
+            jsonArray.add(gson.toJsonTree(folder, FSFolder::class.java))
         Files.write(
             foldersJsonPath,
             gson.toJson(jsonArray).toByteArray()
@@ -65,8 +69,7 @@ object CardrFileSystem {
     fun saveCard(card: CardData) {
         if (card.filename == null || card.filename == "")
             card.filename = card.uuid.toString()
-        val jsonRaw = gson.toJson(card, CardData::class.java)
-        val jsonParsed = JsonParser().parse(jsonRaw).asJsonObject
+        val jsonParsed = gson.toJsonTree(card, CardData::class.java).asJsonObject
         jsonParsed.add("properties", card.getPropertiesJson())
         Files.write(
             Paths.get(System.getProperty("cardr.data.dir"), "cards", "${card.filename}.card"),

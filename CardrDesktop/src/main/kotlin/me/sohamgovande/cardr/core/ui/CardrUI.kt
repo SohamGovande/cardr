@@ -8,10 +8,7 @@ import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.auth.CardrUser
 import me.sohamgovande.cardr.core.ui.property.TitleCardProperty
-import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
-import me.sohamgovande.cardr.core.ui.tabs.NewTabTabUI
-import me.sohamgovande.cardr.core.ui.tabs.TabUI
-import me.sohamgovande.cardr.core.ui.tabs.ToolsPaneUI
+import me.sohamgovande.cardr.core.ui.tabs.*
 import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
 import me.sohamgovande.cardr.core.ui.windows.SignInLauncherOptions
 import me.sohamgovande.cardr.core.ui.windows.SignInWindow
@@ -54,6 +51,7 @@ class CardrUI(val stage: Stage) {
         }
 
         tabs.add(EditCardTabUI(this))
+        tabs.add(FileManagerTabUI(this))
         tabs.add(NewTabTabUI(this))
         for (tab in tabs) {
             tab.generate()
