@@ -412,6 +412,14 @@ class EditCardTabUI(cardrUI: CardrUI) : TabUI("Card Editor", cardrUI) {
         refreshHTML()
     }
 
+    fun applyMenubarChanges() {
+        if (overrideBodyHTML != null) {
+            disableCardBodyEditOptions()
+        } else {
+            enableCardBodyEditOptions()
+        }
+    }
+
     // todo: fix when changing tabs
     fun disableCardBodyEditOptions() {
         toolsUI.keepOnlySelectedBtn.isDisable = true

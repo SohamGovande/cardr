@@ -191,6 +191,7 @@ class CardrUI(val stage: Stage) {
         if (newTab is EditCardTabUI) {
             val title = newTab.propertyManager.getByName<TitleCardProperty>("Title")!!.getValue()
             updateWindowTitle(if (title.isBlank()) "Card Editor" else title)
+            newTab.applyMenubarChanges()
         } else if (newTab !is NewTabTabUI) {
             updateWindowTitle(newTab.internalTab.text)
         }
