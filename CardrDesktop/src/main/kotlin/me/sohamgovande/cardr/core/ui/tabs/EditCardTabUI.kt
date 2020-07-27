@@ -420,7 +420,6 @@ class EditCardTabUI(cardrUI: CardrUI) : TabUI("Card Editor", cardrUI) {
         }
     }
 
-    // todo: fix when changing tabs
     fun disableCardBodyEditOptions() {
         toolsUI.keepOnlySelectedBtn.isDisable = true
         toolsUI.removeSelectedBtn.isDisable = true
