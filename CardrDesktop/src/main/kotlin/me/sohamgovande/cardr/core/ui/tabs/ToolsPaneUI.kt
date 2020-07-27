@@ -115,7 +115,7 @@ class ToolsPaneUI(private val currentTab: EditCardTabUI, private val cardrUI: Ca
         }
         keepOnlySelectedBtn.setOnAction { keepOnlySelectedText() }
         editCardFormatBtn.setOnAction { FormatPrefsWindow(cardrUI, cardrUI.getSelectedTab(EditCardTabUI::class.java)!!.propertyManager).show() }
-        refreshBtn.setOnAction { refreshWordWindows() }
+        refreshBtn.setOnAction { refreshWordWindows(cardrUI) }
         markupBtn.setOnAction { openMarkupWindow() }
 
         initButtonWidths(arrayOf(
@@ -231,7 +231,7 @@ class ToolsPaneUI(private val currentTab: EditCardTabUI, private val cardrUI: Ca
 
             Thread {
                 Thread.sleep(4000)
-                Platform.runLater { refreshWordWindows() }
+                Platform.runLater { refreshWordWindows(cardrUI) }
             }.start()
         } else if (option == "Open doc...") {
             val fileChooser = FileChooser()
@@ -244,36 +244,13 @@ class ToolsPaneUI(private val currentTab: EditCardTabUI, private val cardrUI: Ca
 
             Thread {
                 Thread.sleep(4000)
-                Platform.runLater { refreshWordWindows() }
+                Platform.runLater { refreshWordWindows(cardrUI) }
             }.start()
         }
     }
 
-    fun refreshWordWindows() {
-        val windows: List<String> = when {
-            getOSType() == OS.WINDOWS -> {
-                WinMSWordInteractor().getValidWordWindows()
-            }
-            getOSType() == OS.MAC -> {
-                MacMSWordInteractor().getValidWordWindows()
-            }
-            else -> {
-                emptyList()
-            }
-        }
-        Platform.runLater {
-            if (!windows.isEmpty()) {
-                wordWindowList.items = FXCollections.observableList(windows)
-                if (hasWordWindows())
-                    wordWindowList.selectionModel.select(0)
-            } else {
-                initNoWordWindows()
-            }
-        }
-    }
-
     fun hasWordWindows(): Boolean {
-        return !wordWindowList.items[0].equals("No windows open")
+        return wordWindowList.items[0] != "No windows open"
     }
 
     fun initNoWordWindows() {
@@ -456,7 +433,7 @@ class ToolsPaneUI(private val currentTab: EditCardTabUI, private val cardrUI: Ca
 
     fun sendCardToWord() {
         if (wordWindowList.items.size == 0)
-            refreshWordWindows()
+            refreshWordWindows(cardrUI)
 
         showSendToWordAlert()
         if (getOSType() == OS.WINDOWS){
@@ -520,5 +497,34 @@ class ToolsPaneUI(private val currentTab: EditCardTabUI, private val cardrUI: Ca
 
     companion object {
         private val logger = LogManager.getLogger(ToolsPaneUI::class.java)
+
+        @JvmStatic
+        fun refreshWordWindows(cardrUI: CardrUI) {
+            val windows: List<String> = when {
+                getOSType() == OS.WINDOWS -> {
+                    WinMSWordInteractor().getValidWordWindows()
+                }
+                getOSType() == OS.MAC -> {
+                    MacMSWordInteractor().getValidWordWindows()
+                }
+                else -> {
+                    emptyList()
+                }
+            }
+            Platform.runLater {
+                val tabs = cardrUI.getTabsByClass(EditCardTabUI::class.java)
+                if (windows.isNotEmpty()) {
+                    for (tab in tabs) {
+                        val toolsUI = tab.toolsUI
+                        toolsUI.wordWindowList.items = FXCollections.observableList(windows)
+                        if (toolsUI.hasWordWindows())
+                            toolsUI.wordWindowList.selectionModel.select(0)
+                    }
+                } else {
+                    for (tab in tabs)
+                        tab.toolsUI.initNoWordWindows()
+                }
+            }
+        }
     }
 }

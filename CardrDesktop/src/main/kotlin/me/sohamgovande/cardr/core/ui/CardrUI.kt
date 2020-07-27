@@ -11,6 +11,7 @@ import me.sohamgovande.cardr.core.ui.property.TitleCardProperty
 import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
 import me.sohamgovande.cardr.core.ui.tabs.NewTabTabUI
 import me.sohamgovande.cardr.core.ui.tabs.TabUI
+import me.sohamgovande.cardr.core.ui.tabs.ToolsPaneUI
 import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
 import me.sohamgovande.cardr.core.ui.windows.SignInLauncherOptions
 import me.sohamgovande.cardr.core.ui.windows.SignInWindow
@@ -117,7 +118,7 @@ class CardrUI(val stage: Stage) {
     private fun checkForUpdates() {
         UpdateChecker(this).checkForUpdates()
         logger.info("Initializing Word windows")
-//        toolsUI.refreshWordWindows() TODO: add this back
+        ToolsPaneUI.refreshWordWindows(this)
     }
 
     private fun checkLoginStatus() {
@@ -211,6 +212,7 @@ class CardrUI(val stage: Stage) {
         }
 
         updateTabClosingPolicy()
+        ToolsPaneUI.refreshWordWindows(this)
         return tab
     }
 

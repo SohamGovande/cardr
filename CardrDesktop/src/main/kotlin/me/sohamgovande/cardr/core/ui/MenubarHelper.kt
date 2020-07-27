@@ -11,6 +11,7 @@ import javafx.stage.Stage
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.property.DateCardProperty
 import me.sohamgovande.cardr.core.ui.tabs.EditCardTabUI
+import me.sohamgovande.cardr.core.ui.tabs.ToolsPaneUI
 import me.sohamgovande.cardr.core.ui.windows.*
 import me.sohamgovande.cardr.core.ui.windows.markup.MarkupCardSettingsWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
@@ -95,7 +96,7 @@ class MenubarHelper(private val cardrUI: CardrUI, private val stage: Stage) {
 
         val refreshWordMI  = MenuItem("Refresh Word windows")
         refreshWordMI.accelerator = KeyCodeCombination(KeyCode.R, ctrlKeyMask)
-        refreshWordMI.setOnAction { cardrUI.getSelectedTab(EditCardTabUI::class.java)?.toolsUI?.refreshWordWindows() }
+        refreshWordMI.setOnAction { ToolsPaneUI.refreshWordWindows(cardrUI) }
 
         val sendMI = MenuItem("Send to Word")
         sendMI.accelerator = KeyCodeCombination(KeyCode.S, ctrlKeyMask)
