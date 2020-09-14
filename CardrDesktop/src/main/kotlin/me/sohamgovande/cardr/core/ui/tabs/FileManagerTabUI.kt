@@ -1,16 +1,15 @@
 package me.sohamgovande.cardr.core.ui.tabs
 
-import javafx.scene.control.Button
-import javafx.scene.control.TextInputDialog
-import javafx.scene.control.TreeItem
-import javafx.scene.control.TreeView
+import javafx.scene.control.*
+import javafx.scene.control.cell.TextFieldTreeCell
 import javafx.scene.layout.HBox
 import javafx.scene.layout.VBox
+import javafx.util.Callback
+import javafx.util.StringConverter
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.data.files.CardrFileSystem
 import me.sohamgovande.cardr.data.files.FSFolder
-import java.io.FileFilter
 
 class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
 
@@ -67,6 +66,33 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
                 createNewFolder(path, if (isSelected) selection.selectedItem as FolderTreeItem? else null)
             }
         }
+
+        treeView.isEditable = true
+        treeView.cellFactory = Callback {
+            TextFieldTreeCell<FSFolder>(object : StringConverter<FSFolder>() {
+                override fun toString(obj: FSFolder?): String {
+                    return obj?.getName() ?: "Null"
+                }
+                override fun fromString(string: String?): FSFolder {
+                    return FSFolder(CardrDesktop.CURRENT_VERSION_INT, string ?: "null", mutableListOf())
+                }
+            })
+        }
+
+        val menu = ContextMenu()
+        val renameItem = MenuItem("Rename")
+        menu.items.add(renameItem)
+
+        renameItem.setOnAction { treeView.edit(treeView.selectionModel.selectedItem) }
+
+        treeView.setOnEditCommit {
+            it.newValue.cardUUIDs = it.oldValue.cardUUIDs
+            it.newValue.path = it.oldValue.getParentFolder() + "/" + it.newValue.getName()
+            CardrFileSystem.folders.remove(it.oldValue)
+            CardrFileSystem.folders.add(it.newValue)
+            CardrFileSystem.saveFolders()
+        }
+        treeView.contextMenu = menu
 
         treePanel.children.addAll(btnAddFolder, treeView)
     }
