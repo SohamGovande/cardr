@@ -56,6 +56,10 @@ object CardrFileSystem {
         }
     }
 
+    fun getTopLevelFolders(): List<FSFolder> {
+        return folders.filter { it.isRootFolder() }
+    }
+
     fun saveFolders() {
         val jsonArray = JsonArray()
         for (folder in  folders)

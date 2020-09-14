@@ -10,13 +10,15 @@ import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.data.files.CardrFileSystem
 import me.sohamgovande.cardr.data.files.FSFolder
+import java.io.FileFilter
 
 class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
 
     private val bodyAreaPanel = HBox()
-    private lateinit var treeView: TreeView<String>
+    private lateinit var treeView: TreeView<FSFolder>
     private val btnAddFolder = Button("New Folder")
     private val treePanel = VBox()
+    private val rootItem = FolderTreeItem(FSFolder(CardrDesktop.CURRENT_VERSION_INT, "/", mutableListOf()))
 
     override fun generate() {
         internalTab.isClosable = false
@@ -28,25 +30,41 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
         panel.children.add(bodyAreaPanel)
     }
 
-    private fun generateTreeView() {
-        val rootItem = TreeItem("Saved Cards")
-        for (folder in CardrFileSystem.folders) {
-            val folderItem = TreeItem(folder.path)
-            rootItem.children.add(folderItem)
+    private fun addFoldersToTree(parent: FolderTreeItem, folders: List<FSFolder>) {
+        for (folder in folders) {
+            val folderItem = FolderTreeItem(folder)
+            parent.children.add(folderItem)
+            val subfolders = folder.getChildren(true)
+            if (subfolders.isNotEmpty())
+                addFoldersToTree(folderItem, subfolders)
         }
+    }
+
+    private fun createNewFolder(newPath: String, parent: FolderTreeItem?) {
+        val newFolder = FSFolder(CardrDesktop.CURRENT_VERSION_INT, newPath, mutableListOf())
+        CardrFileSystem.folders.add(newFolder)
+        CardrFileSystem.saveFolders()
+
+        val newItem = FolderTreeItem(newFolder)
+        (parent ?: rootItem).children.add(newItem)
+    }
+
+    private fun generateTreeView() {
         treeView = TreeView(rootItem)
         treeView.minWidth = 300.0
+        addFoldersToTree(rootItem, CardrFileSystem.getTopLevelFolders())
 
         btnAddFolder.setOnAction {
-            val dialog = TextInputDialog("New Folder")
-            dialog.headerText = "Enter a name for your folder"
+            val selection = treeView.selectionModel
+            val isSelected = !(selection.isEmpty || selection.selectedItem.value.path == "/")
+            val contentText = if (!isSelected) "Enter a name for your folder" else "Enter a subfolder name (saved in ${selection.selectedItem.value})."
+            val dialog = TextInputDialog("Untitled Folder")
+            dialog.headerText = contentText
+
             val result = dialog.showAndWait()
             if (result.isPresent) {
-                val path = result.get()
-                val newFolder = FSFolder(CardrDesktop.CURRENT_VERSION_INT, path, mutableListOf())
-                CardrFileSystem.folders.add(newFolder)
-                CardrFileSystem.saveFolders()
-                rootItem.children.add(TreeItem(path))
+                val path = if (!isSelected) result.get() else "${selection.selectedItem.value.path}/${result.get()}"
+                createNewFolder(path, if (isSelected) selection.selectedItem as FolderTreeItem? else null)
             }
         }
 
@@ -59,3 +77,5 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
     }
 
 }
+
+class FolderTreeItem(val value: FSFolder) : TreeItem<FSFolder>(value)
