@@ -2,6 +2,7 @@ package me.sohamgovande.cardr.core.ui.property
 
 import com.google.gson.JsonObject
 import com.google.gson.JsonPrimitive
+import javafx.application.Platform
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.Node
 import javafx.scene.control.TextField
@@ -11,7 +12,7 @@ import me.sohamgovande.cardr.core.web.CardWebScraper
 abstract class StringCardProperty(name: String, macro: String, currentTab: EditCardTabUI) : CardProperty(name, arrayOf("{$macro}"), currentTab) {
 
     private val value = SimpleStringProperty("")
-    private val textField = TextField()
+    protected val textField = TextField()
 
     init {
         textField.textProperty().bindBidirectional(value)
@@ -84,9 +85,29 @@ class UrlCardProperty(currentTab: EditCardTabUI) : StringCardProperty("URL", "Ur
 class CardTagCardProperty(currentTab: EditCardTabUI) : StringCardProperty("Card Tag", "Tag", currentTab) {
     init {
         getValueProperty().addListener { _, _, value ->
+            var modified = value
+            var nChanges = 0
+            var index = -1
+            var charsAdded = 0
+
             for (dash in DASHES) {
-                if (value.contains(dash.key))
-                    setValue(value.replace(dash.key, dash.value))
+                val findIndex = modified.indexOf(dash.key)
+                if (findIndex != -1) {
+                    index = findIndex
+                    modified = modified.replace(dash.key, dash.value)
+                    charsAdded = dash.key.length - dash.value.length
+                    nChanges++
+                }
+            }
+
+            if (nChanges > 0) {
+                Platform.runLater {
+                    getValueProperty().set(modified)
+                    textField.requestFocus()
+                    val newPos = index - charsAdded + 2
+                    if (newPos > 0 && nChanges == 1)
+                        textField.positionCaret(newPos)
+                }
             }
         }
     }
