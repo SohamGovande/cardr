@@ -42,6 +42,7 @@ data class PrefsObject(
     var boldShortcut: Int = KeyEvent.VK_F8,
     var highlightShortcut: Int = KeyEvent.VK_F11,
     var unhighlightShortcut: Int = KeyEvent.VK_F12,
+    var autoOperation: Int  = 0,
     var highlightColor: String = "#ffff00",
 
     var lastMOTD: String = "",

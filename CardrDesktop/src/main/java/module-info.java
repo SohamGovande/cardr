@@ -22,6 +22,8 @@ module CardrDesktop.main {
     requires centerdevice.nsmenufx;
     requires jdk.crypto.ec;
     requires org.apache.commons.compress;
+    requires jdk.jsobject;
 
     exports me.sohamgovande.cardr;
+    opens me.sohamgovande.cardr.core.ui.windows.markup to javafx.web;
 }

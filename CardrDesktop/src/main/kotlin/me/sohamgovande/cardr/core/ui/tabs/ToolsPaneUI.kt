@@ -273,6 +273,14 @@ class ToolsPaneUI(private val currentTab: EditCardTabUI, private val cardrUI: Ca
                 }
             </style>
             <script>
+                var autoOperation = "None";
+                var selectedHighlightColor = "";
+                function setAutoOperation(op) {
+                    autoOperation = op;
+                }
+                function setHighlightColor(col) {
+                    selectedHighlightColor = col;
+                }
                 function highlightSelectedText(color) {
                     var range, sel = window.getSelection();
                     if (sel.rangeCount && sel.getRangeAt) {
@@ -340,9 +348,34 @@ class ToolsPaneUI(private val currentTab: EditCardTabUI, private val cardrUI: Ca
                         }
                     }
                 }
+                function onBodyLoad() {
+                    document.onmouseup = function(e) {
+                        try {
+                            var t = (document.all) ? document.selection.createRange().text : document.getSelection();
+                            if (t !== '') {
+                                if (autoOperation === 'Bold') {boldSelectedText();clearSelection();}
+                                else if (autoOperation === 'Underline') {underlineSelectedText();clearSelection();}
+                                else if (autoOperation === 'Emphasize') {
+                                    try {
+                                        javaConnector.emphasize();
+                                    } catch(err) {
+                                        if (err.toString().includes('IllegalAccessException')) {
+                                            document.getElementsByTagName('body')[0].innerHTML = '<p><code><strong>ERROR:</strong>' + err + '</code></p>' + document.getElementsByTagName('body')[0].innerHTML;
+                                        } else { throw err; }
+                                    }
+                                }
+                                else if (autoOperation === 'Highlight') {highlightSelectedText(selectedHighlightColor);clearSelection();}
+                                else if (autoOperation === 'Unhighlight') {highlightSelectedText('#00000000');clearSelection();}
+                            }
+                        } catch (err2) {
+                            javaConnector.logError(err2.toString());
+                        }
+                    }
+                    if (!document.all) document.captureEvents(Event.MOUSEUP);
+                }
             </script>
         </head>
-        <body>
+        <body onload="onBodyLoad()">
             $cardBody
         </body>
         """.trimIndent()
@@ -390,9 +423,9 @@ class ToolsPaneUI(private val currentTab: EditCardTabUI, private val cardrUI: Ca
         }
         window.show()
 
-        window.window.x = screenBounds.minX - 25
+        window.window.x = screenBounds.minX - 175
         window.window.y = screenBounds.minY - 150
-        window.window.width = screenBounds.width + 225
+        window.window.width = screenBounds.width + 400
         window.window.height = screenBounds.height + 150
     }
 

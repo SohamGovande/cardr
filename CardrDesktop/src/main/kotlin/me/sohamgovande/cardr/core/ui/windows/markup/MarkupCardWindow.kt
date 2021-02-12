@@ -1,10 +1,11 @@
 package me.sohamgovande.cardr.core.ui.windows.markup
 
-import javafx.application.Platform
+import javafx.collections.FXCollections
 import javafx.concurrent.Worker
 import javafx.geometry.Insets
 import javafx.scene.Scene
 import javafx.scene.control.Button
+import javafx.scene.control.ComboBox
 import javafx.scene.control.Label
 import javafx.scene.image.Image
 import javafx.scene.input.KeyEvent
@@ -17,14 +18,15 @@ import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.core.ui.tabs.TabUI
 import me.sohamgovande.cardr.core.ui.windows.ModalWindow
 import me.sohamgovande.cardr.data.prefs.Prefs
+import netscape.javascript.JSObject
 import java.awt.event.KeyEvent.VK_F1
-import javax.print.attribute.IntegerSyntax
 
 class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: String): ModalWindow("Highlight & Underline Card") {
 
     private val optionsPane = FlowPane()
 
     private val resetAllBtn = Button("Reset All")
+    private val autoOperation = ComboBox<String>(FXCollections.observableArrayList("${AUTO_OPERATION_PREFIX}None", "${AUTO_OPERATION_PREFIX}Highlight", "${AUTO_OPERATION_PREFIX}Emphasize", "${AUTO_OPERATION_PREFIX}Bold", "${AUTO_OPERATION_PREFIX}Underline", "${AUTO_OPERATION_PREFIX}Unhighlight"))
     private val boldBtn = Button()
     private val underlineBtn = Button()
     private val emphasizeBtn = Button()
@@ -49,7 +51,7 @@ class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: S
         optionsPane.hgap = 5.0
         optionsPane.vgap = 5.0
 
-        optionsPane.children.addAll(resetAllBtn, boldBtn, underlineBtn, emphasizeBtn, highlightBtn, unhighlightBtn)
+        optionsPane.children.addAll(resetAllBtn, autoOperation, boldBtn, underlineBtn, emphasizeBtn, highlightBtn, unhighlightBtn)
 
         discardChangesBtn.setOnAction {
             close(null)
@@ -72,8 +74,23 @@ class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: S
         cardWV.setOnKeyPressed(this::onKeyPressed)
         cardWV.prefWidth = WIDTH - 50
         cardWV.prefHeight = 1000.0
+        cardWV.engine.loadWorker.stateProperty().addListener { _, _, state ->
+            if (state != Worker.State.SUCCEEDED)
+                return@addListener
+            val autoOperationValue = autoOperation.items[Prefs.get().autoOperation].replace(AUTO_OPERATION_PREFIX, "")
+            cardWV.engine.executeScript("setAutoOperation('$autoOperationValue')")
+            cardWV.engine.executeScript("setHighlightColor('${Prefs.get().highlightColor}')")
+            (cardWV.engine.executeScript("window") as JSObject).setMember("javaConnector", MarkupJavaConnector(this))
+        }
         cardWV.engine.loadContent(cardBodyHTML)
 
+        autoOperation.selectionModel.select(Prefs.get().autoOperation)
+        autoOperation.selectionModel.selectedIndexProperty().addListener { _, _, index ->
+            val value = autoOperation.items[index as Int].replace(AUTO_OPERATION_PREFIX, "")
+            cardWV.engine.executeScript("setAutoOperation(\"$value\")")
+            Prefs.get().autoOperation = index
+            Prefs.save()
+        }
         resetAllBtn.setOnAction { cardWV.engine.loadContent(cardBodyHTML) }
         boldBtn.setOnAction { boldSelectedText(); clearSelection() }
         underlineBtn.setOnAction { underlineSelectedText(); clearSelection() }
@@ -204,7 +221,8 @@ class MarkupCardWindow(private val cardrUI: CardrUI, private val cardBodyHTML: S
     }
 
     companion object {
-        const val WIDTH = 600.0
+        const val WIDTH = 800.0
         const val HEIGHT = 400.0
+        const val AUTO_OPERATION_PREFIX = "On Select: "
     }
 }
