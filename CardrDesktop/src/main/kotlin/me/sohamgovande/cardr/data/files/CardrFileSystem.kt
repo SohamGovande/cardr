@@ -15,7 +15,7 @@ object CardrFileSystem {
     private val foldersJsonPath = Paths.get(System.getProperty("cardr.data.dir"), "Cards", "Folders.json")
 
     val folders = mutableListOf<FSFolder>()
-    val cards = mutableListOf<CardData>()
+    val cards = mutableListOf<FSCardData>()
 
     private val gson = GsonBuilder().setPrettyPrinting().setLenient().create()
 
@@ -43,7 +43,7 @@ object CardrFileSystem {
         if (cardFiles != null) {
             for (cardFile in cardFiles) {
                 val cardDataParsed = JsonParser().parse(String(Files.readAllBytes(Paths.get(cardFile.toURI())))).asJsonObject
-                val cardData: CardData? = gson.fromJson(cardDataParsed, CardData::class.java)
+                val cardData: FSCardData? = gson.fromJson(cardDataParsed, FSCardData::class.java)
 
                 if (cardData != null) {
                     cardData.filename = cardFile.nameWithoutExtension
@@ -70,10 +70,10 @@ object CardrFileSystem {
         )
     }
 
-    fun saveCard(card: CardData) {
+    fun saveCard(card: FSCardData) {
         if (card.filename == null || card.filename == "")
             card.filename = card.uuid.toString()
-        val jsonParsed = gson.toJsonTree(card, CardData::class.java).asJsonObject
+        val jsonParsed = gson.toJsonTree(card, FSCardData::class.java).asJsonObject
         jsonParsed.add("properties", card.getPropertiesJson())
         Files.write(
             Paths.get(System.getProperty("cardr.data.dir"), "Cards", "${card.filename}.card"),
@@ -81,7 +81,7 @@ object CardrFileSystem {
         )
     }
 
-    fun deleteCard(card: CardData, removeFromFolders: Boolean): Boolean {
+    fun deleteCard(card: FSCardData, removeFromFolders: Boolean): Boolean {
         cards.remove(card)
         if (removeFromFolders) {
             for (folder in findFolders(card))
@@ -91,7 +91,7 @@ object CardrFileSystem {
         return Files.deleteIfExists(Paths.get(System.getProperty("cardr.data.dir"), "Cards", "${card.filename}.card"))
     }
 
-    fun findCard(uuid: UUID): CardData = cards.first { it.uuid == uuid }
-    fun findFolders(card: CardData): List<FSFolder> = folders.filter { it.cardUUIDs.contains(card.uuid) }
+    fun findCard(uuid: UUID): FSCardData = cards.first { it.uuid == uuid }
+    fun findFolders(card: FSCardData): List<FSFolder> = folders.filter { it.cardUUIDs.contains(card.uuid) }
     fun findFolder(path: String): FSFolder? = folders.firstOrNull { it.path == path }
 }

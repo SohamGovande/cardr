@@ -10,18 +10,20 @@ import javafx.util.Callback
 import javafx.util.StringConverter
 import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.CardrUI
+import me.sohamgovande.cardr.data.files.FSCardData
 import me.sohamgovande.cardr.data.files.CardrFileSystem
 import me.sohamgovande.cardr.data.files.FSFolder
+import me.sohamgovande.cardr.data.files.FSObj
 import me.sohamgovande.cardr.data.prefs.Prefs
 
 class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
 
     private val bodyAreaPanel = HBox()
-    private lateinit var treeView: TreeView<FSFolder>
+    private lateinit var treeView: TreeView<FSObj>
     private val btnAddFolder = Button("", loadMiniIcon("/folder-new.png", false, 1.0))
     private val btnDeleteFolder = Button("", loadMiniIcon("/folder-delete.png", false, 1.0))
     private val treePanel = VBox()
-    private val rootItem = FolderTreeItem(FSFolder(CardrDesktop.CURRENT_VERSION_INT, "/", mutableListOf()))
+    private val rootItem = FSTreeItem(FSFolder(CardrDesktop.CURRENT_VERSION_INT, "/", mutableListOf()))
 
     override fun generate() {
         internalTab.isClosable = false
@@ -40,22 +42,26 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
         treeView.refresh()
     }
 
-    private fun addFoldersToTree(parent: FolderTreeItem, folders: List<FSFolder>) {
+    private fun addFoldersToTree(parent: FSTreeItem, folders: List<FSFolder>) {
         for (folder in folders) {
-            val folderItem = FolderTreeItem(folder)
+            val folderItem = FSTreeItem(folder)
             parent.children.add(folderItem)
+            if (folder.cardUUIDs.isNotEmpty()) {
+                for (card in folder.getCards())
+                    folderItem.children.add(FSTreeItem(card))
+            }
             val subfolders = folder.getChildren(true)
             if (subfolders.isNotEmpty())
                 addFoldersToTree(folderItem, subfolders)
         }
     }
 
-    private fun createNewFolder(newPath: String, parent: FolderTreeItem?): FolderTreeItem {
+    private fun createNewFolder(newPath: String, parent: FSTreeItem?): FSTreeItem {
         val newFolder = FSFolder(CardrDesktop.CURRENT_VERSION_INT, newPath, mutableListOf())
         CardrFileSystem.folders.add(newFolder)
         CardrFileSystem.saveFolders()
 
-        val newItem = FolderTreeItem(newFolder)
+        val newItem = FSTreeItem(newFolder)
         (parent ?: rootItem).children.add(newItem)
         return newItem
     }
@@ -69,10 +75,8 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
         btnDeleteFolder.tooltip = Tooltip("Delete selected folder")
 
         btnDeleteFolder.setOnAction {
-            val selection = treeView.selectionModel
-            val isSelected = !(selection.isEmpty || selection.selectedItem.value.path == "/")
-
-            if (isSelected) {
+            val selectedFolder = getSelectedFolder()
+            if (selectedFolder != null) {
                 val deleteCardsToo = ButtonType("Delete cards", ButtonBar.ButtonData.OK_DONE)
                 val keepCards = ButtonType("Move to Uncategorized", ButtonBar.ButtonData.OK_DONE)
                 val cancel = ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE)
@@ -80,7 +84,7 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
                 val alert = Alert(Alert.AlertType.CONFIRMATION, "", deleteCardsToo, keepCards, cancel)
                 alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
                 alert.title = "Deletion Confirmation"
-                alert.headerText = "Do you want to delete the cards in '${selection.selectedItem.value.getName()}', or just move them to 'Uncategorized'?"
+                alert.headerText = "Do you want to delete the cards in '${selectedFolder.getName()}', or just move them to 'Uncategorized'?"
                 alert.dialogPane.minHeight = Region.USE_PREF_SIZE
                 val result = alert.showAndWait()
                 if (result.isPresent && result.get() == keepCards)
@@ -91,16 +95,17 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
         }
         btnAddFolder.setOnAction {
             val selection = treeView.selectionModel
-            val isSelected = !(selection.isEmpty || selection.selectedItem.value.path == "/")
-            val contentText = if (!isSelected) "Enter a name for your folder" else "Enter a subfolder name (saved in ${selection.selectedItem.value})."
+            val selectedFolder = getSelectedFolder()
+            val isSelected = selectedFolder != null
+            val contentText = if (!isSelected) "Enter a name for your folder" else "Enter a subfolder name (in ${selection.selectedItem.value})."
             val dialog = TextInputDialog("Untitled Folder")
             dialog.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
             dialog.headerText = contentText
 
             val result = dialog.showAndWait()
             if (result.isPresent) {
-                val path = if (!isSelected) result.get() else "${selection.selectedItem.value.path}/${result.get()}"
-                createNewFolder(path, if (isSelected) selection.selectedItem as FolderTreeItem? else null)
+                val path = if (!isSelected) result.get() else "${selectedFolder!!.path}/${result.get()}"
+                createNewFolder(path, if (isSelected) selection.selectedItem as FSTreeItem? else null)
             }
         }
 
@@ -123,10 +128,14 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
         deleteFolderDeleteCardsItem.setOnAction { deleteSelectedFolder(true) }
 
         treeView.setOnEditCommit {
-            it.newValue.cardUUIDs = it.oldValue.cardUUIDs
-            it.newValue.path = it.oldValue.getParentFolder() + "/" + it.newValue.getName()
-            CardrFileSystem.folders.remove(it.oldValue)
-            CardrFileSystem.folders.add(it.newValue)
+            if (it.oldValue !is FSFolder)
+                return@setOnEditCommit
+            val old = it.oldValue as FSFolder
+            val new = it.newValue as FSFolder
+            new.cardUUIDs = old.cardUUIDs
+            new.path = old.getParentFolder() + "/" + new.getName()
+            CardrFileSystem.folders.remove(old)
+            CardrFileSystem.folders.add(new)
             CardrFileSystem.saveFolders()
         }
         treeView.contextMenu = menu
@@ -141,12 +150,22 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
 
     private fun deleteSelectedFolder(deleteCards: Boolean) {
         val selection = treeView.selectionModel
-        val isSelected = !(selection.isEmpty || selection.selectedItem.value.path == "/")
-        if (isSelected) {
+        val folder = getSelectedFolder()
+        if (folder != null) {
             val selectedItem = selection.selectedItem
-            deleteFolder(selectedItem.value, true)
+            deleteFolder(folder, deleteCards)
             selectedItem.parent.children.remove(selectedItem)
         }
+    }
+    
+    private fun getSelectedFolder(): FSFolder? {
+        val selection = treeView.selectionModel
+        if (selection.isEmpty || selection.selectedItem.value !is FSFolder)
+            return null
+        val folder = selection.selectedItem.value as FSFolder
+        if (folder.path == "/")
+            return null
+        return folder
     }
 
     private fun deleteFolder(folder: FSFolder, deleteCards: Boolean) {
@@ -176,23 +195,32 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
 
 }
 
-class FolderTreeItem(val value: FSFolder) : TreeItem<FSFolder>(value)
+class FSTreeItem(val value: FSObj) : TreeItem<FSObj>(value)
 
-class FolderTreeCell: TextFieldTreeCell<FSFolder>(FolderStringConverter()) {
-    override fun updateItem(item: FSFolder?, empty: Boolean) {
+class FolderTreeCell: TextFieldTreeCell<FSObj>(FSStringConverter()) {
+    override fun updateItem(item: FSObj?, empty: Boolean) {
         super.updateItem(item, empty)
         if (item == null || empty)
             return
-        val suffix = if (item.cardUUIDs.isNotEmpty()) "full" else "empty"
-        graphic = TabUI.loadMiniIcon("/folder-$suffix.png", false, 1.0)
+        if (item is FSFolder) {
+            val suffix = if (item.cardUUIDs.isNotEmpty()) "full" else "empty"
+            graphic = TabUI.loadMiniIcon("/folder-$suffix.png", false, 1.0)
+        } else if (item is FSCardData) {
+            graphic = TabUI.loadMiniIcon("/tree-icon-card.png", false, 1.0)
+        }
     }
 }
 
-class FolderStringConverter : StringConverter<FSFolder>() {
-    override fun toString(obj: FSFolder?): String {
-        return obj?.getName() ?: "Null"
+class FSStringConverter : StringConverter<FSObj>() {
+    override fun toString(obj: FSObj?): String {
+        if (obj is FSFolder)
+            return obj.getName()
+        if (obj is FSCardData) {
+            return obj.cardPropertiesJson.getAsJsonObject("Card Tag").getAsJsonPrimitive("value").asString
+        }
+        return "Null"
     }
-    override fun fromString(string: String?): FSFolder {
+    override fun fromString(string: String?): FSObj {
         return FSFolder(CardrDesktop.CURRENT_VERSION_INT, string ?: "null", mutableListOf())
     }
 }

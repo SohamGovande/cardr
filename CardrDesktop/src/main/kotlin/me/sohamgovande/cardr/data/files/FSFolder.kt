@@ -2,9 +2,9 @@ package me.sohamgovande.cardr.data.files
 
 import java.util.*
 
-data class FSFolder(var lastCardrVersion: Int, var path: String, var cardUUIDs: MutableList<UUID>) {
+data class FSFolder(var lastCardrVersion: Int, var path: String, var cardUUIDs: MutableList<UUID>) : FSObj() {
 
-    fun getCards(): MutableList<CardData> =
+    fun getCards(): MutableList<FSCardData> =
         cardUUIDs.map { CardrFileSystem.findCard(it) }.toMutableList()
 
     fun isRootFolder(): Boolean = !path.contains('/')

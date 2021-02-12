@@ -13,7 +13,6 @@ import me.sohamgovande.cardr.core.ui.windows.FormatPrefsWindow
 import me.sohamgovande.cardr.core.ui.windows.SignInLauncherOptions
 import me.sohamgovande.cardr.core.ui.windows.SignInWindow
 import me.sohamgovande.cardr.core.ui.windows.ocr.OCRCardBuilderWindow
-import me.sohamgovande.cardr.data.files.CardData
 import me.sohamgovande.cardr.data.files.CardrFileSystem
 import me.sohamgovande.cardr.data.prefs.Prefs
 import me.sohamgovande.cardr.data.updater.UpdateChecker
@@ -80,6 +79,15 @@ class CardrUI(val stage: Stage) {
             checkForUpdates()
         }.start()
         finishedInitialLoad = true
+
+//        Thread {
+//            Thread.sleep(5000)
+//            Platform.runLater {
+//                val card = CardData(tabs.get(0) as EditCardTabUI)
+//                CardrFileSystem.cards.add(card)
+//                CardrFileSystem.saveCard(card)
+//            }
+//        }.start()
 
         return panel
     }

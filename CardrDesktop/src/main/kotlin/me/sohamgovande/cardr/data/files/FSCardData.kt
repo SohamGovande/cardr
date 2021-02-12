@@ -11,7 +11,7 @@ import me.sohamgovande.cardr.util.getTodayAsString
 import org.apache.logging.log4j.LogManager
 import java.util.*
 
-data class CardData(
+data class FSCardData(
     var uuid: UUID,
     var filename: String? = null,
     var lastCardrVersion: Int,
@@ -27,7 +27,7 @@ data class CardData(
 
     @Transient var cardProperties: MutableList<CardProperty> = mutableListOf(),
     @Transient var cardPropertiesJson: JsonObject = JsonObject()
-) {
+) : FSObj() {
 
     constructor(tab: EditCardTabUI) : this(UUID.randomUUID(), null, 0, "", mutableListOf()) {
         uuid = UUID.randomUUID()
@@ -87,6 +87,6 @@ data class CardData(
     }
 
     companion object {
-        val logger = LogManager.getLogger(CardData::class.java)
+        val logger = LogManager.getLogger(FSCardData::class.java)
     }
 }
