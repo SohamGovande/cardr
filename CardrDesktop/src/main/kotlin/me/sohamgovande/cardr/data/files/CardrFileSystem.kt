@@ -76,10 +76,22 @@ object CardrFileSystem {
         val jsonParsed = gson.toJsonTree(card, CardData::class.java).asJsonObject
         jsonParsed.add("properties", card.getPropertiesJson())
         Files.write(
-            Paths.get(System.getProperty("cardr.data.dir"), "cards", "${card.filename}.card"),
+            Paths.get(System.getProperty("cardr.data.dir"), "Cards", "${card.filename}.card"),
             gson.toJson(jsonParsed).toByteArray()
         )
     }
 
+    fun deleteCard(card: CardData, removeFromFolders: Boolean): Boolean {
+        cards.remove(card)
+        if (removeFromFolders) {
+            for (folder in findFolders(card))
+                folder.removeCard(card.uuid)
+            saveFolders()
+        }
+        return Files.deleteIfExists(Paths.get(System.getProperty("cardr.data.dir"), "Cards", "${card.filename}.card"))
+    }
+
     fun findCard(uuid: UUID): CardData = cards.first { it.uuid == uuid }
+    fun findFolders(card: CardData): List<FSFolder> = folders.filter { it.cardUUIDs.contains(card.uuid) }
+    fun findFolder(path: String): FSFolder? = folders.firstOrNull { it.path == path }
 }

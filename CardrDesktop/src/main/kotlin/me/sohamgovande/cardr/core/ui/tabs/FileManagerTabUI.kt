@@ -39,13 +39,14 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
         }
     }
 
-    private fun createNewFolder(newPath: String, parent: FolderTreeItem?) {
+    private fun createNewFolder(newPath: String, parent: FolderTreeItem?): FolderTreeItem {
         val newFolder = FSFolder(CardrDesktop.CURRENT_VERSION_INT, newPath, mutableListOf())
         CardrFileSystem.folders.add(newFolder)
         CardrFileSystem.saveFolders()
 
         val newItem = FolderTreeItem(newFolder)
         (parent ?: rootItem).children.add(newItem)
+        return newItem
     }
 
     private fun generateTreeView() {
@@ -81,9 +82,18 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
 
         val menu = ContextMenu()
         val renameItem = MenuItem("Rename")
+        val deleteSubmenu = Menu("Delete")
+        val deleteFolderKeepCardsItem = MenuItem("Delete folder but KEEP cards")
+        val deleteFolderDeleteCardsItem = MenuItem("Delete folder AND cards")
+        deleteSubmenu.items.add(deleteFolderDeleteCardsItem)
+        deleteSubmenu.items.add(deleteFolderKeepCardsItem)
+
         menu.items.add(renameItem)
+        menu.items.add(deleteSubmenu)
 
         renameItem.setOnAction { treeView.edit(treeView.selectionModel.selectedItem) }
+        deleteFolderKeepCardsItem.setOnAction { deleteSelectedFolder(false) }
+        deleteFolderDeleteCardsItem.setOnAction { deleteSelectedFolder(true) }
 
         treeView.setOnEditCommit {
             it.newValue.cardUUIDs = it.oldValue.cardUUIDs
@@ -95,6 +105,36 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
         treeView.contextMenu = menu
 
         treePanel.children.addAll(btnAddFolder, treeView)
+    }
+
+    private fun deleteSelectedFolder(deleteCards: Boolean) {
+        val selection = treeView.selectionModel
+        val isSelected = !(selection.isEmpty || selection.selectedItem.value.path == "/")
+        if (isSelected) {
+            val selectedItem = selection.selectedItem
+            deleteFolder(selectedItem.value, true)
+            selectedItem.parent.children.remove(selectedItem)
+        }
+    }
+
+    private fun deleteFolder(folder: FSFolder, deleteCards: Boolean) {
+        for (subfolder in folder.getChildren(true))
+            deleteFolder(subfolder, deleteCards)
+
+        if (!deleteCards) {
+            val uncategorizedFolder = CardrFileSystem.findFolder("Uncategorized")
+            if (uncategorizedFolder != null) {
+                uncategorizedFolder.cardUUIDs.addAll(folder.cardUUIDs)
+            } else {
+                createNewFolder("Uncategorized", rootItem)
+                return
+            }
+        } else {
+            for (card in folder.getCards())
+                CardrFileSystem.deleteCard(card, false)
+        }
+        CardrFileSystem.folders.remove(folder)
+        CardrFileSystem.saveFolders()
     }
 
     override fun onWindowResized() {

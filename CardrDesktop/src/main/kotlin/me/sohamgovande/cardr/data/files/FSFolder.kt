@@ -34,4 +34,8 @@ data class FSFolder(var lastCardrVersion: Int, var path: String, var cardUUIDs: 
     fun getChildren(directChildren: Boolean): List<FSFolder> = CardrFileSystem.folders.filter { if (directChildren) it.getParentFolder() == path else it.path.startsWith("$path/")}.toList()
 
     override fun toString(): String = getName()
+
+    fun removeCard(uuid: UUID) {
+        cardUUIDs.remove(uuid)
+    }
 }
