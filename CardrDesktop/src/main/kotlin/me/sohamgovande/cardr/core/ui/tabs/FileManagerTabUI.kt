@@ -69,16 +69,7 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
         }
 
         treeView.isEditable = true
-        treeView.cellFactory = Callback {
-            TextFieldTreeCell<FSFolder>(object : StringConverter<FSFolder>() {
-                override fun toString(obj: FSFolder?): String {
-                    return obj?.getName() ?: "Null"
-                }
-                override fun fromString(string: String?): FSFolder {
-                    return FSFolder(CardrDesktop.CURRENT_VERSION_INT, string ?: "null", mutableListOf())
-                }
-            })
-        }
+        treeView.cellFactory = Callback { FolderTreeCell() }
 
         val menu = ContextMenu()
         val renameItem = MenuItem("Rename")
@@ -145,3 +136,22 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
 }
 
 class FolderTreeItem(val value: FSFolder) : TreeItem<FSFolder>(value)
+
+class FolderTreeCell: TextFieldTreeCell<FSFolder>(FolderStringConverter()) {
+    override fun updateItem(item: FSFolder?, empty: Boolean) {
+        super.updateItem(item, empty)
+        if (item == null || empty)
+            return
+        val suffix = if (item.cardUUIDs.isNotEmpty()) "full" else "empty"
+        graphic = TabUI.loadMiniIcon("/folder-$suffix.png", false, 1.0)
+    }
+}
+
+class FolderStringConverter : StringConverter<FSFolder>() {
+    override fun toString(obj: FSFolder?): String {
+        return obj?.getName() ?: "Null"
+    }
+    override fun fromString(string: String?): FSFolder {
+        return FSFolder(CardrDesktop.CURRENT_VERSION_INT, string ?: "null", mutableListOf())
+    }
+}
