@@ -1,8 +1,10 @@
 package me.sohamgovande.cardr.core.ui.tabs
 
+import javafx.geometry.Insets
 import javafx.scene.control.*
 import javafx.scene.control.cell.TextFieldTreeCell
 import javafx.scene.layout.HBox
+import javafx.scene.layout.Region
 import javafx.scene.layout.VBox
 import javafx.util.Callback
 import javafx.util.StringConverter
@@ -10,12 +12,14 @@ import me.sohamgovande.cardr.CardrDesktop
 import me.sohamgovande.cardr.core.ui.CardrUI
 import me.sohamgovande.cardr.data.files.CardrFileSystem
 import me.sohamgovande.cardr.data.files.FSFolder
+import me.sohamgovande.cardr.data.prefs.Prefs
 
 class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
 
     private val bodyAreaPanel = HBox()
     private lateinit var treeView: TreeView<FSFolder>
-    private val btnAddFolder = Button("New Folder")
+    private val btnAddFolder = Button("", loadMiniIcon("/folder-new.png", false, 1.0))
+    private val btnDeleteFolder = Button("", loadMiniIcon("/folder-delete.png", false, 1.0))
     private val treePanel = VBox()
     private val rootItem = FolderTreeItem(FSFolder(CardrDesktop.CURRENT_VERSION_INT, "/", mutableListOf()))
 
@@ -27,6 +31,13 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
         bodyAreaPanel.children.add(treePanel)
 
         panel.children.add(bodyAreaPanel)
+    }
+
+    override fun loadIcons() {
+        super.loadIcons()
+        btnAddFolder.graphic = loadMiniIcon("/folder-new.png", false, 1.0)
+        btnDeleteFolder.graphic = loadMiniIcon("/folder-delete.png", false, 1.0)
+        treeView.refresh()
     }
 
     private fun addFoldersToTree(parent: FolderTreeItem, folders: List<FSFolder>) {
@@ -54,6 +65,32 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
         treeView.minWidth = 300.0
         addFoldersToTree(rootItem, CardrFileSystem.getTopLevelFolders())
 
+        btnAddFolder.tooltip = Tooltip("Create new folder")
+        btnDeleteFolder.tooltip = Tooltip("Delete selected folder")
+
+        btnDeleteFolder.setOnAction {
+            val selection = treeView.selectionModel
+            val isSelected = !(selection.isEmpty || selection.selectedItem.value.path == "/")
+
+            if (isSelected) {
+                val deleteCardsToo = ButtonType("Delete cards", ButtonBar.ButtonData.OK_DONE)
+                val keepCards = ButtonType("Move to Uncategorized", ButtonBar.ButtonData.OK_DONE)
+                val cancel = ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE)
+
+                val alert = Alert(Alert.AlertType.CONFIRMATION, "", deleteCardsToo, keepCards, cancel)
+                alert.dialogPane.stylesheets.add(
+                    CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm()
+                )
+                alert.title = "Deletion Confirmation"
+                alert.headerText = "Do you want to delete the cards in '${selection.selectedItem.value.getName()}', or just move them to 'Uncategorized'?"
+                alert.dialogPane.minHeight = Region.USE_PREF_SIZE
+                val result = alert.showAndWait()
+                if (result.isPresent && result.get() == keepCards)
+                    deleteSelectedFolder(false)
+                else
+                    deleteSelectedFolder(true)
+            }
+        }
         btnAddFolder.setOnAction {
             val selection = treeView.selectionModel
             val isSelected = !(selection.isEmpty || selection.selectedItem.value.path == "/")
@@ -95,7 +132,12 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
         }
         treeView.contextMenu = menu
 
-        treePanel.children.addAll(btnAddFolder, treeView)
+        val optionsBox = HBox()
+        optionsBox.children.addAll(btnAddFolder, btnDeleteFolder)
+        optionsBox.padding = Insets(5.0)
+        optionsBox.spacing = 5.0
+
+        treePanel.children.addAll(optionsBox, treeView)
     }
 
     private fun deleteSelectedFolder(deleteCards: Boolean) {
