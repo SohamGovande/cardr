@@ -133,7 +133,7 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
             val old = it.oldValue as FSFolder
             val new = it.newValue as FSFolder
             new.cardUUIDs = old.cardUUIDs
-            new.path = old.getParentFolder() + "/" + new.getName()
+            new.path = (if (old.getParentFolder() != "") old.getParentFolder() + "/" else "") + new.getName()
             CardrFileSystem.folders.remove(old)
             CardrFileSystem.folders.add(new)
             CardrFileSystem.saveFolders()
