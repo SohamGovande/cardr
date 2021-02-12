@@ -78,9 +78,7 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
                 val cancel = ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE)
 
                 val alert = Alert(Alert.AlertType.CONFIRMATION, "", deleteCardsToo, keepCards, cancel)
-                alert.dialogPane.stylesheets.add(
-                    CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm()
-                )
+                alert.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
                 alert.title = "Deletion Confirmation"
                 alert.headerText = "Do you want to delete the cards in '${selection.selectedItem.value.getName()}', or just move them to 'Uncategorized'?"
                 alert.dialogPane.minHeight = Region.USE_PREF_SIZE
@@ -96,6 +94,7 @@ class FileManagerTabUI(cardrUI: CardrUI) : TabUI("Organizer", cardrUI) {
             val isSelected = !(selection.isEmpty || selection.selectedItem.value.path == "/")
             val contentText = if (!isSelected) "Enter a name for your folder" else "Enter a subfolder name (saved in ${selection.selectedItem.value})."
             val dialog = TextInputDialog("Untitled Folder")
+            dialog.dialogPane.stylesheets.add(CardrDesktop::class.java.getResource(Prefs.get().getStylesheet()).toExternalForm())
             dialog.headerText = contentText
 
             val result = dialog.showAndWait()
