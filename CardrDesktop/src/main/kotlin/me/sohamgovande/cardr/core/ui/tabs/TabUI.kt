@@ -51,9 +51,11 @@ abstract class TabUI(tabName: String, val cardrUI: CardrUI) {
                 val image = Image(copyResource, 15.0 * scale, 15.0 * scale, true, true)
                 val imageView = ImageView(image)
                 if (Prefs.get().darkMode || overrideDarkMode) {
-                    val effect = ColorAdjust()
-                    effect.brightness = 1.0
-                    imageView.effect = effect
+                    if (!path.contains("folder")) {
+                        val effect = ColorAdjust()
+                        effect.brightness = 1.0
+                        imageView.effect = effect
+                    }
                 }
                 return imageView
             }
