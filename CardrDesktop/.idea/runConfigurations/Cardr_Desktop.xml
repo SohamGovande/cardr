@@ -1,0 +1,14 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Cardr Desktop" type="Application" factoryName="Application" singleton="false">
+    <option name="ALTERNATIVE_JRE_PATH" value="11" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="MAIN_CLASS_NAME" value="me.sohamgovande.cardr.CardrDesktopMainKt" />
+    <module name="CardrDesktop.main" />
+    <option name="PROGRAM_PARAMETERS" value="https://www.politico.com/news/2020/07/21/house-cheney-gop-conference-375812" />
+    <option name="VM_PARAMETERS" value="-Djava.library.path=&quot;C:\Users\vgsoh\Desktop\CC Extension\native\dlls&quot;" />
+    <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/run" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

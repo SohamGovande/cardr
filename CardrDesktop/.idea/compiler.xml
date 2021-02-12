@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <bytecodeTargetLevel target="11">
+      <module name="CardifyDebate.CardifyUpdater" target="11" />
+      <module name="CardifyDebate.CardifyUpdater.Cardi" target="11" />
+      <module name="CardifyDebate.CardifyUpdater.CardifyU" target="11" />
+      <module name="CardifyDebate.CardifyUpdater.CardifyUpdater" target="11" />
+      <module name="CardifyDebate.CardifyUpdater.main" target="11" />
+      <module name="CardifyDebate.CardifyUpdater.test" target="11" />
+      <module name="CardifyDebate.main" target="11" />
+      <module name="CardifyDebate.test" target="11" />
+      <module name="CardifyLauncher.main" target="11" />
+      <module name="CardifyLauncher.test" target="11" />
+      <module name="CardifyUpdater.main" target="11" />
+      <module name="CardifyUpdater.test" target="11" />
+      <module name="CardifyWindowsUpdater.main" target="11" />
+      <module name="CardifyWindowsUpdater.test" target="11" />
+      <module name="CardrLauncher.main" target="11" />
+      <module name="CardrLauncher.test" target="11" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="PREFER_TARGET_JDK_COMPILER" value="false" />
+  </component>
+</project>
