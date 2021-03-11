@@ -50,3 +50,6 @@ Cardr has a separate OCR API that uses Tess4j to scan text from screenshots.
 
 ## Credits
 * Soham Govande - Founder & Lead Developer
+
+## Contributions
+To make a pull request to the repository, please sign and email the "Cardr Individual Content Licensing Agreement.pdf" to sohamthedeveloper@gmail.com.
