@@ -1,6 +1,6 @@
 package me.sohamgovande.cardr.core.ui
 
-import de.codecentric.centerdevice.MenuToolkit
+import de.jangassen.MenuToolkit
 import javafx.application.Platform
 import javafx.scene.control.*
 import javafx.scene.input.KeyCode

@@ -1,4 +1,4 @@
-module CardrDesktop.main {
+open module CardrDesktop.main {
     requires javafx.web;
     requires javafx.controls;
     requires javafx.base;
@@ -19,11 +19,10 @@ module CardrDesktop.main {
     requires gson;
     requires org.apache.logging.log4j;
     requires org.apache.logging.log4j.core;
-    requires centerdevice.nsmenufx;
+    requires nsmenufx;
     requires jdk.crypto.ec;
     requires org.apache.commons.compress;
     requires jdk.jsobject;
 
     exports me.sohamgovande.cardr;
-    opens me.sohamgovande.cardr.core.ui.windows.markup to javafx.web;
 }

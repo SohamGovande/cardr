@@ -37,7 +37,7 @@ class CardrUI(val stage: Stage) {
     var finishedDeferredLoad = false
 
     init {
-        currentUser.onSuccessfulLogin = menubarHelper::onSuccessfulLogin
+        currentUser.onSuccessfulLogin = { menubarHelper.onSuccessfulLogin() }
     }
 
     fun initialize(): VBox {

@@ -62,7 +62,7 @@ class CardWebScraper(var cardrUI: CardrUI?, private val currentTab: () -> EditCa
         }
         meta = doc.getElementsByTag("meta")
         try {
-            var jsonText = doc.select("script[type='application/ld+json']").maxBy { it.html().length }?.html() ?: throw NullPointerException()
+            var jsonText = doc.select("script[type='application/ld+json']").maxByOrNull { it.html().length }?.html() ?: throw NullPointerException()
 
             //Remove the "headline" and "description" attributes - if they contain quotes, they cause a JSON parse failure
             jsonText = jsonText.replace(Regex("\"headline\":\\s\".+\","), "")
@@ -608,7 +608,7 @@ class CardWebScraper(var cardrUI: CardrUI?, private val currentTab: () -> EditCa
                 return StringEscapeUtils.unescapeHtml4(titleString)
             }
 
-            titleString = doc.getElementsByTag("title").maxBy { it.text().length }?.text()
+            titleString = doc.getElementsByTag("title").maxByOrNull { it.text().length }?.text()
         }
         return StringEscapeUtils.unescapeHtml4(titleString)
     }
