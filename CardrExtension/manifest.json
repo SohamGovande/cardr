@@ -12,7 +12,7 @@
     "128": "icons/icon-128.png"
   },
 
-  "browser_action": {
+  "action": {
     "default_title": "Open in cardr",
     "default_popup": "popup.html"
   },
@@ -20,12 +20,12 @@
   "author": "Soham Govande",
 
   "background": {
-    "scripts": ["background.js"],
-    "persistent": false
+    "service_worker": "background.js"
   },
   "permissions": [
     "activeTab",
     "tabs",
+    "scripting",
     "nativeMessaging"
   ],
   "content_scripts": []

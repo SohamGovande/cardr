@@ -11,8 +11,7 @@ function openCardr(urlStr, selectedText, html) {
     },
     function(response) {
       if (response == undefined) {
-        alert("No cardr installation detected. Please visit https://cardrdebate.com/download.html to download the desktop client and begin researching! It'll only take a minute :) Click 'OK' to download it.");
-        chrome.tabs.create({ 'url': "https://cardrdebate.com/download.html" });
+        showAlert("No cardr installation detected. Please visit https://cardrdebate.com/download.html to download the desktop client and begin researching! It'll only take a minute - we promise.", 'https://cardrdebate.com/download.html');
       } else {
         console.log("Received response " + JSON.stringify(response))
         chrome.runtime.sendMessage("closeCardrPopup");
@@ -21,23 +20,32 @@ function openCardr(urlStr, selectedText, html) {
   )
 }
 
+function getSelection() {
+  return document.getSelection().toString();
+}
+
+function getOuterHTML() {
+  return document.all[0].outerHTML;
+}
+
 function openCardrFromBtn() {
   chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
     var tab = tabs[0];
     if (tab.url.startsWith("chrome://")) {
-      alert("Sorry, cardr doesn't have permissions to access chrome:// urls. Try another page.");
+      showAlert("Sorry, cardr doesn't have permissions to access chrome:// urls. Try another page.", undefined);
       return;
     }
-    chrome.tabs.executeScript( {
-      code: "window.getSelection().toString();"
+    chrome.scripting.executeScript( {
+      target: {tabId: tab.id},
+      func: getSelection
     }, function(selection) {
       var selectedText = '';
       if (selection != undefined) {
-        selectedText = selection[0];
+        selectedText = selection[0]['result'];
       }
  
-      chrome.tabs.executeScript({code: "document.all[0].outerHTML;"}, function(dom) {
-        var html = dom[0];
+      chrome.scripting.executeScript({target: {tabId: tab.id}, func: getOuterHTML}, function(dom) {
+        var html = dom[0]['result'];
         if (tab != undefined) {
           if (html.length >= 1024 * 1024 - tab.url.length - 20) { // 1 MB
             html = "<p>CARDR ERROR - This webpage was too large for cardr's Chrome extension to process. Please try again by selecting 'GO' above.</p>"
@@ -49,6 +57,26 @@ function openCardrFromBtn() {
   })
 }
 
+function displayAlertText(text, newURL) {
+  window.alert(text);
+  if (newURL != undefined) {
+    window.open(newURL, '_blank')
+  }
+}
+
+function showAlert(text, newURL) {
+  chrome.tabs.query({active: true, lastFocusedWindow: true}, function(tabs) {
+    var tab = tabs[0];
+    if (tab != undefined) {
+      chrome.scripting.executeScript({
+        target: {tabId: tab.id},
+        func: displayAlertText,
+        args: [text, newURL]
+      });  
+    }
+  });
+}
+
 function openOCRTool() {
   chrome.runtime.sendNativeMessage(
     "me.sohamgovande.cardr",
@@ -57,8 +85,8 @@ function openOCRTool() {
     },
     function(response) {
       if (response == undefined) {
-        alert("No cardr installation detected. Please visit https://cardrdebate.com/download.html to download the desktop client and begin researching! It'll only take a minute :) Click 'OK' to download it.");
         chrome.tabs.create({ 'url': "https://cardrdebate.com/download.html" });
+        showAlert("No cardr installation detected. Please visit https://cardrdebate.com/download.html to download the desktop client and begin researching! It'll only take a minute  - we promise.", 'https://cardrdebate.com/download.html');
       } else {
         console.log("Received response " + JSON.stringify(response));
         chrome.runtime.sendMessage("closeCardrPopup");
@@ -68,6 +96,7 @@ function openOCRTool() {
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+  console.log("Request received: " + request);
   if (request == "openCardrFromBtn") {
     openCardrFromBtn();
   } else if (request == "openOCRTool") {

@@ -23,10 +23,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		010533682424426F0047D123 /* json.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = json.hpp; sourceTree = "<group>"; };
 		011EBDD123B915B800D32713 /* CardifyChromeApp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = CardifyChromeApp; sourceTree = BUILT_PRODUCTS_DIR; };
 		011EBDD423B915B800D32713 /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
-		011EBDDB23B9190D00D32713 /* me.matrix4f.cardify.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = me.matrix4f.cardify.json; path = ../../../Desktop/CardifyChromeApp/me.matrix4f.cardify.json; sourceTree = "<group>"; };
+		873D8438280BB09100CBA733 /* json.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = json.hpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -59,9 +58,8 @@
 		011EBDD323B915B800D32713 /* CardifyChromeApp */ = {
 			isa = PBXGroup;
 			children = (
-				010533682424426F0047D123 /* json.hpp */,
+				873D8438280BB09100CBA733 /* json.hpp */,
 				011EBDD423B915B800D32713 /* main.cpp */,
-				011EBDDB23B9190D00D32713 /* me.matrix4f.cardify.json */,
 			);
 			path = CardifyChromeApp;
 			sourceTree = "<group>";
